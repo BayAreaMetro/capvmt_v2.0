@@ -9,5 +9,9 @@ Climate Action Plan VMT Data Portal (Version 2)
 ## Requirements
 
 ### Front End Requirements
-- [ ] environment set up (MZ)
-- [ ] Complete style revamp of portal routes (WL)
+- [ ] initial environment set up (MZ)
+- [ ] Complete front end page buildout (WL)
+
+### Data Updates
+
+See the README in the [etl folder]
