@@ -14,4 +14,4 @@ Climate Action Plan VMT Data Portal (Version 2)
 
 ### Data Updates
 
-See the README in the [etl folder]
+See the README in the [etl folder](https://github.com/BayAreaMetro/capvmt_v2.0/tree/main/etl)
