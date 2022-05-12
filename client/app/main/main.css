@@ -25,3 +25,10 @@
 .navbar-text {
   margin-left: 15px;
 }
+
+body {
+  height: 100;
+  text-align: center;
+  color: white;
+  background-color: gray; 
+}

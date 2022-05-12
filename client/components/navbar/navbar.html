@@ -1,7 +1,36 @@
-<div class="navbar navbar-default navbar-static-top">
+<nav class="navbar navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Vehicle Miles Traveled Dataportal</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link active" aria-current="page" href="#">Home</a>
+        <a class="nav-link" href="#">Data</a>
+        <a class="nav-link" href="#">Feedback</a>
+        <a class="nav-link" href="#">About</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- <div class="navbar navbar-default navbar-static-top">
   <div class="container">
     <div class="navbar-header">
-      <button class="navbar-toggle" type="button" ng-click="$ctrl.isCollapsed = !$ctrl.isCollapsed">
+      <button
+        class="navbar-toggle"
+        type="button"
+        ng-click="$ctrl.isCollapsed = !$ctrl.isCollapsed"
+      >
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -9,21 +38,37 @@
       </button>
       <a href="/" class="navbar-brand">capvmt</a>
     </div>
-    <div uib-collapse="$ctrl.isCollapsed" class="navbar-collapse collapse" id="navbar-main">
+    <div
+      uib-collapse="$ctrl.isCollapsed"
+      class="navbar-collapse collapse"
+      id="navbar-main"
+    >
       <ul class="nav navbar-nav">
         <li ng-repeat="item in $ctrl.menu" ui-sref-active="active">
-            <a ui-sref="{{item.state}}">{{item.title}}</a>
+          <a ui-sref="{{item.state}}">{{item.title}}</a>
         </li>
-        <li ng-show="$ctrl.isAdmin()" ui-sref-active="active"><a ui-sref="admin">Admin</a></li>
+        <li ng-show="$ctrl.isAdmin()" ui-sref-active="active">
+          <a ui-sref="admin">Admin</a>
+        </li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
-        <li ng-hide="$ctrl.isLoggedIn()" ui-sref-active="active"><a ui-sref="signup">Sign up</a></li>
-        <li ng-hide="$ctrl.isLoggedIn()" ui-sref-active="active"><a ui-sref="login">Login</a></li>
-        <li ng-show="$ctrl.isLoggedIn()"><p class="navbar-text">Hello {{ $ctrl.getCurrentUser().name }}</p> </li>
-        <li ng-show="$ctrl.isLoggedIn()" ui-sref-active="active"><a ui-sref="settings"><span class="glyphicon glyphicon-cog"></span></a></li>
+        <li ng-hide="$ctrl.isLoggedIn()" ui-sref-active="active">
+          <a ui-sref="signup">Sign up</a>
+        </li>
+        <li ng-hide="$ctrl.isLoggedIn()" ui-sref-active="active">
+          <a ui-sref="login">Login</a>
+        </li>
+        <li ng-show="$ctrl.isLoggedIn()">
+          <p class="navbar-text">Hello {{ $ctrl.getCurrentUser().name }}</p>
+        </li>
+        <li ng-show="$ctrl.isLoggedIn()" ui-sref-active="active">
+          <a ui-sref="settings"
+            ><span class="glyphicon glyphicon-cog"></span
+          ></a>
+        </li>
         <li ng-show="$ctrl.isLoggedIn()"><a ui-sref="logout">Logout</a></li>
       </ul>
     </div>
   </div>
-</div>
+</div> -->
