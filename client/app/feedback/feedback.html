@@ -1,15 +1,14 @@
-<div class="container bg-dark text-white mt-5">
+<div class="container shadow bg-dark text-white mt-5">
   <h1 class="text-center">Feedback</h1>
   <br />
-  <h6>
-    To provide us with general feedback, bugs and improvements, or suggestions
-    for future releases, please fill out the form below:
-  </h6>
-  <br />
-  <div style="padding: 10px" class="container">
+  <div style="padding: 10px; width: 768px" class="container">
+    <h6>
+      To provide us with general feedback, bugs and improvements, or suggestions
+      for future releases, please fill out the form below:
+    </h6>
     <form>
       <div class="mb-3">
-        <label for="inputName" class="form-label">Full Name</label>
+        <label for="inputName" class="form-label">Full Name:</label>
         <input
           type="name"
           class="form-control"
@@ -18,19 +17,40 @@
         />
       </div>
       <div class="mb-1">
-        <label for="inputEmail" class="form-label">Email</label>
+        <label for="inputEmail" class="form-label">Email:</label>
         <input type="email" class="form-control" id="inputEmail" />
       </div>
       <div id="emailHelp" class="form-text mb-3">
         We'll never share your email with anyone.
       </div>
       <div class="mb-3">
-        <label for="feedbackType" class="form-label">Feedback Type</label>
-        <input type="selection" class="form-control" id="feedbackType" />
+        Feedback
+        <div class="d-grid dropdown">
+          <button
+            class="btn btn-light dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            id="feedbackMenuButton"
+          >
+            Feedback Type:
+          </button>
+          <ul class="w-100 dropdown-menu" aria-labelledby="feedbackMenuButton">
+            <li><a class="dropdown-item" href="#">None</a></li>
+            <li><a class="dropdown-item" href="#">General Feedback</a></li>
+            <li><a class="dropdown-item" href="#">Application Bug</a></li>
+            <li><a class="dropdown-item" href="#">Enhancement Request</a></li>
+            <li><a class="dropdown-item" href="#">Resource Content</a></li>
+          </ul>
+        </div>
       </div>
       <div class="mb-3">
-        <label for="commentBox" class="form-label">Comment Box</label>
-        <input type="comment" class="form-control" id="commentBox" />
+        <label for="commentBox" class="form-label">Comment:</label>
+        <input
+          style="height: 75px"
+          type="comment"
+          class="form-control"
+          id="commentBox"
+        />
       </div>
       <button type="submit" class="btn btn-light">Submit</button>
     </form>
