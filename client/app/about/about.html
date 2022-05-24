@@ -1,123 +1,484 @@
-<div
-  style="position: relative; overflow-y: scroll; margin-top: 10%"
-  class="container"
->
-  <div id="list-example" class="list-group">
-    <a class="list-group-item list-group-item-action" href="#list-item-1"
-      >General</a
+<div style="margin-top: 50px" class="container text-center">
+  <h1>About This Site</h1>
+  <hr />
+</div>
+
+<div style="margin-top: 75px" class="container">
+  <div class="row bg-dark">
+    <div
+      style="padding: 30px"
+      class="accordion"
+      id="accordionPanelsStayOpenExample"
     >
-    <a class="list-group-item list-group-item-action" href="#list-item-2"
-      >VMT Calculation and Methodology</a
-    >
-    <a class="list-group-item list-group-item-action" href="#list-item-3"
-      >Item 3</a
-    >
-    <a class="list-group-item list-group-item-action" href="#list-item-4"
-      >Item 4</a
-    >
-  </div>
-  <div
-    data-bs-spy="scroll"
-    data-bs-target="#list-example"
-    data-bs-offset="0"
-    class="scrollspy-example"
-    tabindex="0"
-  >
-    <h4 id="list-item-1">General</h4>
-    <p>
-      Local jurisdictions are putting forward solutions to the global problem of
-      climate change through Climate Action Plans. These documents strive to
-      first quantify the greenhouse gas emissions within a city's scope of
-      influence and then put forward strategies to reduce future emissions. The
-      Bay Area Quality Management District (Air District) has provided formal
-      guidance to assist jurisdictions in developing these plans. A key
-      component of local jurisdictions' greenhouse gas footprint is passenger
-      vehicle travel. There is, however, no obvious approach to allocating the
-      responsibility of the GHG from vehicle travel to individual jurisdictions.
-      Several entities have put forward suggestions for how to approach this
-      allocation, some of which the Air District notes in the guidance
-      referenced above. The purpose of this data portal is to quickly and easily
-      deliver consistent, jurisdiction-specific estimates of vehicle miles
-      traveled. Importantly, this data is consistent with the travel outcomes
-      associated with the Metropolitan Transportation Commission's long-range
-      transportation plan, which meets a state-mandated GHG reduction target.
-    </p>
-    <h4 id="list-item-2">VMT Calculation and Methodology</h4>
-    <p>
-      The Metropolitan Transportation Commission or MTC, is the transportation
-      planning, financing and coordinating agency for the nine-county San
-      Francisco Bay Area. As part of their work MTC deploys and maintains a
-      large-scale simulation model of daily travel behavior to support its
-      regional transportation planning efforts, most notably in the regional
-      transit document Plan Bay Area. The model simulates transportation
-      activities that the average household currently living in (for simulations
-      of historical years), or expected to be living in (for simulations of
-      future years), in the nine-county Bay Area. The model is documented in
-      great detail on this webpage and the implementation scripts are shared and
-      maintained on [GitHub]. The Data Portal summaries are drawn from the same
-      model output that informs MTC's regional transportation plan and
-      sustainable communities strategy. Therefore, the data is consistent with
-      the travel data used in preparing regional plans to address transportation
-      and land use, air quality, and greenhouse gases. The simulation involves
-      the prediction of numerous travel-related outcomes, including: where the
-      household is located; the location of employment of workers in the
-      household and where the students go to school; the time during which
-      workers work, students go to school; the time and location in which
-      individuals engage in other, non-work and non-school, activities; the
-      means by which travelers get around (e.g., walk, drive, take the bus);
-      and, the routes travelers take to get around (e.g., I-80 to Mission
-      Boulevard, the #1 bus). Two important notes are as follows: The model
-      attempts to simulate a "typical" weekday, defined as a weekday when school
-      is in session, the weather is good, and no major accidents or construction
-      activities are taking place on the roadway. The travel model operates an
-      abstracted spatial system: rather than moving between two precise
-      locations, travelers move between what we call "travel analysis zones". In
-      MTC's current travel model, the travel analysis zones are similar in size
-      to Census tracts. We assume that a traveler going to a travel analysis
-      zone could be going to any precise location within the travel analysis
-      zone's boundaries. One of the outputs of the simulation is a detailed
-      record of every trip made by every simulated traveler. We define a "trip"
-      as a movement between two locations where travelers engage in activities,
-      e.g. from home to work, from school to the grocery store. The trip records
-      include the trip's means of travel and travel distance as well as the
-      traveler's home and work locations. This output can be used to create the
-      data presented in the Climate Action Plan Vehicle Miles Traveled Data
-      Portal. This is done via the following steps: define the subject
-      geography, i.e. the city or county; identify the simulated travelers that
-      live in the subject geography; identify the simulated travelers that work
-      in the subject geography; compute the VMT for each simulated trip, which
-      is simply the distance traveled in a distance divided by the number of
-      travelers in the vehicle (if three travelers are in the vehicle, the
-      movement is listed three times in the trip file); identify trips that
-      begin in the subject geography; identify trips that end in the subject
-      geography; and, sum the vehicle miles traveled by the six live/work market
-      segments and the three start/end travel segments shown in the Data Portal
-      summaries. These data summaries include only non-commercial travel.
-      Meaning, it does not include travel made by taxi drivers, plumbers, etc.,
-      or for moving goods/freight. Three key caveats are as follows: Our
-      simulation model explicitly assumes that every worker living in the
-      nine-county Bay Area also works in the nine-county Bay Area. This is, of
-      course, not always true, particularly in areas at the boundary of our
-      planning region (e.g., Dixon). This caveat should be kept in mind when
-      examining the results for jurisdictions near the boundary of our planning
-      area. The data is simulated: we are using models to predict where people
-      live and how they get around. The models are based on observations
-      collected at different points in time and are routinely reviewed by State
-      and Federal entities. We believe the data is robust and useful for
-      informing Climate Action Plans -- but it is simulated, not observed. The
-      land use allocations used by MTC likely differ from those used by the
-      county Congestion Management Agencies. Specifically, when doing
-      sub-regional planning, MTC -- in the Congestion Management Plan context --
-      allows counties to re-allocate land use within their counties to different
-      locations. There may, therefore, be minor inconsistencies between regional
-      outcomes of the types presented in the Data Portal estimated by MTC and
-      county outcomes estimated by Congestion Management Agencies. The
-      Congestion Management Agencies may also use different travel modeling
-      tools.
-    </p>
-    <h4 id="list-item-3">Item 3</h4>
-    <p>...</p>
-    <h4 id="list-item-4">Item 4</h4>
-    <p>...</p>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+          <button
+            class="accordion-button"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseOne"
+            aria-expanded="true"
+            aria-controls="panelsStayOpen-collapseOne"
+          >
+            General
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseOne"
+          class="accordion-collapse collapse show"
+          aria-labelledby="panelsStayOpen-headingOne"
+        >
+          <div class="accordion-body">
+            <div class="container">
+              <div class="row">
+                <div style="margin-top: 20px" class="col-md-6">
+                  <strong
+                    >Local jurisdictions are putting forward solutions to the
+                    global problem of climate change through Climate Action
+                    Plans.</strong
+                  >
+                  These documents strive to first quantify the greenhouse gas
+                  emissions within a city's scope of influence and then put
+                  forward strategies to reduce future emissions. The Bay Area
+                  Quality Management District (Air District) has provided formal
+                  guidance to assist jurisdictions in developing these plans. A
+                  key component of local jurisdictions' greenhouse gas footprint
+                  is passenger vehicle travel. There is, however, no obvious
+                  approach to allocating the responsibility of the GHG from
+                  vehicle travel to individual jurisdictions. Several entities
+                  have put forward suggestions for how to approach this
+                  allocation, some of which the Air District notes in the
+                  guidance referenced above. The purpose of this data portal is
+                  to quickly and easily deliver consistent,
+                  jurisdiction-specific estimates of vehicle miles traveled.
+                  Importantly, this data is consistent with the travel outcomes
+                  associated with the Metropolitan Transportation Commission's
+                  long-range transportation plan, which meets a state-mandated
+                  GHG reduction target.
+                </div>
+                <div style="margin-top: 40px" class="col-md-6 text-center">
+                  <iframe
+                    width="500"
+                    height="315"
+                    src="https://www.youtube.com/embed/fTG_xdCqpIo"
+                    frameborder="0"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseTwo"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseTwo"
+          >
+            VMT Calculation and Methodology
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseTwo"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingTwo"
+        >
+          <div class="accordion-body">
+            <div style="margin-top: 20px" class="container">
+              <p>
+                <strong>
+                  Metropolitan Transportation Commission or MTC, is the
+                  transportation planning, financing and coordinating agency for
+                  the nine-county San Francisco Bay Area.
+                </strong>
+                As part of their work MTC deploys and maintains a large-scale
+                simulation model of daily travel behavior to support its
+                regional transportation planning efforts, most notably in the
+                regional transit document Plan Bay Area. <br />
+              </p>
+              <p>
+                The model simulates transportation activities that the average
+                household currently living in (for simulations of historical
+                years), or expected to be living in (for simulations of future
+                years), in the nine-county Bay Area. The model is documented in
+                great detail on this webpage and the implementation scripts are
+                shared and maintained on [GitHub]. The Data Portal summaries are
+                drawn from the same model output that informs MTC's regional
+                transportation plan and sustainable communities strategy.
+                Therefore, the data is consistent with the travel data used in
+                preparing regional plans to address transportation and land use,
+                air quality, and greenhouse gases. The simulation involves the
+                prediction of numerous travel-related outcomes, including: where
+                the household is located; the location of employment of workers
+                in the household and where the students go to school; the time
+                during which workers work, students go to school; the time and
+                location in which individuals engage in other, non-work and
+                non-school, activities; the means by which travelers get around
+                (e.g., walk, drive, take the bus); and, the routes travelers
+                take to get around (e.g., I-80 to Mission Boulevard, the #1
+                bus).<br />
+              </p>
+
+              <p>
+                Two important notes are as follows: <br />
+
+                The model attempts to simulate a "typical" weekday, defined as a
+                weekday when school is in session, the weather is good, and no
+                major accidents or construction activities are taking place on
+                the roadway. The travel model operates an abstracted spatial
+                system: rather than moving between two precise locations,
+                travelers move between what we call "travel analysis zones". In
+                MTC's current travel model, the travel analysis zones are
+                similar in size to Census tracts. We assume that a traveler
+                going to a travel analysis zone could be going to any precise
+                location within the travel analysis zone's boundaries. One of
+                the outputs of the simulation is a detailed record of every trip
+                made by every simulated traveler. We define a "trip" as a
+                movement between two locations where travelers engage in
+                activities, e.g. from home to work, from school to the grocery
+                store. The trip records include the trip's means of travel and
+                travel distance as well as the traveler's home and work
+                locations. This output can be used to create the data presented
+                in the Climate Action Plan Vehicle Miles Traveled Data Portal.
+                This is done via the following steps: define the subject
+                geography, i.e. the city or county; identify the simulated
+                travelers that live in the subject geography; identify the
+                simulated travelers that work in the subject geography; compute
+                the VMT for each simulated trip, which is simply the distance
+                traveled in a distance divided by the number of travelers in the
+                vehicle (if three travelers are in the vehicle, the movement is
+                listed three times in the trip file); identify trips that begin
+                in the subject geography; identify trips that end in the subject
+                geography; and, sum the vehicle miles traveled by the six
+                live/work market segments and the three start/end travel
+                segments shown in the Data Portal summaries. These data
+                summaries include only non-commercial travel. Meaning, it does
+                not include travel made by taxi drivers, plumbers, etc., or for
+                moving goods/freight. Three key caveats are as follows: Our
+                simulation model explicitly assumes that every worker living in
+                the nine-county Bay Area also works in the nine-county Bay Area.
+                This is, of course, not always true, particularly in areas at
+                the boundary of our planning region (e.g., Dixon). This caveat
+                should be kept in mind when examining the results for
+                jurisdictions near the boundary of our planning area. The data
+                is simulated: we are using models to predict where people live
+                and how they get around. The models are based on observations
+                collected at different points in time and are routinely reviewed
+                by State and Federal entities. We believe the data is robust and
+                useful for informing Climate Action Plans -- but it is
+                simulated, not observed. The land use allocations used by MTC
+                likely differ from those used by the county Congestion
+                Management Agencies. Specifically, when doing sub-regional
+                planning, MTC -- in the Congestion Management Plan context --
+                allows counties to re-allocate land use within their counties to
+                different locations. There may, therefore, be minor
+                inconsistencies between regional outcomes of the types presented
+                in the Data Portal estimated by MTC and county outcomes
+                estimated by Congestion Management Agencies. The Congestion
+                Management Agencies may also use different travel modeling
+                tools.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseThree"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseThree"
+          >
+            Frequently Asked Questions
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseThree"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingThree"
+        >
+          <div class="accordion-body">
+            <div style="overflow-y: scroll; height: 500px" class="container">
+              <div class="row">
+                <div class="col-md-6">
+                  <div id="list-example" class="list-group">
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-1"
+                      >What is this tool?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-2"
+                      >What is a Climate Action Plan?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-3"
+                      >Why do you use Vehicle Miles Traveled (VMT) when
+                      preparing Climate Action Plans?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-4"
+                      >How should Bay Area jurisdictions use this site to assist
+                      with developing a Climate Action Plan?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-5"
+                      >What methodology was used to determine vehicle miles
+                      traveled by jurisdiction?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-6"
+                      >How do you download data from this site?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-7"
+                      >What is a CSV file?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-8"
+                      >When using the MacOS Safari Browser or Windows IE web
+                      browser, the download data option does not work. What
+                      should I do?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-9"
+                      >What is the difference between a Place Boundary and a TAZ
+                      Boundary?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-10"
+                      >Where can I download the entire VMT dataset for all
+                      Places within the nine-county Bay Area region?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-11"
+                      >What happens after I submit Feedback to this site?</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-12"
+                      >Not all of the features are available when I try to view
+                      this website on my mobile device.</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-13"
+                      >When I click a feature on the map, nothing happens.</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-14"
+                      >When I am viewing the map, I do not see a way to go back
+                      to the data view</a
+                    >
+                    <a
+                      class="list-group-item list-group-item-action"
+                      href="#list-item-15"
+                      >I want to view the neighborhood characteristics of a
+                      specific TAZ within my jurisdiction.</a
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div
+                    data-bs-spy="scroll"
+                    data-bs-target="#list-example"
+                    data-bs-offset="0"
+                    class="scrollspy-example"
+                    tabindex="0"
+                  >
+                    <h4 id="list-item-1">What is this tool?</h4>
+                    <p>
+                      Funded by the Bay Area Air Quality Management District
+                      (Air District) in a collaboration between Air District and
+                      Metropolitan Transportation Commission (MTC). With the
+                      purpose of helping communities streamline the download of
+                      data, updating of greenhouse gas (GHG) inventories and to
+                      provide technical assistance to local governments.
+                    </p>
+                    <h4 id="list-item-2">What is a Climate Action Plan?</h4>
+                    <p>
+                      A climate action plan (CAP) is a community-wide GHG
+                      reduction policy document. CAPs may also address
+                      adaptation measures for adjusting to a changing climate.
+                      CAPs include a GHG target, an inventory of GHG sources in
+                      the community and a comprehensive strategy to meet the
+                      target.
+                    </p>
+                    <h4 id="list-item-3">
+                      Why do you use Vehicle Miles Traveled (VMT) when preparing
+                      Climate Action Plans?
+                    </h4>
+                    <p>
+                      VMT is important for calculating greenhouse gasses (GHG)
+                      associated with the transportation section of a CAP. VMT
+                      calculations provided by a local transit planning
+                      organization such as the Bay Area’s Metropolitan
+                      Transportation Commission (MTC) can be useful to align
+                      CAPs with regional transit plans such as Plan Bay Area.
+                    </p>
+                    <h4 id="list-item-4">
+                      How should Bay Area jurisdictions use this site to assist
+                      with developing a Climate Action Plan?
+                    </h4>
+                    <p>
+                      Jurisdictions in the Bay Area will find this site useful
+                      for developing and updating their GHG inventories, climate
+                      planning activities, tracking progress and understanding
+                      their community within the context of the Bay Area. This
+                      site provides the VMT data which can be used to determine
+                      a large portion of the GHG emissions from the
+                      transportation sector.
+                    </p>
+                    <h4 id="list-item-5">
+                      What methodology was used to determine vehicle miles
+                      traveled by jurisdiction?
+                    </h4>
+                    <p>
+                      Review the VMT Calculation and Methodology approach
+                      located on the About section of the VMT Data Portal
+                      website.
+                    </p>
+                    <h4 id="list-item-6">
+                      How do you download data from this site?
+                    </h4>
+                    <p>
+                      Data can be obtained from this site by clicking the Data
+                      link located in the Navigation banner of this website. To
+                      view the data in the browser, users must choose a Scenario
+                      year and a jurisdiction. In order to download data, users
+                      must select the Download Data button located in the data
+                      preview panel. Data is downloaded as a CSV file, and can
+                      be used in Excel or other spreadsheet programs.
+                    </p>
+                    <h4 id="list-item-7">What is a CSV file?</h4>
+                    <p>
+                      CSV stands for comma separated values. See this link for
+                      more detail on what a CSV file is, and how it is used to
+                      store data in a tabular format.
+                    </p>
+                    <h4 id="list-item-8">
+                      When using the MacOS Safari Browser or Windows IE web
+                      browser, the download data option does not work. What
+                      should I do?
+                    </h4>
+                    <p>
+                      Unfortunately, these two web browsers handle csv files
+                      differently than other browsers. We suggest you use
+                      another popular web browser like Mozilla’s Firefox, or
+                      Google’s Chrome Browser.
+                    </p>
+                    <h4 id="list-item-9">
+                      What is the difference between a Place Boundary and a TAZ
+                      Boundary?
+                    </h4>
+                    <p>
+                      Place geography used by this tool is provided and
+                      maintained by the U.S. Census Bureau. This geography
+                      includes both Incorporated Places and Census Designated
+                      Places (CDPs). Transportation Analysis Zones (TAZs) are
+                      the basic geographic unit used for modeling travel
+                      behavior within a Metropolitan Planning Organization’s
+                      (MPO) boundaries. TAZ boundaries are largely defined by
+                      population size. Because of this, a Place boundary is
+                      typically larger than a TAZ boundary in very densely
+                      populated areas, and conversely, in low density or rural
+                      areas, TAZ boundaries can be larger than Place boundaries.
+                      There are 101 Incorporated Places, 60 CDPs and 1454 TAZs
+                      within the nine-county bay region.<br />
+                    </p>
+                    <p>
+                      Resources for more information on: <br />
+                      CDP <br />
+                      TAZ <br />
+                      CDP vs. TAZ
+                    </p>
+                    <h4 id="list-item-10">
+                      Where can I download the entire VMT dataset for all Places
+                      within the nine-county Bay Area region?
+                    </h4>
+                    <p>
+                      The Metropolitan Transportation Commission (MTC) maintains
+                      a data set that hosts the VMT data by Place for the
+                      nine-county Bay Area, click here to get more information.
+                    </p>
+                    <h4 id="list-item-11">
+                      What happens after I submit Feedback to this site?
+                    </h4>
+                    <p>
+                      Feedback is vital to the success of this tool, and we
+                      welcome any and all feedback that our users wish to
+                      provide. We periodically review feedback in an effort to
+                      fix software bugs, answer technical questions about the
+                      website, and enhance the website with future improvements
+                      that our users request. All submitted feedback is stored
+                      and maintained by this website repository and can be
+                      viewed by clicking this link.
+                    </p>
+                    <h4 id="list-item-12">
+                      Not all of the features are available when I try to view
+                      this website on my mobile device.
+                    </h4>
+                    <p>
+                      This site is best viewed using a Tablet, Laptop or Desktop
+                      device. Mobile devices are typically restricted from
+                      downloading directly to the device. Therefore, this
+                      website does not allow users to download data when using a
+                      mobile device such as a smart phone.
+                    </p>
+                    <h4 id="list-item-13">
+                      When I click a feature on the map, nothing happens.
+                    </h4>
+                    <p>
+                      We have not enabled detailed exploration of the map
+                      features at this time. We are exploring this option for a
+                      future release.
+                    </p>
+                    <h4 id="list-item-14">
+                      When I am viewing the map, I do not see a way to go back
+                      to the data view
+                    </h4>
+                    <p>
+                      Just click the Data menu item in the site navigation
+                      banner across the top of the site.
+                    </p>
+                    <h4 id="list-item-15">
+                      I want to view the neighborhood characteristics of a
+                      specific TAZ within my jurisdiction.
+                    </h4>
+                    <p>
+                      When viewing the map, users can change the base map view
+                      to an aerial image. This allows the user to zoom in closer
+                      on the map view and get a bird’s eye view of the TAZ area.
+                      In addition, we have enabled the Google Street View tool.
+                      This tool provides a street level view of a portion of a
+                      TAZ
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
