@@ -7,10 +7,22 @@ import routes from './data.routes';
 
 export class DataComponent {
   /*@ngInject*/
-  constructor() {
-    this.message = 'Hello';
+  constructor($scope, $http) {
+    this.$http = $http;
+    this.$scope = $scope;
   }
-}
+
+  $onInit(){
+    this.$http.get('/api/data')
+    .then(response => {
+      console.log(response);
+      this.$scope.dataRows = response.dataRows;
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
+};
 
 export default angular.module('capvmtV20App.data', [uiRouter])
   .config(routes)

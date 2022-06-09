@@ -12,13 +12,20 @@
     background-size: cover;
     background-position: bottom;
     background-repeat: no-repeat;
+    color: #444444;
   "
   class="container shadow-lg bg-dark"
 >
   <div class="row">
     <div
-      style="margin-top: 75px; margin-bottom: 75px; padding: 30px; width: 768px"
-      class="container bg-white"
+      style="
+        opacity: 95%;
+        margin-top: 75px;
+        margin-bottom: 75px;
+        padding: 30px;
+        width: 768px;
+      "
+      class="container shadow-lg bg-white"
     >
       <h6>
         To provide us with general feedback, bugs and improvements, or
@@ -42,27 +49,15 @@
           We'll never share your email with anyone.
         </div>
         <div class="mb-3">
-          Feedback
-          <div class="d-grid dropdown">
-            <button
-              class="btn btn-light dropdown-toggle"
-              type="button"
-              data-bs-toggle="dropdown"
-              id="feedbackMenuButton"
-            >
-              Feedback Type:
-            </button>
-            <ul
-              class="w-100 dropdown-menu"
-              aria-labelledby="feedbackMenuButton"
-            >
-              <li><a class="dropdown-item" href="#">None</a></li>
-              <li><a class="dropdown-item" href="#">General Feedback</a></li>
-              <li><a class="dropdown-item" href="#">Application Bug</a></li>
-              <li><a class="dropdown-item" href="#">Enhancement Request</a></li>
-              <li><a class="dropdown-item" href="#">Resource Content</a></li>
-            </ul>
-          </div>
+          Feedback:
+          <select class="form-select" aria-label="Default select example">
+            <option selected>Feedback Type</option>
+            <option value="1">None</option>
+            <option value="2">General Feedback</option>
+            <option value="3">Application Bug</option>
+            <option value="4">Enhancement Request</option>
+            <option value="5">Resource Content</option>
+          </select>
         </div>
         <div class="mb-3">
           <label for="commentBox" class="form-label">Comment:</label>
@@ -73,7 +68,13 @@
             id="commentBox"
           />
         </div>
-        <button type="submit" class="btn btn-light">Submit</button>
+        <button
+          type="submit"
+          class="btn text-white"
+          style="background-color: #506ea7"
+        >
+          Submit
+        </button>
       </form>
     </div>
   </div>
