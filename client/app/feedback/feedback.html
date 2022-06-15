@@ -16,6 +16,7 @@
   "
   class="container shadow-lg bg-dark"
 >
+  <!-- Feedback Table -->
   <div class="row">
     <div
       style="
@@ -27,25 +28,30 @@
       "
       class="container shadow-lg bg-white"
     >
-      <h6>
+      <h6 class="mb-3">
         To provide us with general feedback, bugs and improvements, or
         suggestions for future releases, please fill out the form below:
       </h6>
       <form>
         <div class="mb-3">
-          <label for="inputName" class="form-label">Full Name:</label>
-          <input
-            type="name"
-            class="form-control"
-            id="inputName"
-            aria-describedby="namelHelp"
-          />
-        </div>
-        <div class="mb-1">
-          <label for="inputEmail" class="form-label">Email:</label>
-          <input type="email" class="form-control" id="inputEmail" />
-        </div>
-        <div id="emailHelp" class="form-text mb-3">
+          <div class="form-floating mb-3">
+            <input
+              type="fullname"
+              class="form-control"
+              id="floatingInput"
+              placeholder="First Last"
+            />
+            <label for="floatingInput">Full Name</label>
+          </div>
+          <div class="form-floating">
+            <input
+              type="email"
+              class="form-control"
+              id="floatingPassword"
+              placeholder="Email"
+            />
+            <label for="floatingPassword">Email</label>
+          </div>
           We'll never share your email with anyone.
         </div>
         <div class="mb-3">
@@ -59,14 +65,14 @@
             <option value="5">Resource Content</option>
           </select>
         </div>
-        <div class="mb-3">
-          <label for="commentBox" class="form-label">Comment:</label>
-          <input
-            style="height: 75px"
-            type="comment"
-            class="form-control"
-            id="commentBox"
-          />
+        <div class="form-floating">
+          <textarea
+            class="form-control mb-3"
+            placeholder="Leave a comment here"
+            id="floatingTextarea2"
+            style="height: 100px"
+          ></textarea>
+          <label for="floatingTextarea2">Comments</label>
         </div>
         <button
           type="submit"

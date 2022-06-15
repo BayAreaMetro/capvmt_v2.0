@@ -3,7 +3,7 @@
   <h1>About This Site</h1>
   <hr />
 </div>
-<!-- Content -->
+<!-- Background Image -->
 <div
   style="
     margin-top: 75px;
@@ -15,6 +15,7 @@
   "
   class="container"
 >
+<!-- Content -->
   <div class="row">
     <div
       style="padding: 75px; opacity: 95%"
@@ -51,7 +52,7 @@
                   These documents strive to first quantify the greenhouse gas
                   emissions within a city's scope of influence and then put
                   forward strategies to reduce future emissions. The Bay Area
-                  Quality Management District (Air District) has provided formal
+                  Quality Management District <a href="https://www.baaqmd.gov">(Air District)</a> has provided formal
                   guidance to assist jurisdictions in developing these plans. A
                   key component of local jurisdictions' greenhouse gas footprint
                   is passenger vehicle travel. There is, however, no obvious
@@ -103,52 +104,73 @@
             <div style="margin-top: 20px" class="container">
               <p>
                 <strong>
-                  Metropolitan Transportation Commission or MTC, is the
+                  The <a href="https://mtc.ca.gov">Metropolitan Transportation Commission</a> or MTC, is the
                   transportation planning, financing and coordinating agency for
                   the nine-county San Francisco Bay Area.
                 </strong>
                 As part of their work MTC deploys and maintains a large-scale
                 simulation model of daily travel behavior to support its
                 regional transportation planning efforts, most notably in the
-                regional transit document Plan Bay Area. <br />
+                regional transit document <a href="https://www.planbayarea.org">Plan Bay Area.</a> <br />
               </p>
               <p>
                 The model simulates transportation activities that the average
                 household currently living in (for simulations of historical
                 years), or expected to be living in (for simulations of future
                 years), in the nine-county Bay Area. The model is documented in
-                great detail on this webpage and the implementation scripts are
-                shared and maintained on [GitHub]. The Data Portal summaries are
+                great detail on this <a href="https://github.com/BayAreaMetro/modeling-website/wiki/TravelModel">webpage</a> and the implementation scripts are
+                shared and maintained on <a href="https://github.com/BayAreaMetro/travel-model-one">[GitHub]</a>. The Data Portal summaries are
                 drawn from the same model output that informs MTC's regional
                 transportation plan and sustainable communities strategy.
                 Therefore, the data is consistent with the travel data used in
                 preparing regional plans to address transportation and land use,
                 air quality, and greenhouse gases. The simulation involves the
-                prediction of numerous travel-related outcomes, including: where
-                the household is located; the location of employment of workers
-                in the household and where the students go to school; the time
-                during which workers work, students go to school; the time and
-                location in which individuals engage in other, non-work and
-                non-school, activities; the means by which travelers get around
-                (e.g., walk, drive, take the bus); and, the routes travelers
-                take to get around (e.g., I-80 to Mission Boulevard, the #1
-                bus).<br />
+                prediction of numerous travel-related outcomes, including:
+                <ul>
+                  <li>where the household is located;</li>
+                  <li>
+                    the location of employment of workers in the household and
+                    where the students go to school;
+                  </li>
+                  <li>
+                    the time during which workers work, students go to school;
+                  </li>
+                  <li>
+                    the time and location in which individuals engage in other,
+                    non-work and non-school, activities;
+                  </li>
+                  <li>
+                    the means by which travelers get around (e.g., walk, drive,
+                    take the bus);
+                  </li>
+                  <li>
+                    and, the routes travelers take to get around (e.g., I-80 to
+                    Mission Boulevard, the #1 bus).
+                  </li>
+                </ul>
+                
               </p>
 
               <p>
                 Two important notes are as follows: <br />
-
-                The model attempts to simulate a "typical" weekday, defined as a
-                weekday when school is in session, the weather is good, and no
-                major accidents or construction activities are taking place on
-                the roadway. The travel model operates an abstracted spatial
-                system: rather than moving between two precise locations,
-                travelers move between what we call "travel analysis zones". In
-                MTC's current travel model, the travel analysis zones are
-                similar in size to Census tracts. We assume that a traveler
-                going to a travel analysis zone could be going to any precise
-                location within the travel analysis zone's boundaries. One of
-                the outputs of the simulation is a detailed record of every trip
+                <ol>
+                  <li>
+                    The model attempts to simulate a "typical" weekday, defined as a
+                    weekday when school is in session, the weather is good, and no
+                    major accidents or construction activities are taking place on
+                    the roadway. 
+                  </li> <br>
+                  <li>
+                    The travel model operates an abstracted spatial
+                    system: rather than moving between two precise locations,
+                    travelers move between what we call "travel analysis zones". In
+                    MTC's current travel model, the travel analysis zones are
+                    similar in size to Census tracts. We assume that a traveler
+                    going to a travel analysis zone could be going to any precise
+                    location within the travel analysis zone's boundaries.
+                  </li> 
+                </ol>
+                 One of the outputs of the simulation is a detailed record of every trip
                 made by every simulated traveler. We define a "trip" as a
                 movement between two locations where travelers engage in
                 activities, e.g. from home to work, from school to the grocery
@@ -156,43 +178,54 @@
                 travel distance as well as the traveler's home and work
                 locations. This output can be used to create the data presented
                 in the Climate Action Plan Vehicle Miles Traveled Data Portal.
-                This is done via the following steps: define the subject
-                geography, i.e. the city or county; identify the simulated
-                travelers that live in the subject geography; identify the
-                simulated travelers that work in the subject geography; compute
-                the VMT for each simulated trip, which is simply the distance
-                traveled in a distance divided by the number of travelers in the
-                vehicle (if three travelers are in the vehicle, the movement is
-                listed three times in the trip file); identify trips that begin
-                in the subject geography; identify trips that end in the subject
-                geography; and, sum the vehicle miles traveled by the six
-                live/work market segments and the three start/end travel
-                segments shown in the Data Portal summaries. These data
-                summaries include only non-commercial travel. Meaning, it does
-                not include travel made by taxi drivers, plumbers, etc., or for
-                moving goods/freight. Three key caveats are as follows: Our
-                simulation model explicitly assumes that every worker living in
-                the nine-county Bay Area also works in the nine-county Bay Area.
-                This is, of course, not always true, particularly in areas at
-                the boundary of our planning region (e.g., Dixon). This caveat
-                should be kept in mind when examining the results for
-                jurisdictions near the boundary of our planning area. The data
-                is simulated: we are using models to predict where people live
-                and how they get around. The models are based on observations
-                collected at different points in time and are routinely reviewed
-                by State and Federal entities. We believe the data is robust and
-                useful for informing Climate Action Plans -- but it is
-                simulated, not observed. The land use allocations used by MTC
-                likely differ from those used by the county Congestion
-                Management Agencies. Specifically, when doing sub-regional
-                planning, MTC -- in the Congestion Management Plan context --
-                allows counties to re-allocate land use within their counties to
-                different locations. There may, therefore, be minor
-                inconsistencies between regional outcomes of the types presented
-                in the Data Portal estimated by MTC and county outcomes
-                estimated by Congestion Management Agencies. The Congestion
-                Management Agencies may also use different travel modeling
-                tools.
+                This is done via the following steps: <br>
+                <br>
+                <ul>
+                  <li>define the subject geography, i.e. the city or county;</li>
+                  <li>identify the simulated travelers that live in the subject geography;</li>  
+                  <li>identify the simulated travelers that work in the subject geography;</li>  
+                  <li>compute the VMT for each simulated trip, which is simply the distance
+                    traveled in a distance divided by the number of travelers in the
+                    vehicle (if three travelers are in the vehicle, the movement is
+                    listed three times in the trip file);</li> 
+                  <li>identify trips that begin in the subject geography;</li>  
+                  <li>identify trips that end in the subject geography; </li> 
+                  <li>and, sum the vehicle miles traveled by the six
+                    live/work market segments and the three start/end travel
+                    segments shown in the Data Portal summaries.</li>
+                </ul>
+                <p>These data summaries include only non-commercial travel. Meaning, it does
+                  not include travel made by taxi drivers, plumbers, etc., or for
+                  moving goods/freight.</p>
+                
+                Three key caveats are as follows:
+                <br>
+                <br>
+                <ol>
+                  <li>Our simulation model explicitly assumes that every worker living in
+                    the nine-county Bay Area also works in the nine-county Bay Area.
+                    This is, of course, not always true, particularly in areas at
+                    the boundary of our planning region (e.g., Dixon). This caveat
+                    should be kept in mind when examining the results for
+                    jurisdictions near the boundary of our planning area.</li>  <br>
+                   <li>The data is simulated: we are using models to predict where people live
+                    and how they get around. The models are based on observations
+                    collected at different points in time and are routinely reviewed
+                    by State and Federal entities. We believe the data is robust and
+                    useful for informing Climate Action Plans -- but it is
+                    simulated, not observed. </li> <br>
+                   <li>The land use allocations used by MTC
+                    likely differ from those used by the county Congestion
+                    Management Agencies. Specifically, when doing sub-regional
+                    planning, MTC -- in the Congestion Management Plan context --
+                    allows counties to re-allocate land use within their counties to
+                    different locations. There may, therefore, be minor
+                    inconsistencies between regional outcomes of the types presented
+                    in the Data Portal estimated by MTC and county outcomes
+                    estimated by Congestion Management Agencies. The Congestion
+                    Management Agencies may also use different travel modeling
+                    tools.</li> 
+                </ol> 
               </p>
             </div>
           </div>
@@ -382,7 +415,7 @@
                     </p>
                     <h4 id="list-item-7">What is a CSV file?</h4>
                     <p>
-                      CSV stands for comma separated values. See this link for
+                      CSV stands for comma separated values. See this <a href="https://en.wikipedia.org/wiki/Comma-separated_values">link</a> for
                       more detail on what a CSV file is, and how it is used to
                       store data in a tabular format.
                     </p>
@@ -418,9 +451,9 @@
                     </p>
                     <p>
                       Resources for more information on: <br />
-                      CDP <br />
-                      TAZ <br />
-                      CDP vs. TAZ
+                      <a href="https://www.census.gov/geo/reference/gtc/gtc_place.html">CDP</a> <br />
+                      <a href="https://www.fhwa.dot.gov/planning/tmip/publications/other_reports/technical_synthesis_report/page01.cfm">TAZ</a> <br />
+                      <a href="https://www.census.gov/geo/reference/gtc/gtc_place.html">CDP vs. TAZ</a>
                     </p>
                     <h4 id="list-item-10">
                       Where can I download the entire VMT dataset for all Places
@@ -442,7 +475,7 @@
                       website, and enhance the website with future improvements
                       that our users request. All submitted feedback is stored
                       and maintained by this website repository and can be
-                      viewed by clicking this link.
+                      viewed by clicking this <a href="https://github.com/BayAreaMetro/CAPVMT/issues">link</a>.
                     </p>
                     <h4 id="list-item-12">
                       Not all of the features are available when I try to view
