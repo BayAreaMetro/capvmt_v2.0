@@ -1,8 +1,50 @@
-<header class="hero-unit" id="banner">
+<div id="div-body">
+  <div
+    id="main-background-image"
+    style="
+      background-image: url(../../assets/images/cover_img.jpg);
+      background-size: cover;
+      height: 875px;
+    "
+    class="container-fluid bg-dark"
+  >
+    <div class="row" style="color: #444444">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <div style="margin-top: 40%; opacity: 95%">
+          <div class="card bg-light shadow-lg text-center">
+            <div class="card-body">
+              <h1 class="card-title">Climate Action Plan</h1>
+              <hr />
+              <h4 class="text-center">
+                Vehicle Miles Traveled by Jurisdiction
+              </h4>
+              <h6 class="card-text">
+                This site delivers estimates of vehicle miles traveled (VMT)
+                relative to local jurisdictional boundaries or selected areas of
+                interest using a standardized method.
+              </h6>
+              <br />
+              <a
+                ui-sref="data"
+                class="btn"
+                style="color: white; background-color: #506ea7"
+                >Get VMT Data</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- <header class="hero-unit" id="banner">
   <div class="container">
     <h1>'Allo, 'Allo!</h1>
     <p class="lead">Kick-start your next web app with Angular Fullstack</p>
-    <img src="assets/images/yeoman.png" alt="I'm Yeoman">
+    <img src="assets/images/yeoman.png" alt="I'm Yeoman" />
   </div>
 </header>
 
@@ -10,9 +52,12 @@
   <div class="row">
     <div class="col-lg-12">
       <h1 class="page-header">Features:</h1>
-      <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="thing in $ctrl.awesomeThings">
+      <ul
+        class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6"
+        ng-repeat="thing in $ctrl.awesomeThings"
+      >
         <li><a href="#" uib-tooltip="{{thing.info}}">{{thing.name}}</a></li>
       </ul>
     </div>
   </div>
-</div>
+</div> -->

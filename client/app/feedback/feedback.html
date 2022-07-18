@@ -1,0 +1,87 @@
+<!-- Feedback Page Header -->
+<div style="margin-top: 50px" class="container text-center">
+  <h1>Feedback</h1>
+  <hr />
+</div>
+<!-- Feedback Form -->
+<div
+  style="
+    margin-top: 75px;
+    margin-bottom: 75px;
+    background-image: url(../../assets/images/feedback-img.jpg);
+    background-size: cover;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    color: #444444;
+  "
+  class="container shadow-lg bg-dark"
+>
+  <!-- Feedback Table -->
+  <div class="row">
+    <div
+      style="
+        opacity: 95%;
+        margin-top: 75px;
+        margin-bottom: 75px;
+        padding: 30px;
+        width: 768px;
+      "
+      class="container shadow-lg bg-white"
+    >
+      <h6 class="mb-3">
+        To provide us with general feedback, bugs and improvements, or
+        suggestions for future releases, please fill out the form below:
+      </h6>
+      <form>
+        <div class="mb-3">
+          <div class="form-floating mb-3">
+            <input
+              type="fullname"
+              class="form-control"
+              id="floatingInput"
+              placeholder="First Last"
+            />
+            <label for="floatingInput">Full Name</label>
+          </div>
+          <div class="form-floating">
+            <input
+              type="email"
+              class="form-control"
+              id="floatingPassword"
+              placeholder="Email"
+            />
+            <label for="floatingPassword">Email</label>
+          </div>
+          We'll never share your email with anyone.
+        </div>
+        <div class="mb-3">
+          Feedback:
+          <select class="form-select" aria-label="Default select example">
+            <option selected>Feedback Type</option>
+            <option value="1">None</option>
+            <option value="2">General Feedback</option>
+            <option value="3">Application Bug</option>
+            <option value="4">Enhancement Request</option>
+            <option value="5">Resource Content</option>
+          </select>
+        </div>
+        <div class="form-floating">
+          <textarea
+            class="form-control mb-3"
+            placeholder="Leave a comment here"
+            id="floatingTextarea2"
+            style="height: 100px"
+          ></textarea>
+          <label for="floatingTextarea2">Comments</label>
+        </div>
+        <button
+          type="submit"
+          class="btn text-white"
+          style="background-color: #506ea7"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
