@@ -9,12 +9,13 @@ module.exports = {
   sequelize: {
     uri: process.env.SQL_URI,
     options: {
-        logging: false,
-        storage: 'dev.sqlite',
-        encrypt: false,
-        define: {
-            timestamps: false
-        }
+        dialect: 'mssql',
+        // logging: false,
+        // storage: 'dev.sqlite',
+        // encrypt: false,
+        // define: {
+        //     timestamps: false
+        // }
     }
   },
 
