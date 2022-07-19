@@ -57,7 +57,7 @@ export class DataComponent {
         element.partially_in = parseFloat(element.partially_in);
         element.persons = parseFloat(element.persons);
         element.total = parseFloat(element.total);
-        tazList = tazList.concat(element.tazlist, ',');
+        tazList = tazList.concat(element.tazlist, ', ');
       });
 
       this.$scope.vmtData = response.data;
@@ -92,4 +92,22 @@ export default angular.module('capvmtV20App.data', [uiRouter])
       return $filter('number')(input * 100, decimals) + '%';
     };
   }])
+  .filter('thousandSuffix', function () {
+    return function (input, decimals) {
+      var exp, rounded,
+        suffixes = ['k', 'M', 'G', 'T', 'P', 'E'];
+
+      if(window.isNaN(input)) {
+        return null;
+      }
+
+      if(input < 1000) {
+        return input;
+      }
+
+      exp = Math.floor(Math.log(input) / Math.log(1000));
+
+      return (input / Math.pow(1000, exp)).toFixed(decimals) + suffixes[exp - 1];
+    };
+  })
   .name;

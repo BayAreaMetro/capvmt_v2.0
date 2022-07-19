@@ -21,6 +21,7 @@ import navbar from '../components/navbar/navbar.component';
 import footer from '../components/footer/footer.component';
 import main from './main/main.component';
 import data from './data/data.component';
+import map from './map/map.component';
 import feedback from './feedback/feedback.component';
 import about from './about/about.component';
 import constants from './app.constants';
@@ -29,7 +30,7 @@ import util from '../components/util/util.module';
 import './app.css';
 
 angular.module('capvmtApp', [ngCookies, ngResource, ngSanitize, uiRouter, uiBootstrap, _Auth,
-  account, admin, 'validation.match', navbar, footer, main, data, feedback, about, constants, util
+  account, admin, 'validation.match', navbar, footer, main, data, map, feedback, about, constants, util
 ])
   .config(routeConfig)
   .run(function($rootScope, $location, Auth) {

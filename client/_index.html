@@ -7,6 +7,8 @@
     <title>Angular Full-Stack Generator</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
+    <!-- Mapbox Styles  -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 </head>
 <body>
@@ -28,5 +30,12 @@
     <navbar></navbar>
     <div ui-view=""></div>
     <footer></footer>
+
+<!-- Mapbox  -->
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+<!-- Turf JS -->
+<script src="https://api.mapbox.com/mapbox.js/plugins/turf/v2.0.2/turf.min.js"></script>
+<!-- Places Geojson  -->
+<script src="/assets/js/spatial/places.json"></script>
 </body>
 </html>

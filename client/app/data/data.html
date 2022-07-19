@@ -4,85 +4,54 @@
   <hr />
 </div>
 <!-- Background Image -->
-<div
-  style="
+<div style="
     margin-top: 75px;
     background-image: url(../../assets/images/data-img.jpg);
     background-position: center;
     background-size: cover;
-  "
-  class="container"
->
+  " class="container">
   <!-- Data Table -->
   <div class="row">
     <div id="data" class="col-sm-12 container">
       <div class="tableProperties">
         <div class="row margin-top-75" style="padding: 75px">
-          <div
-            class="col-xs-12 col-md-12 txtBlack"
-            style="position: relative; overflow-y: scroll"
-          >
+          <div class="col-xs-12 col-md-12 txtBlack" style="position: relative; overflow-y: scroll">
             <div class="container shadow-lg bg-white" style="opacity: 95%">
               <div class="col-xs-12" style="padding: 30px">
                 <form class="d-flex form-inline">
                   <div class="form-group d-flex gap-3">
-                    <select
-                      class="input-sm form-control"
-                      ng-model="selectedModelRun"
-                      ng-change="setModelRun(selectedModelRun)"
-                      style="width: 200px !important"
-                    >
+                    <select class="input-sm form-control" ng-model="selectedModelRun"
+                      ng-change="setModelRun(selectedModelRun)" style="width: 200px !important">
                       <option value="">Choose a Scenario Year</option>
-                      <option
-                        ng-repeat="item in Years"
-                        banner
-                        ng-value="item.value"
-                      >
+                      <option ng-repeat="item in Years" banner ng-value="item.value">
                         {{item.text}}
                       </option>
                     </select>
                     <!-- <input type="text" class="form-control" placeholder="Choose a City"> -->
-                    <select
-                      class="input-sm form-control"
-                      ng-model="selectedPlace"
-                      ng-change="setCity(selectedPlace)"
-                      style="width: 200px !important"
-                    >
+                    <select class="input-sm form-control" ng-model="selectedPlace" ng-change="setCity(selectedPlace)"
+                      style="width: 200px !important">
                       <option value="">Choose a Jurisdiction</option>
                       <option ng-repeat="item in Jurisdictions" ng-value="item.cityname">
                         {{item.cityname}}
                       </option>
                     </select>
                   </div>
-                  <button
-                    type="submit"
-                    class="btn gx-5 text-white"
-                    ng-click="dataCtrl.getVMTbyJurisdiction()"
-                    style="
+                  <button type="submit" class="btn gx-5 text-white" ng-click="dataCtrl.getVMTbyJurisdiction()" style="
                       margin-left: auto !important;
                       background-color: #506ea7;
-                    "
-                  >
+                    ">
                     Get Data
                   </button>
-                  <a ui-sref="explorer">
-                    <button
-                      type="submit"
-                      class="btn text-white"
-                      style="margin-left: 10px; background-color: #506ea7"
-                    >
+                  <a ui-sref="map">
+                    <button type="submit" class="btn text-white" style="margin-left: 10px; background-color: #506ea7">
                       Map
                     </button>
                   </a>
-                  <button
-                    class="btn text-white"
-                    style="
+                  <button class="btn text-white" style="
                       margin-left: 10px;
                       gap: 30px;
                       background-color: #506ea7;
-                    "
-                    ng-click="downloadData()"
-                  >
+                    " ng-click="downloadData()">
                     Download Data
                   </button>
                 </form>
@@ -91,15 +60,12 @@
                 <div class="row">
                   <div class="col-xs-12 col-md-8">
                     <p>
-                      <span class="table-title" id="CityName"
-                        ><h4>Climate Action Plan VMT Data</h4>
-                        <b>Place Name: </b> {{ selectedPlace }}</span
-                      >
-                      <span
-                        class="table-title ma-left-l pull-right"
-                        id="ModelRun"
-                        ><b>Simulation ID: </b> {{ selectedPlace }}</span
-                      >
+                      <span class="table-title" id="CityName">
+                        <h4>Climate Action Plan VMT Data</h4>
+                        <b>Place Name: </b> {{ selectedPlace }}
+                      </span>
+                      <span class="table-title ma-left-l pull-right" id="ModelRun"><b>Simulation ID: </b> {{
+                        selectedPlace }}</span>
                     </p>
                   </div>
                 </div>
@@ -131,7 +97,7 @@
                       <th class="text-center" colspan="2">Total</th>
                     </tr>
                   </thead>
-              
+
                   <!-- Table head for sm and xs resolution -->
                   <thead class="hidden-md hidden-lg hidden-xl">
                     <tr style="border: 0">
