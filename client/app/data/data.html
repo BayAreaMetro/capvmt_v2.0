@@ -49,15 +49,15 @@
                       style="width: 200px !important"
                     >
                       <option value="">Choose a Jurisdiction</option>
-                      <option ng-repeat="item in Places" ng-value="item.value">
-                        {{item.text}}
+                      <option ng-repeat="item in Jurisdictions" ng-value="item.cityname">
+                        {{item.cityname}}
                       </option>
                     </select>
                   </div>
                   <button
                     type="submit"
                     class="btn gx-5 text-white"
-                    ng-click="getData()"
+                    ng-click="dataCtrl.getVMTbyJurisdiction()"
                     style="
                       margin-left: auto !important;
                       background-color: #506ea7;
@@ -93,23 +93,23 @@
                     <p>
                       <span class="table-title" id="CityName"
                         ><h4>Climate Action Plan VMT Data</h4>
-                        <b>Place Name: </b> {{ vmtData[0].CityName }}</span
+                        <b>Place Name: </b> {{ selectedPlace }}</span
                       >
                       <span
                         class="table-title ma-left-l pull-right"
                         id="ModelRun"
-                        ><b>Simulation ID: </b> {{ vmtData[0].Model_Run }}</span
+                        ><b>Simulation ID: </b> {{ selectedPlace }}</span
                       >
                     </p>
                   </div>
                 </div>
               </div>
 
+
+
+
               <div id="vmtResults">
-                <table
-                  class="table table-hover table-striped"
-                  style="word-wrap: break-word !important"
-                >
+                <table class="table table-hover table-striped" style="word-wrap: break-word !important">
                   <!-- Table head for md, lg, xl resolution -->
                   <thead class="hidden-sm hidden-xs">
                     <tr>
@@ -131,6 +131,7 @@
                       <th class="text-center" colspan="2">Total</th>
                     </tr>
                   </thead>
+              
                   <!-- Table head for sm and xs resolution -->
                   <thead class="hidden-md hidden-lg hidden-xl">
                     <tr style="border: 0">
@@ -160,136 +161,95 @@
                   </thead>
                   <!-- Table body for md, lg and xl resolution -->
                   <tbody class="hidden-sm hidden-xs">
-                    <tr ng-repeat="data in vmtData">
+                    <tr ng-repeat="vmt in vmtData">
                       <td>
-                        <span
-                          >{{ data.Lives }}/ <br />
-                          {{ data.Works }}
+                        <span>{{ vmt.lives }}/ <br />
+                          {{ vmt.works }}
                         </span>
                       </td>
                       <td class="verticalLeft">
-                        <span class="pull-right"
-                          >{{ data.Persons | number }}</span
-                        >
+                        <span class="pull-right">{{ vmt.persons | number }}</span>
                       </td>
                       <td class="verticalLeft">
-                        <span class="pull-right"
-                          >{{ data.Inside | number }}</span
-                        >
+                        <span class="pull-right">{{ vmt.inside | number }}</span>
                       </td>
                       <td class="verticalRight">
-                        <span id="Inside0pct" class="pull-right"
-                          >{{ data.Inside/data.Total | percentage:1 }}</span
-                        >
+                        <span id="Inside0pct" class="pull-right">{{ vmt.inside/vmt.total | percentage:1 }}</span>
                       </td>
                       <td>
-                        <span class="pull-right"
-                          >{{ data.Partially_In | number }}</span
-                        >
+                        <span class="pull-right">{{ vmt.partially_in | number }}</span>
                       </td>
                       <td class="verticalRight">
-                        <span id="Inside0pct" class="pull-right"
-                          >{{ data.Partially_In/data.Total | percentage:1
-                          }}</span
-                        >
+                        <span id="Inside0pct" class="pull-right">{{ vmt.partially_in/vmt.total | percentage:1 }}</span>
                       </td>
                       <td>
-                        <span class="pull-right"
-                          >{{ data.Outside | number }}</span
-                        >
+                        <span class="pull-right">{{ vmt.outside | number }}</span>
                       </td>
                       <td class="verticalRight">
-                        <span id="Inside0pct" class="pull-right"
-                          >{{ data.Outside/data.Total | percentage:1 }}</span
-                        >
+                        <span id="Inside0pct" class="pull-right">{{ vmt.outside/vmt.total | percentage:1 }}</span>
                       </td>
                       <td>
-                        <span class="pull-right"
-                          >{{ data.Total | number }}</span
-                        >
+                        <span class="pull-right">{{ vmt.total | number }}</span>
                       </td>
                       <td class="verticalRight">
                         <span id="Total0pct" class="pull-right">100%</span>
                       </td>
                       <td>
-                        <span id="PerCapita0" class="pull-right"
-                          >{{data.Total / data.Persons | number:2}}</span
-                        >
+                        <span id="PerCapita0" class="pull-right">{{vmt.total / vmt.persons | number:2}}</span>
                       </td>
                     </tr>
                     <tr>
                       <td class="text-right">Total</td>
                       <td>
-                        <span class="pull-right"
-                          >{{ totals.totalPersons | number }}</span
-                        >
+                        <span class="pull-right">{{ totals.totalPersons | number }}</span>
                       </td>
                       <td>
-                        <span class="pull-right"
-                          >{{ totals.totalInside | number }}</span
-                        >
+                        <span class="pull-right">{{ totals.totalInside | number }}</span>
                       </td>
                       <td></td>
                       <td>
-                        <span class="pull-right"
-                          >{{ totals.totalPartial | number}}</span
-                        >
+                        <span class="pull-right">{{ totals.totalPartial | number}}</span>
                       </td>
                       <td></td>
                       <td>
-                        <span class="pull-right"
-                          >{{ totals.totalOutside | number }}</span
-                        >
+                        <span class="pull-right">{{ totals.totalOutside | number }}</span>
                       </td>
                       <td></td>
                       <td>
-                        <span class="pull-right"
-                          >{{ totals.totalVMT | number }}</span
-                        >
+                        <span class="pull-right">{{ totals.totalVMT | number }}</span>
                       </td>
                       <td></td>
                       <td>
-                        <span class="pull-right"
-                          >{{ totals.totalVMTPerCapita | number:2 }}</span
-                        >
+                        <span class="pull-right">{{ totals.totalVMTPerCapita | number:2 }}</span>
                       </td>
                     </tr>
                   </tbody>
                   <!-- Table body for sm, xs resolution -->
                   <tbody class="hidden-md hidden-lg hidden-xl">
-                    <tr ng-repeat="data in vmtData">
+                    <tr ng-repeat="vmt in vmtData">
                       <td>
-                        <span
-                          >{{ data.Lives }}/ <br />
-                          {{ data.Works }}
+                        <span>{{ vmt.lives }}/ <br />
+                          {{ vmt.works }}
                         </span>
                       </td>
                       <td class="text-center verticalLeft">
-                        <span>{{ data.Persons | thousandSuffix:1 }}</span>
+                        <span>{{ vmt.persons | thousandSuffix:1 }}</span>
                       </td>
                       <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct1"
-                          >{{ data.Inside/data.Total | percentage:1 }}</span
-                        >
+                        <span id="Inside0pct1">{{ vmt.inside/vmt.total | percentage:1 }}</span>
                       </td>
                       <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct2"
-                          >{{ data.Partially_In/data.Total | percentage:1
-                          }}</span
-                        >
+                        <span id="Inside0pct2">{{ vmt.Partially_In/vmt.total | percentage:1
+                          }}</span>
                       </td>
                       <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct3"
-                          >{{ data.Outside/data.Total | percentage:1 }}</span
-                        >
+                        <span id="Inside0pct3">{{ vmt.outside/data.total | percentage:1 }}</span>
                       </td>
                       <td colspan="2" class="text-center verticalLeft">
-                        <span>{{ data.Total | thousandSuffix:1 }}</span>
+                        <span>{{ vmt.total | thousandSuffix:1 }}</span>
                       </td>
                       <td class="verticalLeft">
-                        <span id="PerCapita01" class="pull-right"
-                          >{{data.Total / data.Persons | number:2}}</span
-                        >
+                        <span id="PerCapita01" class="pull-right">{{vmt.total / vmt.persons | number:2}}</span>
                       </td>
                     </tr>
                     <tr>
@@ -302,14 +262,10 @@
                       <td></td>
                       <td></td>
                       <td colspan="2">
-                        <span class="pull-right"
-                          >{{ totals.totalVMT | number }}</span
-                        >
+                        <span class="pull-right">{{ totals.totalVMT | number }}</span>
                       </td>
                       <td>
-                        <span class="pull-right"
-                          >{{ totals.totalVMTPerCapita | number:2 }}</span
-                        >
+                        <span class="pull-right">{{ totals.totalVMTPerCapita | number:2 }}</span>
                       </td>
                     </tr>
                   </tbody>
@@ -320,7 +276,7 @@
                           <h4 class="panel-title" id="CityName">
                             Selected Transportation Analysis Zones:
                           </h4>
-                          <p><span id="TAZs">{{ TAZList }}</span></p>
+                          <p><span id="TAZs">{{ tazList }}</span></p>
                         </div>
                       </td>
                     </tr>
