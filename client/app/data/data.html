@@ -38,9 +38,7 @@
                   </div>
                   <button type="submit" class="btn gx-5 text-white" ng-click="dataCtrl.getVMTbyJurisdiction()" style="
                       margin-left: auto !important;
-                      background-color: #506ea7;
-                    ">
-                    Get Data
+                      background-color: #506ea7;">Get Data
                   </button>
                   
                     <button ng-click="dataCtrl.getMap()" class="btn text-white" style="margin-left: 10px; background-color: #506ea7">
@@ -49,14 +47,16 @@
                   <button class="btn text-white" style="
                       margin-left: 10px;
                       gap: 30px;
-                      background-color: #506ea7;
-                    " ng-click="downloadData()">
+                      background-color: #506ea7;" ng-click="downloadData()">
                     Download Data
                   </button>
                 </form>
               </div>
               <div class="table-heading">
                 <div class="row">
+                  <div class="alert alert-danger" role="alert" ng-show="noData">
+                    No data available for this combination!
+                  </div>
                   <div class="col-xs-12 col-md-8">
                     <p>
                       <span class="table-title" id="CityName">

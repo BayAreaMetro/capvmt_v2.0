@@ -14,6 +14,7 @@ export class DataComponent {
   }
 
   $onInit(){
+    this.$scope.noData = false;
     //Get list of years for drop down menu
     this.getYears();
 
@@ -50,29 +51,34 @@ export class DataComponent {
     this.$http.get(`/api/data/vmt/${model_run}/${cityname}`)
     .then(response => {
       console.log(response);
-      var tazList = '';
-      //Format numbers
-      response.data.forEach(element => {
-        element.inside = parseFloat(element.inside);
-        element.outside = parseFloat(element.outside);
-        element.partially_in = parseFloat(element.partially_in);
-        element.persons = parseFloat(element.persons);
-        element.total = parseFloat(element.total);
-        tazList = tazList.concat(element.tazlist, ', ');
-      });
-
-      this.$scope.vmtData = response.data;
-      this.$scope.tazList = tazList;
-
-      this.$scope.totals = {};
-
-     this.$scope.totals.totalInside = _.sum(_.map(this.$scope.vmtData, 'inside'));
-     this.$scope.totals.totalOutside = _.sum(_.map(this.$scope.vmtData, 'outside'));
-     this.$scope.totals.totalPartial = _.sum(_.map(this.$scope.vmtData, 'partially_in'));
-     this.$scope.totals.totalPersons = _.sum(_.map(this.$scope.vmtData, 'persons'));
-     this.$scope.totals.totalVMT = _.sum(_.map(this.$scope.vmtData, 'total'));
-     this.$scope.totals.totalVMTPerCapita = this.$scope.totals.totalVMT / this.$scope.totals.totalPersons;
-     console.log(this.$scope.totals);
+      if(response.data.length === 0){
+        this.$scope.noData = true;
+      } else {
+        this.$scope.noData = false;
+        var tazList = '';
+        //Format numbers
+        response.data.forEach(element => {
+          element.inside = parseFloat(element.inside);
+          element.outside = parseFloat(element.outside);
+          element.partially_in = parseFloat(element.partially_in);
+          element.persons = parseFloat(element.persons);
+          element.total = parseFloat(element.total);
+          tazList = tazList.concat(element.tazlist, ', ');
+        });
+  
+        this.$scope.vmtData = response.data;
+        this.$scope.tazList = tazList;
+  
+        this.$scope.totals = {};
+  
+       this.$scope.totals.totalInside = _.sum(_.map(this.$scope.vmtData, 'inside'));
+       this.$scope.totals.totalOutside = _.sum(_.map(this.$scope.vmtData, 'outside'));
+       this.$scope.totals.totalPartial = _.sum(_.map(this.$scope.vmtData, 'partially_in'));
+       this.$scope.totals.totalPersons = _.sum(_.map(this.$scope.vmtData, 'persons'));
+       this.$scope.totals.totalVMT = _.sum(_.map(this.$scope.vmtData, 'total'));
+       this.$scope.totals.totalVMTPerCapita = this.$scope.totals.totalVMT / this.$scope.totals.totalPersons;
+       console.log(this.$scope.totals);
+      }
     })
     .catch(err => {
       console.log(err);

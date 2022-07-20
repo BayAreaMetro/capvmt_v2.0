@@ -26,6 +26,18 @@ export class MapComponent {
       projection: 'globe', // display the map as a 3D globe
     });
 
+    // Map style toggle 
+    const layerList = document.getElementById("menu");
+    const inputs = layerList.getElementsByTagName("input");
+
+    for (const input of inputs) {
+      input.onclick = (layer) => {
+        const layerId = layer.target.id;
+        map.setStyle("mapbox://styles/mapbox/" + layerId);
+      };
+    }
+    // End map style toggle 
+
     map.on('style.load', () => {
       map.setFog({}); // Set the default atmosphere style
 
@@ -53,12 +65,13 @@ export class MapComponent {
           'paint': {
             'fill-outline-color': 'white',
             'fill-color': 'purple',
-            'fill-opacity': 0.7
+            'fill-opacity': 0.6
           },
           'filter': ['in', 'NAME', jurisdiction]
         });
 
       }
+
     });
 
 

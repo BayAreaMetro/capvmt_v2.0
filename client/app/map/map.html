@@ -1,5 +1,14 @@
 <style>
    #map { position: relative; top: 0; bottom: 0; width: 100%; height:60vh; }
+   #menu {
+    position: relative;
+    top:0;
+    width:25%;
+    background: #fff;
+    padding: 10px;
+    font-family: 'Open Sans', sans-serif;
+    z-index: 2000;
+  }
 </style>
 <!-- Map Header -->
 <div style="margin-top: 50px" class="container text-center">
@@ -7,9 +16,24 @@
     <hr />
   </div>
 <div class="container">
+    <a class="btn btn-default" ui-sref="data">Back to Data</a>
     <div class="row">
         <div class="col-md-12">
-            <div id="map"></div>
+            <div id="map">
+                <div id="menu" style="border:1px solid darkgray;margin-top:8px;margin-left:10px;">
+                    <input id="light-v10" type="radio" name="rtoggle" value="light"  />
+                    <label for="light-v10">Light</label>
+                    <input id="streets-v11" type="radio" name="rtoggle" value="streets" checked="checked" />
+                    <label for="streets-v11">Streets</label>
+                    <input id="dark-v10" type="radio" name="rtoggle" value="dark" />
+                    <label for="dark-v10">Dark</label>
+                    <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
+                    <label for="outdoors-v11">Outdoors</label>
+                    <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" />
+                    <label for="satellite-v9">Satellite</label>
+                  </div>
+            </div>
+            
         </div>
     </div>
 </div>
