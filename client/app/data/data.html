@@ -47,7 +47,7 @@
                   <button class="btn text-white" style="
                       margin-left: 10px;
                       gap: 30px;
-                      background-color: #506ea7;" ng-click="downloadData()">
+                      background-color: #506ea7;" ng-click="dataCtrl.downloadData()">
                     Download Data
                   </button>
                 </form>
@@ -190,50 +190,7 @@
                     </tr>
                   </tbody>
                   <!-- Table body for sm, xs resolution -->
-                  <tbody class="hidden-md hidden-lg hidden-xl">
-                    <tr ng-repeat="vmt in vmtData">
-                      <td>
-                        <span>{{ vmt.lives }}/ <br />
-                          {{ vmt.works }}
-                        </span>
-                      </td>
-                      <td class="text-center verticalLeft">
-                        <span>{{ vmt.persons | thousandSuffix:1 }}</span>
-                      </td>
-                      <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct1">{{ vmt.inside/vmt.total | percentage:1 }}</span>
-                      </td>
-                      <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct2">{{ vmt.Partially_In/vmt.total | percentage:1
-                          }}</span>
-                      </td>
-                      <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct3">{{ vmt.outside/data.total | percentage:1 }}</span>
-                      </td>
-                      <td colspan="2" class="text-center verticalLeft">
-                        <span>{{ vmt.total | thousandSuffix:1 }}</span>
-                      </td>
-                      <td class="verticalLeft">
-                        <span id="PerCapita01" class="pull-right">{{vmt.total / vmt.persons | number:2}}</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="text-center">Total</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td colspan="2">
-                        <span class="pull-right">{{ totals.totalVMT | number }}</span>
-                      </td>
-                      <td>
-                        <span class="pull-right">{{ totals.totalVMTPerCapita | number:2 }}</span>
-                      </td>
-                    </tr>
-                  </tbody>
+                
                   <tfoot>
                     <tr>
                       <td colspan="11">
