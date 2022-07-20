@@ -7,9 +7,10 @@ import routes from './data.routes';
 
 export class DataComponent {
   /*@ngInject*/
-  constructor($scope, $http) {
+  constructor($scope, $http, $state) {
     this.$http = $http;
     this.$scope = $scope;
+    this.$state = $state;
   }
 
   $onInit(){
@@ -76,6 +77,10 @@ export class DataComponent {
     .catch(err => {
       console.log(err);
     });
+  }
+
+  getMap(){
+    this.$state.go('map', { 'jurisdiction': this.$scope.selectedPlace });
   }
 
 };

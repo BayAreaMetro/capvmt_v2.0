@@ -8,12 +8,15 @@ import routes from './map.routes';
 
 export class MapComponent {
   /*@ngInject*/
-  constructor() {
-   
+  constructor($stateParams) {
+    this.$stateParams = $stateParams;
   }
 
   $onInit() {
-
+    var jurisdiction;
+    if(this.$stateParams.jurisdiction){
+      jurisdiction = this.$stateParams.jurisdiction
+    }
     mapboxgl.accessToken = 'pk.eyJ1IjoiY2hhcmxpZWRvdGF1IiwiYSI6ImNpazlpdzh0ZTA5d3Z2Y200emhqbml1OGEifQ.uoA6t5rO18m0BgNGPXsm5A';
     const map = new mapboxgl.Map({
       container: 'map', // container ID
@@ -28,7 +31,7 @@ export class MapComponent {
 
       // Set jurisdiction to zoom to 
       var zoomToFeature = _.filter(placesGeoJSON.features, function (item) {
-        return item.properties.NAME === 'Alameda';
+        return item.properties.NAME === jurisdiction;
       });
 
       //use Turf.js to set geometry and zoom to feature bounding box09
@@ -52,7 +55,7 @@ export class MapComponent {
             'fill-color': 'purple',
             'fill-opacity': 0.7
           },
-          'filter': ['in', 'NAME', 'Alameda']
+          'filter': ['in', 'NAME', jurisdiction]
         });
 
       }
