@@ -40,6 +40,7 @@
     "sequelize": "^3.34.0",
     "serve-favicon": "^2.3.0",
     "soda-js": "^0.2.3",
+    "sodajs": "^0.4.10",
     "sprint-js": "~0.1.0",
     "yo": "^4.3.0"
   },
