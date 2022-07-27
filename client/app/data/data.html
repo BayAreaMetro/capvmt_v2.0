@@ -63,6 +63,7 @@
                     ng-click="dataCtrl.getVMTbyJurisdiction()"
                     style="
                       margin-left: auto !important;
+<<<<<<< HEAD
                       background-color: #506ea7;
                     "
                   >
@@ -86,12 +87,27 @@
                     "
                     ng-click="downloadData()"
                   >
+=======
+                      background-color: #506ea7;">Get Data
+                  </button>
+                  
+                    <button ng-click="dataCtrl.getMap()" class="btn text-white" style="margin-left: 10px; background-color: #506ea7">
+                      Map
+                    </button>
+                  <button class="btn text-white" style="
+                      margin-left: 10px;
+                      gap: 30px;
+                      background-color: #506ea7;" ng-click="dataCtrl.downloadData()">
+>>>>>>> 9c99190c12aeddc2b80295aa5f0c4e5500dc7fb6
                     Download Data
                   </button>
                 </form>
               </div>
               <div class="table-heading">
                 <div class="row">
+                  <div class="alert alert-danger" role="alert" ng-show="noData">
+                    No data available for this combination!
+                  </div>
                   <div class="col-xs-12 col-md-8">
                     <p>
                       <span class="table-title" id="CityName">
@@ -257,6 +273,7 @@
                     </tr>
                   </tbody>
                   <!-- Table body for sm, xs resolution -->
+<<<<<<< HEAD
                   <!-- <tbody class="hidden-md hidden-lg hidden-xl">
                     <tr ng-repeat="vmt in vmtData">
                       <td>
@@ -313,6 +330,9 @@
                       </td>
                     </tr>
                   </tbody> -->
+=======
+                
+>>>>>>> 9c99190c12aeddc2b80295aa5f0c4e5500dc7fb6
                   <tfoot>
                     <tr>
                       <td colspan="11">

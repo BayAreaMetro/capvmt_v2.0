@@ -8,12 +8,15 @@ import routes from './map.routes';
 
 export class MapComponent {
   /*@ngInject*/
-  constructor() {
-   
+  constructor($stateParams) {
+    this.$stateParams = $stateParams;
   }
 
   $onInit() {
-
+    var jurisdiction;
+    if(this.$stateParams.jurisdiction){
+      jurisdiction = this.$stateParams.jurisdiction
+    }
     mapboxgl.accessToken = 'pk.eyJ1IjoiY2hhcmxpZWRvdGF1IiwiYSI6ImNpazlpdzh0ZTA5d3Z2Y200emhqbml1OGEifQ.uoA6t5rO18m0BgNGPXsm5A';
     const map = new mapboxgl.Map({
       container: 'map', // container ID
@@ -23,12 +26,24 @@ export class MapComponent {
       projection: 'globe', // display the map as a 3D globe
     });
 
+    // Map style toggle 
+    const layerList = document.getElementById("menu");
+    const inputs = layerList.getElementsByTagName("input");
+
+    for (const input of inputs) {
+      input.onclick = (layer) => {
+        const layerId = layer.target.id;
+        map.setStyle("mapbox://styles/mapbox/" + layerId);
+      };
+    }
+    // End map style toggle 
+
     map.on('style.load', () => {
       map.setFog({}); // Set the default atmosphere style
 
       // Set jurisdiction to zoom to 
       var zoomToFeature = _.filter(placesGeoJSON.features, function (item) {
-        return item.properties.NAME === 'Alameda';
+        return item.properties.NAME === jurisdiction;
       });
 
       //use Turf.js to set geometry and zoom to feature bounding box09
@@ -50,12 +65,13 @@ export class MapComponent {
           'paint': {
             'fill-outline-color': 'white',
             'fill-color': 'purple',
-            'fill-opacity': 0.7
+            'fill-opacity': 0.6
           },
-          'filter': ['in', 'NAME', 'Alameda']
+          'filter': ['in', 'NAME', jurisdiction]
         });
 
       }
+
     });
 
 
