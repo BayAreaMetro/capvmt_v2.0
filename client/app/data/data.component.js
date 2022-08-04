@@ -144,7 +144,7 @@ export class DataComponent {
         this.$scope.vmtData = response.data;
         this.$scope.tazList = response.data[0].tazlist.replace(/,/g, ", ");
         console.log(this.$scope.tazList);
-  
+        console.log(response.data); 
         this.$scope.totals = {};
   
        this.$scope.totals.totalInside = _.sum(_.map(this.$scope.vmtData, 'inside'));
