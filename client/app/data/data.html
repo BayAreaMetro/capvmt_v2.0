@@ -1,12 +1,6 @@
-<!-- Data Header -->
-<div style="margin-top: 50px" class="container-fluid text-center">
-  <h1>Data</h1>
-  <hr />
-</div>
 <!-- Background Image -->
 <div
   style="
-    margin-top: 75px;
     background-image: url(../../assets/images/data-img.jpg);
     background-position: center;
     background-size: cover;
@@ -65,15 +59,6 @@
                   >
                     Get Data
                   </button>
-                  <a ui-sref="map">
-                    <button
-                      type="submit"
-                      class="btn text-white"
-                      style="margin-left: 10px; background-color: #506ea7"
-                    >
-                      Map
-                    </button>
-                  </a>
                   <button
                     class="btn text-white"
                     style="
@@ -136,7 +121,10 @@
                   </thead>
 
                   <!-- Table head for sm and xs resolution -->
-                  <thead class="hidden-md hidden-lg hidden-xl">
+                  <thead
+                    class=".d-none .d-sm-block .d-m-none"
+                    style="display: none"
+                  >
                     <tr style="border: 0">
                       <th rowspan="2" width="120px"></th>
                       <th rowspan="2" class="text-center col-xs-2">
@@ -258,7 +246,7 @@
                   </tbody>
                   <!-- Table body for sm, xs resolution -->
 
-                  <!-- <tbody class="hidden-md hidden-lg hidden-xl">
+                  <tbody class="hidden-md hidden-lg hidden-xl">
                     <tr ng-repeat="vmt in vmtData">
                       <td>
                         <span
@@ -313,7 +301,7 @@
                         >
                       </td>
                     </tr>
-                  </tbody> -->
+                  </tbody>
                   <tfoot>
                     <tr>
                       <td colspan="11">

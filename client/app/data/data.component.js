@@ -206,4 +206,4 @@ export default angular.module('capvmtV20App.data', [uiRouter])
       return (input / Math.pow(1000, exp)).toFixed(decimals) + suffixes[exp - 1];
     };
   })
-  .name;
+  .name;  
