@@ -4,12 +4,7 @@
   <hr />
 </div> -->
 <!-- Background Image -->
-<div style="
-    margin-top: 75px;
-    background-image: url(../../assets/images/data-img.jpg);
-    background-position: center;
-    background-size: cover;
-  " class="container-fluid">
+<div style="background-image: url(../../assets/images/data-img.jpg); background-position: center; background-size: cover;" class="container-fluid">
   <!-- Data Table -->
   <div class="row">
     <div id="data" class="col-sm-12 container">
@@ -51,35 +46,10 @@
                       </option>
                     </select>
                   </div>
-                  <button
-                    type="submit"
-                    class="btn gx-5 text-white"
-                    ng-click="dataCtrl.getVMTbyJurisdiction()"
-                    style="
-                      margin-left: auto !important;
-                      background-color: #506ea7;
-                    "
-                  >
+                  <button type="submit" class="btn gx-5 text-white" ng-click="dataCtrl.getVMTbyJurisdiction()" style="margin-left: auto !important; background-color: #506ea7;">
                     Get Data
-                  </button>
-                  <a ui-sref="map">
-                    <button
-                      type="submit"
-                      class="btn text-white"
-                      style="margin-left: 10px; background-color: #506ea7"
-                    >
-                      Map
-                    </button>
-                  </a>
-                  <button
-                    class="btn text-white"
-                    style="
-                      margin-left: 10px;
-                      gap: 30px;
-                      background-color: #506ea7;
-                    "
-                    ng-click="dataCtrl.downloadData()"
-                  >
+                  </button>                 
+                  <button class="btn text-white" style="margin-left: 10px; gap: 30px; background-color: #506ea7;" ng-click="dataCtrl.downloadData()">
                     Download Data
                   </button>
                 </form>
@@ -95,11 +65,7 @@
                         <h4>Climate Action Plan VMT Data</h4>
                         <b>Place Name: </b> {{ selectedPlace }}
                       </span>
-                      <span
-                        class="table-title ma-left-l pull-right"
-                        id="ModelRun"
-                        ><b>Simulation ID: </b> {{ selectedPlace }}</span
-                      >
+                      <span class="table-title ma-left-l pull-right" id="ModelRun"><b>Simulation ID: </b> {{ selectedPlace }}</span>
                     </p>
                   </div>
                 </div>
