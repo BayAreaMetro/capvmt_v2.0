@@ -40,6 +40,11 @@
   padding: 0.2em 0;
 }
 
+.main-margin {
+  margin-top: 20rem !important;
+  margin-bottom: 3rem !important;
+}
+
 
 /* Component styles are injected through gulp */
 /* inject:css */

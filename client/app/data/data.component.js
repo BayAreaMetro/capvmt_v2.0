@@ -161,18 +161,15 @@ export class DataComponent {
     });
   }
 
-  getMap(){
-    this.$state.go('map', { 'jurisdiction': this.$scope.selectedPlace });
-  }
+  // getMap(){
+  //   this.$state.go('map', { 'jurisdiction': this.$scope.selectedPlace });
+  // }
 
   downloadData(){
     this.$scope.jsonToCSVConverter(this.$scope.vmtData, this.$scope.vmtData[0].cityname, this.$scope.vmtData[0].cityname, true);
 
 
-  }
- 
-
- 
+  } 
 
 };
 
@@ -205,5 +202,7 @@ export default angular.module('capvmtV20App.data', [uiRouter])
 
       return (input / Math.pow(1000, exp)).toFixed(decimals) + suffixes[exp - 1];
     };
+
   })
-  .name;  
+  .name; 
+// Have MZ help us set the default value to Alameda.

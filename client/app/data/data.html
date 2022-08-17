@@ -7,314 +7,358 @@
   "
   class="container-fluid"
 >
-  <!-- Data Table -->
-  <div class="row">
-    <div id="data" class="col-sm-12 container">
-      <div class="tableProperties">
-        <div class="row margin-top-75" style="padding: 75px">
-          <div class="col-xs-12 col-md-12 txtBlack" style="position: relative">
-            <div class="container shadow-lg bg-white" style="opacity: 95%">
-              <div class="col-xs-12" style="padding: 30px">
-                <form class="d-flex form-inline">
-                  <div class="form-group d-flex gap-3">
-                    <select
-                      class="input-sm form-control"
-                      ng-model="selectedModelRun"
-                      ng-change="setModelRun(selectedModelRun)"
-                      style="width: 200px !important"
+  =======
+  <!-- Data Header -->
+  <!-- <div style="margin-top: 50px" class="container-fluid text-center">
+  <h1>Data</h1>
+  <hr />
+</div> -->
+  <!-- Background Image -->
+  <div
+    style="
+      background-image: url(../../assets/images/data-img.jpg);
+      background-position: center;
+      background-size: cover;
+    "
+    class="container-fluid"
+  >
+    <!-- Data Table -->
+    <div class="row">
+      <div id="data" class="col-sm-12 container">
+        <div class="tableProperties">
+          <div class="row margin-top-75" style="padding: 75px">
+            <div
+              class="col-xs-12 col-md-12 txtBlack"
+              style="position: relative"
+            >
+              <div class="container shadow-lg bg-white" style="opacity: 95%">
+                <div class="col-xs-12" style="padding: 30px">
+                  <form class="d-flex form-inline">
+                    <div class="form-group d-flex gap-3">
+                      <select
+                        class="input-sm form-control"
+                        ng-model="selectedModelRun"
+                        ng-change="setModelRun(selectedModelRun)"
+                        style="width: 200px !important"
+                      >
+                        <option value="">Choose a Scenario Year</option>
+                        <option
+                          ng-repeat="item in Years"
+                          banner
+                          ng-value="item.value"
+                        >
+                          {{item.text}}
+                        </option>
+                      </select>
+                      <!-- <input type="text" class="form-control" placeholder="Choose a City"> -->
+                      <select
+                        class="input-sm form-control"
+                        ng-model="selectedPlace"
+                        ng-change="setCity(selectedPlace)"
+                        style="width: 200px !important"
+                      >
+                        <option value="">Choose a Jurisdiction</option>
+                        <option
+                          ng-repeat="item in Jurisdictions"
+                          ng-value="item.cityname"
+                        >
+                          {{item.cityname}}
+                        </option>
+                      </select>
+                    </div>
+                    <button
+                      type="submit"
+                      class="btn gx-5 text-white"
+                      ng-click="dataCtrl.getVMTbyJurisdiction()"
+                      style="
+                        margin-left: auto !important;
+                        background-color: #506ea7;
+                      "
                     >
-                      <option value="">Choose a Scenario Year</option>
-                      <option
-                        ng-repeat="item in Years"
-                        banner
-                        ng-value="item.value"
-                      >
-                        {{item.text}}
-                      </option>
-                    </select>
-                    <!-- <input type="text" class="form-control" placeholder="Choose a City"> -->
-                    <select
-                      class="input-sm form-control"
-                      ng-model="selectedPlace"
-                      ng-change="setCity(selectedPlace)"
-                      style="width: 200px !important"
+                      Get Data
+                    </button>
+                    <button
+                      class="btn text-white"
+                      style="
+                        margin-left: 10px;
+                        gap: 30px;
+                        background-color: #506ea7;
+                      "
+                      ng-click="dataCtrl.downloadData()"
+                    ></button>
+                    <button
+                      class="btn text-white"
+                      style="
+                        margin-left: 10px;
+                        gap: 30px;
+                        background-color: #506ea7;
+                      "
+                      ng-click="dataCtrl.downloadData()"
                     >
-                      <option value="">Choose a Jurisdiction</option>
-                      <option
-                        ng-repeat="item in Jurisdictions"
-                        ng-value="item.cityname"
-                      >
-                        {{item.cityname}}
-                      </option>
-                    </select>
-                  </div>
-                  <button
-                    type="submit"
-                    class="btn gx-5 text-white"
-                    ng-click="dataCtrl.getVMTbyJurisdiction()"
-                    style="
-                      margin-left: auto !important;
-                      background-color: #506ea7;
-                    "
-                  >
-                    Get Data
-                  </button>
-                  <button
-                    class="btn text-white"
-                    style="
-                      margin-left: 10px;
-                      gap: 30px;
-                      background-color: #506ea7;
-                    "
-                    ng-click="dataCtrl.downloadData()"
-                  >
-                    Download Data
-                  </button>
-                </form>
-              </div>
-              <div class="table-heading">
-                <div class="row">
-                  <div class="alert alert-danger" role="alert" ng-show="noData">
-                    No data available for this combination!
-                  </div>
-                  <div class="col-xs-12 col-md-8">
-                    <p>
-                      <span class="table-title" id="CityName">
-                        <h4>Climate Action Plan VMT Data</h4>
-                        <b>Place Name: </b> {{ selectedPlace }}
-                      </span>
-                      <span
-                        class="table-title ma-left-l pull-right"
-                        id="ModelRun"
-                        ><b>Simulation ID: </b> {{ selectedPlace }}</span
-                      >
-                    </p>
+                      Download Data
+                    </button>
+                  </form>
+                </div>
+                <div class="table-heading">
+                  <div class="row">
+                    <div
+                      class="alert alert-danger"
+                      role="alert"
+                      ng-show="noData"
+                    >
+                      No data available for this combination!
+                    </div>
+                    <div class="col-xs-12 col-md-8">
+                      <p>
+                        <span class="table-title" id="CityName">
+                          <h4>Climate Action Plan VMT Data</h4>
+                          <b>Place Name: </b> {{ selectedPlace }}
+                        </span>
+                        <span
+                          class="table-title ma-left-l pull-right"
+                          id="ModelRun"
+                          ><b>Simulation ID: </b> {{ selectedPlace }}</span
+                        >
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div id="vmtResults">
-                <table
-                  class="table table-hover table-striped"
-                  style="word-wrap: break-word !important"
-                >
-                  <!-- Table head for md, lg, xl resolution -->
-                  <thead class="hidden-sm hidden-xs">
-                    <tr>
-                      <th rowspan="2" width="170px">Population Segment</th>
-                      <th rowspan="2" width="100px" class="text-right">
-                        Persons
-                      </th>
-                      <th class="text-center" colspan="8">
-                        Non-commercial Passenger Vehicle Miles Traveled
-                      </th>
-                      <th rowspan="2" class="text-center" width="150px">
-                        Vehicle miles traveled per capita
-                      </th>
-                    </tr>
-                    <tr>
-                      <th class="text-center" colspan="2">Entirely within</th>
-                      <th class="text-center" colspan="2">Partially in</th>
-                      <th class="text-center" colspan="2">Entirely outside</th>
-                      <th class="text-center" colspan="2">Total</th>
-                    </tr>
-                  </thead>
-
-                  <!-- Table head for sm and xs resolution -->
-                  <thead
-                    class=".d-none .d-sm-block .d-m-none"
-                    style="display: none"
+                <div id="vmtResults">
+                  <table
+                    class="table table-hover table-striped"
+                    style="word-wrap: break-word !important"
                   >
-                    <tr style="border: 0">
-                      <th rowspan="2" width="120px"></th>
-                      <th rowspan="2" class="text-center col-xs-2">
-                        <i class="fa fa-users fa-2x"></i>
-                      </th>
-                      <th class="text-center" colspan="8" style="border: 0">
-                        Non-commercial Passenger Vehicle Miles Traveled
-                      </th>
-                      <th rowspan="2" class="text-center col-xs-2">VMT/PP.</th>
-                    </tr>
-                    <tr>
-                      <th class="text-center col-xs-2" colspan="2">
-                        <i class="fa fa-user fa-2x"></i>
-                      </th>
-                      <th class="text-center col-xs-1" colspan="2">
-                        <i class="fa fa-user-plus fa-2x"></i>
-                      </th>
-                      <th class="text-center col-xs-1" colspan="2">
-                        <i class="fa fa-user-times fa-2x"></i>
-                      </th>
-                      <th class="text-center col-xs-2" colspan="2" width="50px">
-                        Total
-                      </th>
-                    </tr>
-                  </thead>
-                  <!-- Table body for md, lg and xl resolution -->
-                  <tbody class="hidden-sm hidden-xs">
-                    <tr ng-repeat="vmt in vmtData">
-                      <td>
-                        <span
-                          >{{ vmt.lives }}/ <br />
-                          {{ vmt.works }}
-                        </span>
-                      </td>
-                      <td class="verticalLeft">
-                        <span class="pull-right"
-                          >{{ vmt.persons | number }}</span
-                        >
-                      </td>
-                      <td class="verticalLeft">
-                        <span class="pull-right"
-                          >{{ vmt.inside | number }}</span
-                        >
-                      </td>
-                      <td class="verticalRight">
-                        <span id="Inside0pct" class="pull-right"
-                          >{{ vmt.inside/vmt.total | percentage:1 }}</span
-                        >
-                      </td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ vmt.partially_in | number }}</span
-                        >
-                      </td>
-                      <td class="verticalRight">
-                        <span id="Inside0pct" class="pull-right"
-                          >{{ vmt.partially_in/vmt.total | percentage:1 }}</span
-                        >
-                      </td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ vmt.outside | number }}</span
-                        >
-                      </td>
-                      <td class="verticalRight">
-                        <span id="Inside0pct" class="pull-right"
-                          >{{ vmt.outside/vmt.total | percentage:1 }}</span
-                        >
-                      </td>
-                      <td>
-                        <span class="pull-right">{{ vmt.total | number }}</span>
-                      </td>
-                      <td class="verticalRight">
-                        <span id="Total0pct" class="pull-right">100%</span>
-                      </td>
-                      <td>
-                        <span id="PerCapita0" class="pull-right"
-                          >{{vmt.total / vmt.persons | number:2}}</span
-                        >
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="text-right">Total</td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ totals.totalPersons | number }}</span
-                        >
-                      </td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ totals.totalInside | number }}</span
-                        >
-                      </td>
-                      <td></td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ totals.totalPartial | number}}</span
-                        >
-                      </td>
-                      <td></td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ totals.totalOutside | number }}</span
-                        >
-                      </td>
-                      <td></td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ totals.totalVMT | number }}</span
-                        >
-                      </td>
-                      <td></td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ totals.totalVMTPerCapita | number:2 }}</span
-                        >
-                      </td>
-                    </tr>
-                  </tbody>
-                  <!-- Table body for sm, xs resolution -->
+                    <!-- Table head for md, lg, xl resolution -->
+                    <thead class="hidden-sm hidden-xs">
+                      <tr>
+                        <th rowspan="2" width="170px">Population Segment</th>
+                        <th rowspan="2" width="100px" class="text-right">
+                          Persons
+                        </th>
+                        <th class="text-center" colspan="8">
+                          Non-commercial Passenger Vehicle Miles Traveled
+                        </th>
+                        <th rowspan="2" class="text-center" width="150px">
+                          Vehicle miles traveled per capita
+                        </th>
+                      </tr>
+                      <tr>
+                        <th class="text-center" colspan="2">Entirely within</th>
+                        <th class="text-center" colspan="2">Partially in</th>
+                        <th class="text-center" colspan="2">
+                          Entirely outside
+                        </th>
+                        <th class="text-center" colspan="2">Total</th>
+                      </tr>
+                    </thead>
 
-                  <tbody class="hidden-md hidden-lg hidden-xl">
-                    <tr ng-repeat="vmt in vmtData">
-                      <td>
-                        <span
-                          >{{ vmt.lives }}/ <br />
-                          {{ vmt.works }}
-                        </span>
-                      </td>
-                      <td class="text-center verticalLeft">
-                        <span>{{ vmt.persons | thousandSuffix:1 }}</span>
-                      </td>
-                      <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct1"
-                          >{{ vmt.inside/vmt.total | percentage:1 }}</span
+                    <!-- Table head for sm and xs resolution -->
+                    <thead
+                      class=".d-none .d-sm-block .d-m-none"
+                      style="display: none"
+                    >
+                      <tr style="border: 0">
+                        <th rowspan="2" width="120px"></th>
+                        <th rowspan="2" class="text-center col-xs-2">
+                          <i class="fa fa-users fa-2x"></i>
+                        </th>
+                        <th class="text-center" colspan="8" style="border: 0">
+                          Non-commercial Passenger Vehicle Miles Traveled
+                        </th>
+                        <th rowspan="2" class="text-center col-xs-2">
+                          VMT/PP.
+                        </th>
+                      </tr>
+                      <tr>
+                        <th class="text-center col-xs-2" colspan="2">
+                          <i class="fa fa-user fa-2x"></i>
+                        </th>
+                        <th class="text-center col-xs-1" colspan="2">
+                          <i class="fa fa-user-plus fa-2x"></i>
+                        </th>
+                        <th class="text-center col-xs-1" colspan="2">
+                          <i class="fa fa-user-times fa-2x"></i>
+                        </th>
+                        <th
+                          class="text-center col-xs-2"
+                          colspan="2"
+                          width="50px"
                         >
-                      </td>
-                      <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct2"
-                          >{{ vmt.Partially_In/vmt.total | percentage:1 }}</span
-                        >
-                      </td>
-                      <td colspan="2" class="text-center verticalLeft">
-                        <span id="Inside0pct3"
-                          >{{ vmt.outside/data.total | percentage:1 }}</span
-                        >
-                      </td>
-                      <td colspan="2" class="text-center verticalLeft">
-                        <span>{{ vmt.total | thousandSuffix:1 }}</span>
-                      </td>
-                      <td class="verticalLeft">
-                        <span id="PerCapita01" class="pull-right"
-                          >{{vmt.total / vmt.persons | number:2}}</span
-                        >
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="text-center">Total</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td colspan="2">
-                        <span class="pull-right"
-                          >{{ totals.totalVMT | number }}</span
-                        >
-                      </td>
-                      <td>
-                        <span class="pull-right"
-                          >{{ totals.totalVMTPerCapita | number:2 }}</span
-                        >
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colspan="11">
-                        <div class="col-lg-12 pad-top-s">
-                          <h4 class="panel-title" id="CityName">
-                            Selected Transportation Analysis Zones:
-                          </h4>
-                          <p><span id="TAZs">{{ tazList }}</span></p>
-                        </div>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
+                          Total
+                        </th>
+                      </tr>
+                    </thead>
+                    <!-- Table body for md, lg and xl resolution -->
+                    <tbody class="hidden-sm hidden-xs">
+                      <tr ng-repeat="vmt in vmtData">
+                        <td>
+                          <span
+                            >{{ vmt.lives }}/ <br />
+                            {{ vmt.works }}
+                          </span>
+                        </td>
+                        <td class="verticalLeft">
+                          <span class="pull-right"
+                            >{{ vmt.persons | number }}</span
+                          >
+                        </td>
+                        <td class="verticalLeft">
+                          <span class="pull-right"
+                            >{{ vmt.inside | number }}</span
+                          >
+                        </td>
+                        <td class="verticalRight">
+                          <span id="Inside0pct" class="pull-right"
+                            >{{ vmt.inside/vmt.total | percentage:1 }}</span
+                          >
+                        </td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ vmt.partially_in | number }}</span
+                          >
+                        </td>
+                        <td class="verticalRight">
+                          <span id="Inside0pct" class="pull-right"
+                            >{{ vmt.partially_in/vmt.total | percentage:1
+                            }}</span
+                          >
+                        </td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ vmt.outside | number }}</span
+                          >
+                        </td>
+                        <td class="verticalRight">
+                          <span id="Inside0pct" class="pull-right"
+                            >{{ vmt.outside/vmt.total | percentage:1 }}</span
+                          >
+                        </td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ vmt.total | number }}</span
+                          >
+                        </td>
+                        <td class="verticalRight">
+                          <span id="Total0pct" class="pull-right">100%</span>
+                        </td>
+                        <td>
+                          <span id="PerCapita0" class="pull-right"
+                            >{{vmt.total / vmt.persons | number:2}}</span
+                          >
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="text-right">Total</td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ totals.totalPersons | number }}</span
+                          >
+                        </td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ totals.totalInside | number }}</span
+                          >
+                        </td>
+                        <td></td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ totals.totalPartial | number}}</span
+                          >
+                        </td>
+                        <td></td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ totals.totalOutside | number }}</span
+                          >
+                        </td>
+                        <td></td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ totals.totalVMT | number }}</span
+                          >
+                        </td>
+                        <td></td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ totals.totalVMTPerCapita | number:2 }}</span
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                    <!-- Table body for sm, xs resolution -->
+
+                    <tbody class="hidden-md hidden-lg hidden-xl">
+                      <tr ng-repeat="vmt in vmtData">
+                        <td>
+                          <span
+                            >{{ vmt.lives }}/ <br />
+                            {{ vmt.works }}
+                          </span>
+                        </td>
+                        <td class="text-center verticalLeft">
+                          <span>{{ vmt.persons | thousandSuffix:1 }}</span>
+                        </td>
+                        <td colspan="2" class="text-center verticalLeft">
+                          <span id="Inside0pct1"
+                            >{{ vmt.inside/vmt.total | percentage:1 }}</span
+                          >
+                        </td>
+                        <td colspan="2" class="text-center verticalLeft">
+                          <span id="Inside0pct2"
+                            >{{ vmt.Partially_In/vmt.total | percentage:1
+                            }}</span
+                          >
+                        </td>
+                        <td colspan="2" class="text-center verticalLeft">
+                          <span id="Inside0pct3"
+                            >{{ vmt.outside/data.total | percentage:1 }}</span
+                          >
+                        </td>
+                        <td colspan="2" class="text-center verticalLeft">
+                          <span>{{ vmt.total | thousandSuffix:1 }}</span>
+                        </td>
+                        <td class="verticalLeft">
+                          <span id="PerCapita01" class="pull-right"
+                            >{{vmt.total / vmt.persons | number:2}}</span
+                          >
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="text-center">Total</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td colspan="2">
+                          <span class="pull-right"
+                            >{{ totals.totalVMT | number }}</span
+                          >
+                        </td>
+                        <td>
+                          <span class="pull-right"
+                            >{{ totals.totalVMTPerCapita | number:2 }}</span
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="11">
+                          <div class="col-lg-12 pad-top-s">
+                            <h4 class="panel-title" id="CityName">
+                              Selected Transportation Analysis Zones:
+                            </h4>
+                            <p><span id="TAZs">{{ tazList }}</span></p>
+                          </div>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
