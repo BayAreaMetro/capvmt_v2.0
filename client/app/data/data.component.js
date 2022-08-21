@@ -12,6 +12,10 @@ export class DataComponent {
     this.$scope = $scope;
     this.$state = $state;
 
+    // Set Default Values 
+    this.$scope.selectedModelRun = "2050_06_YYY";
+    this.$scope.selectedPlace = 'Alameda';
+
     //Download data function
     this.$scope.jsonToCSVConverter = function(JSONData, PlaceName, Scenario, ShowLabel) {
       //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
@@ -96,6 +100,9 @@ export class DataComponent {
 
     //Get list of jurisdictions for drop down menu
     this.getJurisdictions();
+
+    //Load default data
+    this.getVMTbyJurisdiction();
 
   }
 
