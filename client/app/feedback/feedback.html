@@ -1,26 +1,37 @@
-<!-- Feedback Form -->
-<div
-  style="
+<style>
+  .feedbackBackground {
     background-image: url(../../assets/images/feedback-img.jpg);
     background-size: cover;
     background-position: bottom;
     background-repeat: no-repeat;
+    height: 875px;
     color: #444444;
-  "
-  class="container-fluid shadow-lg bg-dark"
->
+  }
+
+  .feedbackMargin {
+    margin-top: 12rem !important;
+    margin-bottom: 3rem !important;
+    opacity: 95%;
+    width: 768px;
+    padding: 3%;
+    background-color: white;
+  }
+
+  .btn {
+    background-color: #506ea7;
+    color: white;
+  }
+
+  .btn:hover {
+    color: white;
+  }
+</style>
+
+<!-- Feedback Form -->
+<div class="feedbackBackground container-fluid shadow-lg bg-dark">
   <!-- Feedback Table -->
   <div class="row">
-    <div
-      style="
-        opacity: 95%;
-        margin-top: 75px;
-        margin-bottom: 75px;
-        padding: 30px;
-        width: 768px;
-      "
-      class="container shadow-lg bg-white"
-    >
+    <div class="feedbackMargin container shadow-lg">
       <h6 class="mb-3">
         To provide us with general feedback, bugs and improvements, or
         suggestions for future releases, please fill out the form below:
@@ -67,13 +78,7 @@
           ></textarea>
           <label for="floatingTextarea2">Comments</label>
         </div>
-        <button
-          type="submit"
-          class="btn text-white"
-          style="background-color: #506ea7"
-        >
-          Submit
-        </button>
+        <button type="submit" class="btn">Submit</button>
       </form>
     </div>
   </div>
