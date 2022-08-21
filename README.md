@@ -23,21 +23,24 @@ This project was generated with the [Angular Full-Stack Generator](https://githu
 
 ### Prerequisites
 
-- [Git](https://git-scm.com/)
-- [Node.js and npm](nodejs.org) Node >= 4.x.x, npm >= 2.x.x
-- [Gulp](http://gulpjs.com/) (`npm install --global gulp`)
-- [SQLite](https://www.sqlite.org/quickstart.html)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Docker Extension for Visual Code](https://code.visualstudio.com/docs/containers/overview)
 
 ### Developing
 
-1. Run `npm install` to install server dependencies.
+  1. Build Docker Image
+     `docker build -t capvmt . `
+  2. Create "dist" folder at root of the project if it doesn't already exist
+  3. Copy [local.env.js](https://mtcdrive.box.com/s/3mupwj06prg1wwhs5lc34ehv1lqx4x60) file to server/config and rename to local.env.js
+  4. Create Docker Container
+    ` docker run -dp "3000:3000"  -w /app -v "$(pwd)/client:/app/client" -v "$(pwd)/server:/app/server" -v "$(pwd)/dist:/app/dist capvmt `
+  5. Container should now be running in Docker Desktop. Open local browser at localhost:3000
 
-2. Run `gulp serve` to start the development server. It should automatically open the client in your browser when ready.
 
 ## Build & development
 
-Run `gulp build` for building and `gulp serve` for preview.
+In Docker terminal, run `gulp build` for building and `gulp serve` for preview.
 
 ## Testing
 
-Running `npm test` will run the unit tests with karma.
+In Docker terminal, running `npm test` will run the unit tests with karma.
