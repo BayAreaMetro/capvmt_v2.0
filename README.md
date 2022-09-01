@@ -33,7 +33,7 @@ This project was generated with the [Angular Full-Stack Generator](https://githu
   2. Create "dist" folder at root of the project if it doesn't already exist
   3. Copy [local.env.js](https://mtcdrive.box.com/s/3mupwj06prg1wwhs5lc34ehv1lqx4x60) file to server/config and rename to local.env.js
   4. Create Docker Container
-    ` docker run -dp "3000:3000"  -w /app -v "$(pwd)/client:/app/client" -v "$(pwd)/server:/app/server" -v "$(pwd)/dist:/app/dist capvmt `
+    ` docker run -dp "3000:3000"  -w /app -v "$(pwd)/client:/app/client" -v "$(pwd)/server:/app/server" -v "$(pwd)/dist:/app/dist" capvmt `
   5. Container should now be running in Docker Desktop. Open local browser at localhost:3000
 
 
