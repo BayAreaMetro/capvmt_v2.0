@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.rawgit.com/MetropolitanTransportationCommission/CAPVMT/gh-pages/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.rawgit.com/MetropolitanTransportationCommission/CAPVMT/gh-pages/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+</head>
+
+<body role="document">
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Climate Action Portal</h1>
+            <p class="lead">The website delivers estimates of vehicle miles traveled (VMT) relative to local jurisdictional boundaries or selected areas of interest using a standardized method.</p>
+            <p><a class="btn btn-primary btn-lg" href="http://vmtdataportal.mtcanalytics.org/" role="button">Visit the Website &raquo;</a></p>
+        </div>
+    </div>
+    <div class="loading" id="loading-indicator" style="display:none">Loading&#8230;</div>
+    <div class="container">
+        <!-- Example row of columns -->
+        <div class="row">
+            <h1 style="padding-left:10px;">Downloadable Data</h1>
+            <div class="col-md-4">
+                <h2>Places and TAZs</h2>
+                <p>Download the correspondence table between Places (CDPs and Incorporated Jurisdictions) and MTC’s Travel Analysis Zones or TAZs (1454 Zones). This data does not include whole counties, only CDPs and County Remainder areas. </p>
+                <p><a id="placeTazBtn" class="btn btn-default" href="#" role="button">Download CSV &raquo;</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>Places and TAZs (1454)</h2>
+                <p>Download the correspondence table between Places and TAZs (1454). The Place boundaries include all 101 Incorporated Jurisdictions in the nine-county bay area region, 60 Census Designated Places or CDP areas, and County Remainder Areas. In addition this route includes all nine Bay Area Counties.</p>
+                <p><a id="placeTaz1454Btn" class="btn btn-default" href="#" role="button">Download CSV &raquo;</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>VMT by Place</h2>
+                <p>Download VMT data by place.</p>
+                <p><a id="vmtBtn" class="btn btn-default" href="#" role="button">Download CSV &raquo;</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <h1 style="padding-left:10px;">Data API</h1>
+            <div class="col-md-12">
+                <h2>Places and TAZs</h2>
+                <p>The api can be accessed here: http://capvmt.us-west-2.elasticbeanstalk.com/api/vmt/jurisdictionId/modelRunYear
+                    <br>
+                    <p> This API accepts the following parameters: <strong>id- Jurisdiction ID mr- Model Run Year</strong>.
+                        <br> Example API Call: http://capvmt.us-west-2.elasticbeanstalk.com/api/vmt/1/2005_03_YYY
+                        <br> Results are returned as JSON data. See below for example data returned for the City of Alameda with Model Year 2010:</p>
+                    <!-- HTML generated using hilite.me -->
+                    <div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">[
+   {
+      <span style="color: #007700">&quot;Lives&quot;</span>:<span style="background-color: #fff0f0">&quot;Live in area&quot;</span>,
+      <span style="color: #007700">&quot;Works&quot;</span>:<span style="background-color: #fff0f0">&quot;Works in area&quot;</span>,
+      <span style="color: #007700">&quot;Persons&quot;</span>:<span style="color: #0000DD; font-weight: bold">4312</span>,
+      <span style="color: #007700">&quot;Inside&quot;</span>:<span style="color: #0000DD; font-weight: bold">11956</span>,
+      <span style="color: #007700">&quot;Partially_In&quot;</span>:<span style="color: #0000DD; font-weight: bold">28395</span>,
+      <span style="color: #007700">&quot;Outside&quot;</span>:<span style="color: #0000DD; font-weight: bold">2987</span>,
+      <span style="color: #007700">&quot;Total&quot;</span>:<span style="color: #0000DD; font-weight: bold">43338</span>,
+      <span style="color: #007700">&quot;CityName&quot;</span>:<span style="background-color: #fff0f0">&quot;Alameda&quot;</span>,
+      <span style="color: #007700">&quot;Model_Run&quot;</span>:<span style="background-color: #fff0f0">&quot;2010_03_YYY&quot;</span>,
+      <span style="color: #007700">&quot;tazlist&quot;</span>:<span style="background-color: #fff0f0">&quot;948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,963,964&quot;</span>
+   },
+   {
+      <span style="color: #007700">&quot;Lives&quot;</span>:<span style="background-color: #fff0f0">&quot;Live in area&quot;</span>,
+      <span style="color: #007700">&quot;Works&quot;</span>:<span style="background-color: #fff0f0">&quot;Works out of area&quot;</span>,
+      <span style="color: #007700">&quot;Persons&quot;</span>:<span style="color: #0000DD; font-weight: bold">31068</span>,
+      <span style="color: #007700">&quot;Inside&quot;</span>:<span style="color: #0000DD; font-weight: bold">16244</span>,
+      <span style="color: #007700">&quot;Partially_In&quot;</span>:<span style="color: #0000DD; font-weight: bold">537618</span>,
+      <span style="color: #007700">&quot;Outside&quot;</span>:<span style="color: #0000DD; font-weight: bold">152549</span>,
+      <span style="color: #007700">&quot;Total&quot;</span>:<span style="color: #0000DD; font-weight: bold">706411</span>,
+      <span style="color: #007700">&quot;CityName&quot;</span>:<span style="background-color: #fff0f0">&quot;Alameda&quot;</span>,
+      <span style="color: #007700">&quot;Model_Run&quot;</span>:<span style="background-color: #fff0f0">&quot;2010_03_YYY&quot;</span>,
+      <span style="color: #007700">&quot;tazlist&quot;</span>:<span style="background-color: #fff0f0">&quot;948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,963,964&quot;</span>
+   },
+   {
+      <span style="color: #007700">&quot;Lives&quot;</span>:<span style="background-color: #fff0f0">&quot;Live in area&quot;</span>,
+      <span style="color: #007700">&quot;Works&quot;</span>:<span style="background-color: #fff0f0">&quot;Non-worker&quot;</span>,
+      <span style="color: #007700">&quot;Persons&quot;</span>:<span style="color: #0000DD; font-weight: bold">38703</span>,
+      <span style="color: #007700">&quot;Inside&quot;</span>:<span style="color: #0000DD; font-weight: bold">34611</span>,
+      <span style="color: #007700">&quot;Partially_In&quot;</span>:<span style="color: #0000DD; font-weight: bold">273652</span>,
+      <span style="color: #007700">&quot;Outside&quot;</span>:<span style="color: #0000DD; font-weight: bold">41330</span>,
+      <span style="color: #007700">&quot;Total&quot;</span>:<span style="color: #0000DD; font-weight: bold">349592</span>,
+      <span style="color: #007700">&quot;CityName&quot;</span>:<span style="background-color: #fff0f0">&quot;Alameda&quot;</span>,
+      <span style="color: #007700">&quot;Model_Run&quot;</span>:<span style="background-color: #fff0f0">&quot;2010_03_YYY&quot;</span>,
+      <span style="color: #007700">&quot;tazlist&quot;</span>:<span style="background-color: #fff0f0">&quot;948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,963,964&quot;</span>
+   },
+   {
+      <span style="color: #007700">&quot;Lives&quot;</span>:<span style="background-color: #fff0f0">&quot;Live out of area&quot;</span>,
+      <span style="color: #007700">&quot;Works&quot;</span>:<span style="background-color: #fff0f0">&quot;Works in area&quot;</span>,
+      <span style="color: #007700">&quot;Persons&quot;</span>:<span style="color: #0000DD; font-weight: bold">21189</span>,
+      <span style="color: #007700">&quot;Inside&quot;</span>:<span style="color: #0000DD; font-weight: bold">4480</span>,
+      <span style="color: #007700">&quot;Partially_In&quot;</span>:<span style="color: #0000DD; font-weight: bold">498006</span>,
+      <span style="color: #007700">&quot;Outside&quot;</span>:<span style="color: #0000DD; font-weight: bold">157863</span>,
+      <span style="color: #007700">&quot;Total&quot;</span>:<span style="color: #0000DD; font-weight: bold">660348</span>,
+      <span style="color: #007700">&quot;CityName&quot;</span>:<span style="background-color: #fff0f0">&quot;Alameda&quot;</span>,
+      <span style="color: #007700">&quot;Model_Run&quot;</span>:<span style="background-color: #fff0f0">&quot;2010_03_YYY&quot;</span>,
+      <span style="color: #007700">&quot;tazlist&quot;</span>:<span style="background-color: #fff0f0">&quot;948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,963,964&quot;</span>
+   },
+   {
+      <span style="color: #007700">&quot;Lives&quot;</span>:<span style="background-color: #fff0f0">&quot;Live out of area&quot;</span>,
+      <span style="color: #007700">&quot;Works&quot;</span>:<span style="background-color: #fff0f0">&quot;Works out of area&quot;</span>,
+      <span style="color: #007700">&quot;Persons&quot;</span>:<span style="color: #0000DD; font-weight: bold">3091770</span>,
+      <span style="color: #007700">&quot;Inside&quot;</span>:<span style="color: #0000DD; font-weight: bold">939</span>,
+      <span style="color: #007700">&quot;Partially_In&quot;</span>:<span style="color: #0000DD; font-weight: bold">213419</span>,
+      <span style="color: #007700">&quot;Outside&quot;</span>:<span style="color: #0000DD; font-weight: bold">73294733</span>,
+      <span style="color: #007700">&quot;Total&quot;</span>:<span style="color: #0000DD; font-weight: bold">73509091</span>,
+      <span style="color: #007700">&quot;CityName&quot;</span>:<span style="background-color: #fff0f0">&quot;Alameda&quot;</span>,
+      <span style="color: #007700">&quot;Model_Run&quot;</span>:<span style="background-color: #fff0f0">&quot;2010_03_YYY&quot;</span>,
+      <span style="color: #007700">&quot;tazlist&quot;</span>:<span style="background-color: #fff0f0">&quot;948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,963,964&quot;</span>
+   },
+   {
+      <span style="color: #007700">&quot;Lives&quot;</span>:<span style="background-color: #fff0f0">&quot;Live out of area&quot;</span>,
+      <span style="color: #007700">&quot;Works&quot;</span>:<span style="background-color: #fff0f0">&quot;Non-worker&quot;</span>,
+      <span style="color: #007700">&quot;Persons&quot;</span>:<span style="color: #0000DD; font-weight: bold">3866292</span>,
+      <span style="color: #007700">&quot;Inside&quot;</span>:<span style="color: #0000DD; font-weight: bold">1966</span>,
+      <span style="color: #007700">&quot;Partially_In&quot;</span>:<span style="color: #0000DD; font-weight: bold">254855</span>,
+      <span style="color: #007700">&quot;Outside&quot;</span>:<span style="color: #0000DD; font-weight: bold">34271870</span>,
+      <span style="color: #007700">&quot;Total&quot;</span>:<span style="color: #0000DD; font-weight: bold">34528691</span>,
+      <span style="color: #007700">&quot;CityName&quot;</span>:<span style="background-color: #fff0f0">&quot;Alameda&quot;</span>,
+      <span style="color: #007700">&quot;Model_Run&quot;</span>:<span style="background-color: #fff0f0">&quot;2010_03_YYY&quot;</span>,
+      <span style="color: #007700">&quot;tazlist&quot;</span>:<span style="background-color: #fff0f0">&quot;948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,963,964&quot;</span>
+   }
+]<span style="color: #FF0000; background-color: #FFAAAA"></span>
+</pre></div>
+                </p>
+            </div>
+        </div>
+        <hr>
+        <footer>
+            <p>&copy; 2016 Metropolitan Transportation Commission</p>
+        </footer>
+    </div>
+    <!-- /container -->
+    <!-- /container -->
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/MetropolitanTransportationCommission/CAPVMT/gh-pages/js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/MetropolitanTransportationCommission/CAPVMT/gh-pages/js/index.js"></script>
+</body>
+
+</html>
