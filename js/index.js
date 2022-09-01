@@ -13,7 +13,7 @@ $(document).ready(function() {
     $("#placeTazBtn").click(function() {
         //Show loading indicator
         $('#loading-indicator').show();
-        var url = 'http://capvmt.us-west-2.elasticbeanstalk.com/api/places/placeTAZ';
+        var url = 'https://data.bayareametro.gov/api/views/tpnp-wcbv/rows.csv?accessType=DOWNLOAD';
         //Send request to server and handle response in success function
         $.ajax({
             type: "GET",
@@ -54,7 +54,7 @@ $(document).ready(function() {
         console.log('clicked');
         //Show loading indicator
         $('#loading-indicator').show();
-        var url = 'http://capvmt.us-west-2.elasticbeanstalk.com/api/vmt';
+        var url = 'https://data.bayareametro.gov/api/views/tpnp-wcbv/rows.csv?accessType=DOWNLOAD';
         //Send request to server and handle response in success function
         $.ajax({
             type: "GET",
