@@ -130,14 +130,14 @@
     "webpack-stream": "^3.2.0"
   },
   "engines": {
-    "node": "^6.2.2",
-    "npm": "^3.9.5"
+    "node": "^14.17.0",
+    "npm": "^6.14.13"
   },
   "scripts": {
     "test": "gulp test",
     "flow": "flow",
     "update-webdriver": "node node_modules/protractor/bin/webdriver-manager update",
-    "start": "node server"
+    "start": "node index.js"
   },
   "private": true
 }

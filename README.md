@@ -44,3 +44,7 @@ In Docker terminal, run `gulp build` for building and `gulp serve` for preview.
 ## Testing
 
 In Docker terminal, running `npm test` will run the unit tests with karma.
+
+## Deployment
+
+After running `gulp build`, compress all files in dist/server into a zip file. In AWS EB environment, select `Upload and Deploy`, and point to zip file in dist/server

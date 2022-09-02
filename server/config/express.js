@@ -23,17 +23,25 @@ var Store = expressSequelizeSession(session.Store);
 export default function(app) {
   var env = app.get('env');
 
-  if(env === 'development' || env === 'test') {
+  if (env === 'development' || env === 'test') {
+    app.set('appPath', path.join(config.root, 'client'));
     app.use(express.static(path.join(config.root, '.tmp')));
-  }
+    app.use(express.static(app.get('appPath')));
+    app.use(morgan('dev'));
 
-  if(env === 'production') {
-    app.use(favicon(path.join(config.root, 'client', 'favicon.ico')));
-  }
+}
 
-  app.set('appPath', path.join(config.root, 'client'));
-  app.use(express.static(app.get('appPath')));
+if (env === 'production') {
+  app.use(favicon(path.join(__dirname, './../client', 'favicon.ico')));
+  app.use(express.static(path.join(__dirname, './../client')));
+  app.set('appPath', path.join(__dirname, './../client'));
+  // app.use(express.static(app.get('appPath')));
   app.use(morgan('dev'));
+}
+
+  // app.set('appPath', path.join(config.root, 'client'));
+  // app.use(express.static(app.get('appPath')));
+  // app.use(morgan('dev'));
 
   app.set('views', `${config.root}/server/views`);
   app.engine('html', require('ejs').renderFile);
