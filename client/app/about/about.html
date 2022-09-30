@@ -8,6 +8,10 @@
     opacity: 95%;
   }
 
+  .accordion-button {
+  font-weight: 600;
+  }
+
   .accordion-button:hover {
     background-color: #506ea7;
     color: white;
@@ -224,8 +228,242 @@
         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
           <div class="accordion-body">
             <div class="container">
-              <div class="row">
-                <div class="col-md-6">
+                <div class="accordion" id="faqAccordion">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqOne">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseChildOne" aria-expanded="true" aria-controls="collapseChildOne">
+                        What is this tool?
+                      </button>
+                    </h2>
+                    <div id="collapseChildOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          Funded by the Bay Area Air Quality Management District
+                          (Air District) in a collaboration between Air District and
+                          Metropolitan Transportation Commission (MTC). With the
+                          purpose of helping communities streamline the download of
+                          data, updating of greenhouse gas (GHG) inventories and to
+                          provide technical assistance to local governments.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqTwo">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseChildTwo" aria-expanded="false" aria-controls="collapseChildTwo">
+                        What is a Climate Action Plan?
+                      </button>
+                    </h2>
+                    <div id="collapseChildTwo" class="accordion-collapse collapse" aria-labelledby="faqTwo" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          A climate action plan (CAP) is a community-wide GHG
+                          reduction policy document. CAPs may also address
+                          adaptation measures for adjusting to a changing climate.
+                          CAPs include a GHG target, an inventory of GHG sources in
+                          the community and a comprehensive strategy to meet the
+                          target.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqThree">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqThree" aria-expanded="false" aria-controls="collapseFaqThree">
+                        Why do you use Vehicle Miles Traveled (VMT) when preparing Climate Action Plans?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqThree" class="accordion-collapse collapse" aria-labelledby="faqThree" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          VMT is important for calculating greenhouse gases (GHG)
+                          associated with the transportation section of a CAP. VMT
+                          calculations provided by a local transit planning
+                          organization such as the Bay Area’s Metropolitan
+                          Transportation Commission (MTC) can be useful to align
+                          CAPs with regional transit plans such as Plan Bay Area.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqFour">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqFour" aria-expanded="false" aria-controls="collapseFaqFour">
+                        How should Bay Area jurisdictions use this site to assist with developing a Climate Action Plan?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqFour" class="accordion-collapse collapse" aria-labelledby="faqFour" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          Jurisdictions in the Bay Area will find this site useful
+                          for developing and updating their GHG inventories, climate
+                          planning activities, tracking progress and understanding
+                          their community within the context of the Bay Area. This
+                          site provides the VMT data which can be used to determine
+                          a large portion of the GHG emissions from the
+                          transportation sector.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqFive">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqFive" aria-expanded="false" aria-controls="collapseFaqFive">
+                        What methodology was used to determine vehicle miles traveled by jurisdiction?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqFive" class="accordion-collapse collapse" aria-labelledby="faqFive" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          Review the VMT Calculation and Methodology approach
+                          located on the About section of the VMT Data Portal
+                          website.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqSix">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqSix" aria-expanded="false" aria-controls="collapseFaqSix">
+                        How do you download data from this site?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqSix" class="accordion-collapse collapse" aria-labelledby="faqSix" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          Data can be obtained from this site by clicking the Data
+                          link located in the Navigation banner of this website. To
+                          view the data in the browser, users must choose a Scenario
+                          year and a jurisdiction. In order to download data, users
+                          must select the Download Data button located in the data
+                          preview panel. Data is downloaded as a CSV file, and can
+                          be used in Excel or other spreadsheet programs.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqSeven">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqSeven" aria-expanded="false" aria-controls="collapseFaqSeven">
+                        What is a CSV file?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqSeven" class="accordion-collapse collapse" aria-labelledby="faqSeven" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          CSV stands for comma separated values. See this <a href="https://en.wikipedia.org/wiki/Comma-separated_values">link</a> for
+                          more detail on what a CSV file is, and how it is used to
+                          store data in a tabular format.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqEight">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqEight" aria-expanded="false" aria-controls="collapseFaqEight">
+                        When using the MacOS Safari Browser or Windows IE web browser, the download data option does not work. What should I do?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqEight" class="accordion-collapse collapse" aria-labelledby="faqEight" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          Unfortunately, these two web browsers handle csv files
+                          differently than other browsers. We suggest you use
+                          another popular web browser like Mozilla’s Firefox, or
+                          Google’s Chrome Browser.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqNine">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqNine" aria-expanded="false" aria-controls="collapseFaqNine">
+                        What is the difference between a Place Boundary and a TAZ Boundary?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqNine" class="accordion-collapse collapse" aria-labelledby="faqNine" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          Place geography used by this tool is provided and
+                          maintained by the U.S. Census Bureau. This geography
+                          includes both Incorporated Places and Census Designated
+                          Places (CDPs). Transportation Analysis Zones (TAZs) are
+                          the basic geographic unit used for modeling travel
+                          behavior within a Metropolitan Planning Organization’s
+                          (MPO) boundaries. TAZ boundaries are largely defined by
+                          population size. Because of this, a Place boundary is
+                          typically larger than a TAZ boundary in very densely
+                          populated areas, and conversely, in low density or rural
+                          areas, TAZ boundaries can be larger than Place boundaries.
+                          There are 101 Incorporated Places, 60 CDPs and 1454 TAZs
+                          within the nine-county bay region.<br />
+                        </p>
+                        <p>
+                          Resources for more information on: <br />
+                          <a href="https://www.census.gov/geo/reference/gtc/gtc_place.html">CDP</a> <br />
+                          <a href="https://www.fhwa.dot.gov/planning/tmip/publications/other_reports/technical_synthesis_report/page01.cfm">TAZ</a> <br />
+                          <a href="https://www.census.gov/geo/reference/gtc/gtc_place.html">CDP vs. TAZ</a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqTen">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqTen" aria-expanded="false" aria-controls="collapseFaqTen">
+                        Where can I download the entire VMT dataset for all Places within the nine-county Bay Area region?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqTen" class="accordion-collapse collapse" aria-labelledby="faqTen" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          The Metropolitan Transportation Commission (MTC) maintains
+                          a data set that hosts the VMT data by Place for the
+                          nine-county Bay Area, click <a href="https://bayareametro.github.io/capvmt_v2.0/">here</a> to get more information.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqEleven">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaqEleven" aria-expanded="false" aria-controls="collapseFaqEleven">
+                        What happens after I submit Feedback to this site?
+                      </button>
+                    </h2>
+                    <div id="collapseFaqEleven" class="accordion-collapse collapse" aria-labelledby="faqEleven" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          Feedback is vital to the success of this tool, and we
+                          welcome any and all feedback that our users wish to
+                          provide. We periodically review feedback in an effort to
+                          fix software bugs, answer technical questions about the
+                          website, and enhance the website with future improvements
+                          that our users request. All submitted feedback is stored
+                          and maintained by this website repository and can be
+                          viewed by clicking this <a href="https://github.com/BayAreaMetro/CAPVMT/issues">link</a>.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqTwelve">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwelve" aria-expanded="false" aria-controls="collapseTwelve">
+                        Not all of the features are available when I try to view this website on my mobile device.
+                      </button>
+                    </h2>
+                    <div id="collapseTwelve" class="accordion-collapse collapse" aria-labelledby="faqTwelve" data-bs-parent="#faqAccordion">
+                      <div class="accordion-body">
+                        <p>
+                          This site is best viewed using a Tablet, Laptop or Desktop
+                          device. Mobile devices are typically restricted from
+                          downloading directly to the device. Therefore, this
+                          website does not allow users to download data when using a
+                          mobile device such as a smart phone.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="col-md-6">
                   <div class="list-group">
                     <a
                       class="list-group-item list-group-item-action"
@@ -295,7 +533,7 @@
                       >Not all of the features are available when I try to view
                       this website on my mobile device.</a
                     >
-                    <!-- <a
+                     <a
                       class="list-group-item list-group-item-action"
                       href="#list-item-13"
                       >When I click a feature on the map, nothing happens.</a
@@ -311,7 +549,7 @@
                       href="#list-item-15"
                       >I want to view the neighborhood characteristics of a
                       specific TAZ within my jurisdiction.</a
-                    > -->
+                    >
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -461,7 +699,7 @@
                       website does not allow users to download data when using a
                       mobile device such as a smart phone.
                     </p>
-                    <!-- <h4 id="list-item-13">
+                    <h4 id="list-item-13">
                       When I click a feature on the map, nothing happens.
                     </h4>
                     <p>
@@ -489,9 +727,7 @@
                       This tool provides a street level view of a portion of a
                       TAZ
                     </p> -->
-                  </div>
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
