@@ -40,6 +40,7 @@
         <div class="mb-3">
           <div class="form-floating mb-3">
             <input
+              ng-model="feedback.name"
               type="fullname"
               class="form-control"
               id="floatingInput"
@@ -49,6 +50,7 @@
           </div>
           <div class="form-floating">
             <input
+              ng-model="feedback.email"
               type="email"
               class="form-control"
               id="floatingPassword"
@@ -60,7 +62,11 @@
         </div>
         <div class="mb-3">
           Feedback:
-          <select class="form-select" aria-label="Default select example">
+          <select
+            ng-model="feedback.type"
+            class="form-select"
+            aria-label="Default select example"
+          >
             <option selected>Feedback Type</option>
             <option value="1">None</option>
             <option value="2">General Feedback</option>
@@ -71,6 +77,7 @@
         </div>
         <div class="form-floating">
           <textarea
+            ng-model="feedback.comment"
             class="form-control mb-3"
             placeholder="Leave a comment here"
             id="floatingTextarea2"
@@ -78,7 +85,13 @@
           ></textarea>
           <label for="floatingTextarea2">Comments</label>
         </div>
-        <button type="submit" class="btn">Submit</button>
+        <button
+          ng-click="feedbackCtrl.submitFeedback(feedbackForm)"
+          type="submit"
+          class="btn text-white"
+        >
+          Submit
+        </button>
       </form>
     </div>
   </div>
