@@ -27,13 +27,14 @@ import about from './about/about.component';
 import constants from './app.constants';
 import util from '../components/util/util.module';
 
+
 //UUID
 require('angular-uuid');
 
 import './app.css';
 
 angular.module('capvmtApp', [ngCookies, ngResource, ngSanitize, uiRouter, uiBootstrap, _Auth,
-  account, admin, 'validation.match', navbar, footer, main, data, map, feedback, 'angular-uuid', dataService, about, constants, util
+  account, admin, 'validation.match', navbar, footer, main, data, map, feedback, 'angular-uuid', about, constants, util
 ])
   .config(routeConfig)
   .run(function($rootScope, $location, Auth) {

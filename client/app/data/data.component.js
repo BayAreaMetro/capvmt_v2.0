@@ -212,4 +212,3 @@ export default angular.module('capvmtV20App.data', [uiRouter])
 
   })
   .name; 
-// Have MZ help us set the default value to Alameda.
