@@ -10,12 +10,12 @@ module.exports = {
     uri: process.env.SQL_URI,
     options: {
         dialect: 'mssql',
-        // logging: false,
-        // storage: 'dev.sqlite',
-        // encrypt: false,
-        // define: {
-        //     timestamps: false
-        // }
+        logging: false,
+        storage: 'dev.sqlite',
+        encrypt: false,
+        define: {
+            timestamps: false
+        }
     }
   },
 
