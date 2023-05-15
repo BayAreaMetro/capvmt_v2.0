@@ -7,7 +7,7 @@ module.exports = {
 
   // Sequelize connection opions
   sequelize: {
-    uri: process.env.SQL_URI,
+    uri: 'sqlite://',
     options: {
         dialect: 'mssql',
         logging: false,

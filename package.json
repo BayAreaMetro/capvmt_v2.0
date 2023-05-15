@@ -43,6 +43,7 @@
     "soda-js": "^0.2.3",
     "sodajs": "^0.4.10",
     "sprint-js": "~0.1.0",
+    "sqlite3": "^5.1.6",
     "yo": "^4.3.0"
   },
   "devDependencies": {

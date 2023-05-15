@@ -15,7 +15,7 @@ module.exports = {
     || 8080,
 
     sequelize: {
-      uri: process.env.SQL_URI,
+      uri: 'sqlite://' || process.env.SQL_URI,
       options: {
           logging: false,
           storage: 'dist.sqlite',
