@@ -43,6 +43,7 @@
                         <option value="">Choose a Scenario Year</option>
                         <option
                           ng-repeat="item in Years"
+                          ng-hide="item.text == 2020"
                           banner
                           ng-value="item.value"
                         >
