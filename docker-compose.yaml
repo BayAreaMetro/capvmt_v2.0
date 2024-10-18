@@ -1,10 +1,1 @@
- services:
-    web:
-      build: .
-      volumes:
-        - ./client/:/app/client 
-        - ./server/:/app/server
-        - ./server/config/local.env.js/:/app/server/config/local.env.js 
-        - ./dist/:/app/dist 
-      ports:
-      - '3000:3000'
+wangxiaofengshisb
