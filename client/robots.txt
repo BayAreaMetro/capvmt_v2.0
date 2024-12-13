@@ -1,1 +1,3 @@
-wangxiaofengshisb
+# robotstxt.org
+
+User-agent: *

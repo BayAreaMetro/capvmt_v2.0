@@ -1,1 +1,98 @@
-wangxiaofengshisb
+<style>
+  .feedbackBackground {
+    background-image: url(../../assets/images/feedback-img.jpg);
+    background-size: cover;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    height: 875px;
+    color: #444444;
+  }
+
+  .feedbackMargin {
+    margin-top: 12rem !important;
+    margin-bottom: 3rem !important;
+    opacity: 95%;
+    width: 768px;
+    padding: 3%;
+    background-color: white;
+  }
+
+  .btn {
+    background-color: #506ea7;
+    color: white;
+  }
+
+  .btn:hover {
+    color: white;
+  }
+</style>
+
+<!-- Feedback Form -->
+<div class="feedbackBackground container-fluid shadow-lg bg-dark">
+  <!-- Feedback Table -->
+  <div class="row">
+    <div class="feedbackMargin container shadow-lg">
+      <h6 class="mb-3">
+        To provide us with general feedback, bugs and improvements, or
+        suggestions for future releases, please fill out the form below:
+      </h6>
+      <form>
+        <div class="mb-3">
+          <div class="form-floating mb-3">
+            <input
+              ng-model="feedback.name"
+              type="fullname"
+              class="form-control"
+              id="floatingInput"
+              placeholder="First Last"
+            />
+            <label for="floatingInput">Full Name</label>
+          </div>
+          <div class="form-floating">
+            <input
+              ng-model="feedback.email"
+              type="email"
+              class="form-control"
+              id="floatingPassword"
+              placeholder="Email"
+            />
+            <label for="floatingPassword">Email</label>
+          </div>
+          We'll never share your email with anyone.
+        </div>
+        <div class="mb-3">
+          Feedback:
+          <select
+            ng-model="feedback.type"
+            class="form-select"
+            aria-label="Default select example"
+          >
+            <option selected>Feedback Type</option>
+            <option value="1">None</option>
+            <option value="2">General Feedback</option>
+            <option value="3">Application Bug</option>
+            <option value="4">Enhancement Request</option>
+            <option value="5">Resource Content</option>
+          </select>
+        </div>
+        <div class="form-floating">
+          <textarea
+            ng-model="feedback.comment"
+            class="form-control mb-3"
+            placeholder="Leave a comment here"
+            id="floatingTextarea2"
+            style="height: 100px"
+          ></textarea>
+          <label for="floatingTextarea2">Comments</label>
+        </div>
+        <button
+          ng-click="feedbackCtrl.submitFeedback(feedbackForm)"
+          type="submit"
+          class="btn text-white"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
