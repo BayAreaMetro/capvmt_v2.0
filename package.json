@@ -2,6 +2,10 @@
   "name": "capvmt",
   "version": "0.0.0",
   "main": "server/index.js",
+  "workspaces": [
+    "web",
+    "api"
+  ],
   "dependencies": {
     "@popperjs/core": "^2.11.6",
     "angular": "~1.6.0",
@@ -130,14 +134,18 @@
     "webpack-stream": "^3.2.0"
   },
   "engines": {
-    "node": "^14.17.0",
-    "npm": "^6.14.13"
+    "node": ">=18.18.0",
+    "npm": ">=9"
   },
   "scripts": {
     "test": "gulp test",
     "flow": "flow",
     "update-webdriver": "node node_modules/protractor/bin/webdriver-manager update",
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev:web": "npm --workspace web run dev",
+    "dev:api": "npm --workspace api run dev",
+    "test:workspaces": "npm run test --workspaces --if-present",
+    "lint:workspaces": "npm run lint --workspaces --if-present"
   },
   "private": true
 }

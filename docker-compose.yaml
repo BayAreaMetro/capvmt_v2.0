@@ -2,9 +2,34 @@
     web:
       build: .
       volumes:
-        - ./client/:/app/client 
+        - ./client/:/app/client
         - ./server/:/app/server
-        - ./server/config/local.env.js/:/app/server/config/local.env.js 
-        - ./dist/:/app/dist 
+        - ./server/config/local.env.js/:/app/server/config/local.env.js
+        - ./dist/:/app/dist
       ports:
       - '3000:3000'
+
+    # Modernized stack (see docs/superpowers/plans/2026-08-14-modernization-plan.md).
+    # Named "web-next" (not "web") to avoid colliding with the legacy service above,
+    # which keeps running alongside these until the strangler migration is complete.
+    web-next:
+      image: node:20-alpine
+      working_dir: /app/web
+      volumes:
+        - ./web:/app/web
+      command: sh -c "npm install && npm run dev"
+      env_file:
+        - .env
+      ports:
+        - '3001:3000'
+
+    api:
+      image: node:20-alpine
+      working_dir: /app/api
+      volumes:
+        - ./api:/app/api
+      command: sh -c "npm install && npm run dev"
+      env_file:
+        - .env
+      ports:
+        - '4000:4000'
