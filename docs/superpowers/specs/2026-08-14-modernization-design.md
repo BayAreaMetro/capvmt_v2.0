@@ -2,7 +2,9 @@
 
 > **Updated 2026-08-24** after a direct codebase audit of `capvmt_v2.0` (this repo — the current/latest version of the app). The original current-state description below was carried over from the CAPVMT repo's modernization worktree and assumed SQL Server was still the live data source. That assumption was wrong for this codebase: the VMT reporting data path already runs through the Socrata Open Data API. Sections below are rewritten to match what the code actually does; corrections are called out inline.
 >
-> **Updated again 2026-08-24** to add a product requirement: the current app only publishes non-commercial (passenger) VMT — this is confirmed in-repo, not just assumed (see "Vehicle type scope" below). The modernized app needs to add commercial-vehicle VMT and show both sets of stats. The data to do this **does not exist yet anywhere in this repo or its pipeline** and needs to be sourced/produced as part of this work — see the new Open Decisions and Task 2.
+> **Updated again 2026-08-24** to add a product requirement: the current app only publishes non-commercial (passenger) VMT — this is confirmed in-repo, not just assumed (see "Vehicle type scope" below). An earlier revision of this doc scoped in app-side work to show commercial and non-commercial VMT side by side.
+>
+> **Superseded later the same day:** product clarified that commercial-vehicle VMT does **not** need to be displayed separately by the app. The published Socrata dataset will be updated by others to include commercial data; the app's job is just to keep displaying whatever the dataset returns, with no app-side code changes required to support that update. See "Vehicle type scope" below for what this does and doesn't mean for the modernization work.
 
 ## Goal
 
@@ -12,7 +14,7 @@ Replace the legacy AngularJS 1.x + Express + ad hoc data layer with a modern arc
 - **Backend:** Node API
 - **Database:** an owned relational store for operational data (auth/users, feedback) — see "Data Layer" below for why this is no longer a flat "move to Postgres" task
 
-The end state should preserve current product behavior while removing the oldest platform constraints and making future feature work safer and faster, **and extend the product to cover commercial-vehicle VMT alongside the existing non-commercial VMT stats** (today the app publishes non-commercial data only — see "Vehicle type scope" below).
+The end state should preserve current product behavior while removing the oldest platform constraints and making future feature work safer and faster. The Socrata VMT dataset is expected to be updated separately (outside this codebase) to include commercial-vehicle data; the app does not need code changes to support that update — see "Vehicle type scope" below.
 
 ## Current State (verified against this repo, 2026-08-24)
 
@@ -46,16 +48,19 @@ There are **three independent data paths**, not one:
 3. **Feedback — an entirely separate external service, not this repo's backend at all.**
    `client/app/feedback/feedback.component.js` POSTs directly to `http://basis-dev-2022.us-west-2.elasticbeanstalk.com/api/feedback/add`. There is no `/api/feedback` route in this server. Feedback data does not touch this app's database or Socrata.
 
-### Vehicle type scope — the app only publishes non-commercial VMT today
+### Vehicle type scope — the app only publishes non-commercial VMT today, and that's fine
 
-This is explicit and deliberate in both the product copy and the pipeline, not an oversight to just "turn on" a hidden field:
+This is explicit and deliberate in both the product copy and the pipeline today, not an oversight:
 
 - `client/app/about/about.html` states outright: *"These data summaries include only non-commercial travel. Meaning, it does [not include] moving goods/freight."*
 - `client/app/data/data.html` labels the published metric **"Non-commercial Passenger Vehicle Miles Traveled"** in two places.
-- The ETL pipeline (`etl/vmt-results-etl.py`) computes VMT shares from `persons_table`/`vmt_table` inputs keyed by `WorkLocation`/`orig_taz`/`dest_taz` — these are person/household-trip outputs from the travel demand model. Commercial and freight vehicle movement isn't represented in person-trip tables at all in typical four-step travel demand models (including MTC's `travel-model-one`, which `etl/readme.md` links to); it normally comes from a separate commercial-vehicle or truck sub-model, if one exists and is run.
-- There is **no commercial/truck/freight VMT data anywhere** in this repo — not in the ETL inputs or outputs, not in the Socrata query fields the app reads (`cityname`, `model_run`, `inside`, `outside`, `partially_in`, `persons`, `total`, `tazlist`), not in the Socrata dataset schema as consumed by `data.controller.js`.
+- The ETL pipeline (`etl/vmt-results-etl.py`) computes VMT shares from `persons_table`/`vmt_table` inputs keyed by `WorkLocation`/`orig_taz`/`dest_taz` — these are person/household-trip outputs from the travel demand model. Commercial and freight vehicle movement isn't represented in person-trip tables at all in typical four-step travel demand models (including MTC's `travel-model-one`, which `etl/readme.md` links to); it normally comes from a separate commercial-vehicle or truck sub-model.
 
-Per the product requirement gathered during this modernization effort, **a commercial-vehicle VMT data source needs to be defined and produced from scratch** — it is not a matter of exposing an existing field. See Open Decisions and Task 2 of the implementation plan.
+**Current instruction (2026-08-24): commercial VMT does not need to be shown separately by the app.** The Socrata dataset behind `VMT_DATA_KEY` will be updated and republished by others (outside this codebase's ETL automation scope, and outside this modernization's implementation work) to include commercial-vehicle data. The app's read path — `getJurisdictions`, `getVMTbyJurisdiction`, `getYears` and their Task 2/3 replacements in the implementation plan — queries that dataset generically by `model_run` and `cityname` and returns whatever rows/fields come back. As long as the updated dataset keeps the same field names the app already reads, **no app-side code change is required** for the update to take effect; the app will simply display the updated data the next time it queries Socrata.
+
+Two things worth flagging, not as new work but as things to watch during implementation:
+- If the updated dataset changes shape (new fields, a `vehicle_type` column that changes what a `total` means, more rows per `model_run`/`cityname` pair than before), the existing display logic (totals math in `client/app/data/data.component.js`'s `$scope.totals`, and its Next.js replacement) should be checked against the new data for correctness — not to add commercial-specific UI, but to make sure "non-commercial" labeling and totals don't silently become wrong or ambiguous once the underlying dataset changes.
+- The "Non-commercial Passenger Vehicle Miles Traveled" copy in `about.html`/`data.html` may need a product/copy review once the dataset changes, independent of any app logic change, so the page doesn't keep asserting something that's no longer accurate about the underlying data. That's a content call for whoever owns the dataset update, not an engineering task in this plan.
 
 ### ETL pipeline (offline, not part of the running app)
 
@@ -84,7 +89,7 @@ Build a separate Node API service.
 
 - Expose versioned HTTP endpoints that mirror the real current contract: `/api/data/years/all`, `/api/data/jurisdictions/all`, `/api/data/vmt/:model_run/:cityname`, plus auth/session/user endpoints
 - **Keep Socrata as the source of truth for VMT reporting data** — it's already the live path and there's no evidence a re-platform to an owned warehouse is planned or needed. Wrap `soda-js` (or a modern REST client against the same SODA API) in a typed module instead of calling it ad hoc from the controller, and add a thin cache layer since Socrata calls are synchronous per-request today with no caching
-- **Add a `vehicleType` dimension (`non_commercial` / `commercial`) to the VMT read endpoints** so the frontend can request or display both stat sets. The exact shape (query param vs. always-return-both-in-one-response) is an implementation choice, but the API contract should not hardcode "non-commercial only" the way the legacy controller and Socrata dataset do today
+- Query and pass through whatever fields the Socrata dataset returns rather than hardcoding today's field set — the dataset is expected to be updated to include commercial-vehicle data (see "Vehicle type scope" above), and the API layer shouldn't need a code change for that update to flow through
 - Finish the abandoned `getYears` migration: query distinct `model_run` values from Socrata instead of the hardcoded array
 - Move `User` (and any operational data that should stay writable in-app, e.g. feedback if brought in-house) off the ad hoc SQLite/Sequelize setup onto a properly provisioned database — see Data Layer below
 - Delete the unused `Data`/`Thing` CRUD scaffolding rather than porting it; it has no caller in production
@@ -97,19 +102,20 @@ This is the section that changes most from the original plan. The original plan 
 - **VMT reporting data already lives in Socrata and should stay there.** Building a Postgres warehouse to replace it is a bigger, separate decision (see Open Decisions) — not a default part of this modernization.
 - **Operational data (auth/users, and feedback if brought in-house) is the only piece that genuinely needs a real database**, replacing the SQLite-with-a-stray-mssql-flag setup. Postgres is a reasonable choice here, but the scope is much smaller than "migrate the whole app's data" — it's a users/sessions/feedback schema, not a VMT schema.
 - If in-repo caching of Socrata results ever becomes necessary (e.g. for the years/jurisdictions lookups, which change rarely), that's a candidate for the same operational Postgres instance rather than a reason to duplicate the whole VMT dataset.
-- **Commercial-vehicle VMT is new data that doesn't exist yet, not a field to unhide.** Whatever produces it (an extended ETL step against a commercial/truck model output, or a manually sourced dataset) needs to land somewhere queryable with the same `model_run` + `cityname` shape the non-commercial data already has, so the API can serve both series consistently. Whether that's a second Socrata dataset, an added `vehicle_type` column on the existing one, or a Postgres table is an open decision — see below.
+- **Commercial-vehicle VMT is a dataset-owner concern, not an app data-layer concern.** The Socrata dataset will be updated externally to include it; the app's data layer doesn't need a new table, a new dataset key, or a `vehicle_type` dimension of its own — it keeps querying the same dataset the same way and displays whatever comes back.
 
 ## Migration Strategy
 
 Use an incremental strangler approach.
 
 1. Stand up the new Next.js app alongside the legacy AngularJS app.
-2. Define and produce a commercial-vehicle VMT data source (new ETL work, new/extended Socrata dataset) — this can proceed in parallel with steps 3–4 but must land before the data explorer migration in step 5 shows both stat sets.
-3. Create the new Node API with a typed Socrata client wrapping the existing `jurisdictions`/`vmt`/`years` contract plus the new commercial-vehicle series, and a small Postgres schema for auth/users (replacing SQLite).
-4. Migrate auth/session behavior onto the new API and Postgres-backed `User` model.
-5. Move one feature area at a time from AngularJS to Next.js: data explorer (now showing non-commercial + commercial side by side) → map → about → feedback → auth/account/admin.
-6. Keep legacy and new systems interoperable until the cutover point.
-7. Retire the old app only after the migrated surface is complete and stable.
+2. Create the new Node API with a typed Socrata client wrapping the existing `jurisdictions`/`vmt`/`years` contract, and a small Postgres schema for auth/users (replacing SQLite).
+3. Migrate auth/session behavior onto the new API and Postgres-backed `User` model.
+4. Move one feature area at a time from AngularJS to Next.js: data explorer → map → about → feedback → auth/account/admin.
+5. Keep legacy and new systems interoperable until the cutover point.
+6. Retire the old app only after the migrated surface is complete and stable.
+
+Separately, and not gating any of the above: the Socrata VMT dataset gets updated by its owners to include commercial-vehicle data. No step in this migration strategy depends on that update landing first.
 
 ## Key Boundaries
 
@@ -129,7 +135,7 @@ During migration, the old and new systems should coexist with explicit handoff p
 
 - **Socrata dependency risk:** the app's core data already depends on an external, rate-limited, third-party-hosted dataset with undocumented credentials. Document the required env vars and add error handling/caching so Socrata latency or throttling doesn't take down the whole data page (today, `getJurisdictions`/`getVMTbyJurisdiction` have no caching and minimal error handling).
 - **ETL-to-Socrata gap risk:** the hand-off from `vmt-results-etl.py`'s output CSV to the live Socrata dataset is undocumented and unscripted. Losing the person who runs that step manually is a real operational risk worth closing during modernization.
-- **Commercial-vehicle data does not exist risk:** this is the single biggest unknown in this plan. Producing commercial VMT may require a travel-demand-modeling deliverable (a commercial/truck sub-model run) that's outside typical software engineering scope and outside this repo's control — it could be a multi-week modeling effort, not a coding task. Treat "define and produce the commercial VMT source" as its own tracked work item with its own timeline, not a line item inside the Socrata client task, so it doesn't silently block the rest of the modernization.
+- **Dataset-shape-change risk:** when the Socrata dataset is updated to include commercial-vehicle data, verify it doesn't silently change the shape the app assumes (extra rows per `model_run`/`cityname`, a redefined `total` field, etc.) in a way that breaks the existing non-commercial totals math. The app isn't expected to add commercial-specific handling, but it should keep working correctly on the updated dataset.
 - **Auth migration risk:** keep the authentication model stable at first (same session/JWT shape), then improve internals later.
 - **Feature drift risk:** migrate in small slices and verify parity per route/feature, especially the map page's Mapbox usage and the feedback form's external POST.
 - **Scope creep risk:** avoid redesigning unrelated product areas during the platform rewrite, and avoid building a Postgres VMT warehouse unless a real requirement (not just "it's more modern than Socrata") drives it.
@@ -138,9 +144,9 @@ During migration, the old and new systems should coexist with explicit handoff p
 
 - Unit test backend services and data access, including the Socrata client wrapper (mock the SODA API)
 - Integration test API routes, including against a real or sandboxed Socrata dataset for at least one smoke test
-- End-to-end test critical user flows in Next.js: data explorer (both vehicle types), map, feedback, login/signup/admin
+- End-to-end test critical user flows in Next.js: data explorer, map, feedback, login/signup/admin
 - Add parity checks for migrated features before decommissioning the legacy path
-- Once a commercial-vehicle data source exists, add the same shape of test coverage for it as for non-commercial (unit test the client method, integration test the route, E2E test the UI toggle/section)
+- Include a test fixture with an extra (commercial-vehicle) row/field in the Socrata response shape when testing the VMT read path, so a future dataset update doesn't silently break totals math the app does need to keep correct
 
 ## Non-Goals
 
@@ -148,6 +154,7 @@ During migration, the old and new systems should coexist with explicit handoff p
 - Changing business rules without explicit product approval
 - Introducing extra platform layers unless they solve a concrete migration problem
 - Replacing Socrata with an owned data warehouse as part of this modernization, unless a separate decision explicitly calls for it
+- Building app-side UI or API logic to distinguish, filter, or separately display commercial vs. non-commercial VMT — the dataset update is handled outside this codebase, and the app is not required to change to support it
 
 ## Open Decisions
 
@@ -156,15 +163,13 @@ During migration, the old and new systems should coexist with explicit handoff p
 - Exact ORM/data access approach for the (much smaller than originally scoped) Postgres operational schema
 - Whether to finish the abandoned `getYears` → Socrata migration as part of this work or leave the hardcoded list
 - Feature-by-feature cutover order
-- **Where does commercial-vehicle VMT come from?** Confirmed during this update: it doesn't exist anywhere today (not in the ETL inputs/outputs, not in the Socrata dataset). This needs an answer before Task 2 of the plan can move past research: is there a commercial/truck sub-model in MTC's travel-model-one (or a companion model) that can feed an ETL step analogous to `vmt-results-etl.py`? Or does commercial VMT need to come from a different source entirely (e.g. a third-party freight dataset, Caltrans/HPMS truck AADT data, or another MTC data product)? This is a data/modeling-team question as much as an engineering one.
-- **Storage shape for commercial VMT once sourced:** a `vehicle_type` column added to the existing Socrata VMT dataset (simplest for the API, requires a Socrata dataset schema change and a backfill), a second parallel Socrata dataset (keeps the two series fully independent, doubles the client/query surface), or a Postgres table if Socrata turns out to be the wrong fit for this new data. Decide once the source (previous bullet) is known — the shape of the source data may constrain this.
-- **UI presentation:** side-by-side columns/totals on the same `data` page (matches "show both sets of stats" literally), a toggle/tab between the two, or a combined total with a breakdown — needs a product/design call, not just an engineering one.
+- Whether the `about.html`/`data.html` "non-commercial only" copy needs a content update once the underlying dataset changes — a product/content decision outside this plan's engineering scope
 
 ## Success Criteria
 
 - The app runs on Next.js and a Node API, with VMT reporting data continuing to flow from Socrata and operational data (auth/users) on a real database instead of the ad hoc SQLite file
 - Core user flows — data explorer, map, feedback, auth/account/admin — are available in the new stack
-- **The data explorer shows both non-commercial and commercial VMT stats**, clearly labeled as such (today's "Non-commercial Passenger Vehicle Miles Traveled" labeling should not silently become ambiguous once a second series is added)
+- The app correctly displays whatever the Socrata dataset returns, including after it's updated to include commercial-vehicle data, without requiring an app code change to do so
 - Legacy AngularJS usage is removed or reduced to a temporary migration bridge
 - The Socrata integration is documented (required env vars, dataset key, error handling) instead of tribal knowledge
 - The new architecture is easier to maintain and extend than the current one
