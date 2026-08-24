@@ -5,12 +5,14 @@
 > **Updated 2026-08-24** after auditing this repo (`capvmt_v2.0`, the current/latest version of the app). The prior version of this plan (ported from the CAPVMT repo's modernization worktree) assumed the app's data layer was SQL-Server-backed and needed a wholesale migration to Postgres. That's not what this codebase does: VMT reporting data already comes from **Socrata** via `soda-js` (`server/api/data/data.controller.js`), and `mssql` is an unused, dead npm dependency. Only auth/user data (and the unused `Data`/`Thing` CRUD scaffolding) lives in a local SQLite file via Sequelize. Tasks below are rewritten to match the real endpoints, real data sources, and real gaps found in this repo. See `docs/superpowers/specs/2026-08-14-modernization-design.md` for the full analysis.
 >
 > **Updated again 2026-08-24, then superseded the same day:** an intermediate revision of this plan added a task to source commercial-vehicle VMT data and thread a `vehicleType` dimension through the Socrata client, API, and UI so the app could show both non-commercial and commercial stats side by side. **Product has since clarified that's not required.** The Socrata dataset will be updated separately (outside this codebase) to include commercial-vehicle data, but the app itself does not need code changes to display it — it just needs to keep displaying whatever the updated dataset returns. The task list below is back to matching that simpler scope; see the design doc's "Vehicle type scope" section for the full reasoning.
+>
+> **Updated again 2026-08-24:** the former Task 5 ("Auth, Account, and Admin Migration") is removed. Confirmed by reading the actual rendered markup: the navbar block linking to `login`/`signup`/`settings`/`admin`/`logout` is commented out in `client/components/navbar/navbar.html`, and no other UI path reaches them — this is working backend code with zero real users, not a live feature. Decision: remove it rather than migrate it. That also removes the only reason this plan needed Postgres/Prisma at all, so Task 2 is simplified down to just the Socrata client — see the design doc's "Auth/account/admin scope" and rewritten "Data Layer" sections.
 
-**Goal:** Rebuild the app on Next.js and a separate Node API, keeping Socrata as the system of record for VMT reporting data and moving operational data (auth/users) off the ad hoc SQLite file, while preserving current behavior. The Socrata dataset is expected to be updated externally to include commercial-vehicle data; no task below adds app-side logic to distinguish or display that separately (see design doc Non-Goals).
+**Goal:** Rebuild the app on Next.js and a separate Node API, keeping Socrata as the system of record for VMT reporting data, while preserving current behavior. Login/signup/account/admin functionality is being **removed, not migrated** — see Non-Goals below. The Socrata dataset is expected to be updated externally to include commercial-vehicle data; no task below adds app-side logic to distinguish or display that separately (see design doc Non-Goals).
 
-**Architecture:** Stand up the new stack beside the legacy app, then migrate one surface at a time behind explicit API contracts. Keep frontend, API, Socrata, and operational-database boundaries strict so each layer can be tested independently and the old app can be retired without a big-bang rewrite.
+**Architecture:** Stand up the new stack beside the legacy app, then migrate one surface at a time behind explicit API contracts. Keep frontend, API, and Socrata boundaries strict so each layer can be tested independently and the old app can be retired without a big-bang rewrite. The new API is expected to be stateless by default — no database, unless the feedback decision (Task 5) requires one.
 
-**Tech Stack:** Next.js (App Router, TypeScript), Node.js API (Express + TypeScript), a typed Socrata (SODA API) client, PostgreSQL + Prisma (operational data only — auth/users, optionally feedback), Vitest, Playwright, supertest.
+**Tech Stack:** Next.js (App Router, TypeScript), Node.js API (Express + TypeScript), a typed Socrata (SODA API) client, Vitest, Playwright, supertest. PostgreSQL + Prisma only if the feedback task decides to bring feedback in-house — not provisioned by default.
 
 ## Global Constraints
 
@@ -18,7 +20,8 @@
 - Use an incremental strangler approach.
 - Socrata stays the source of truth for VMT reporting data unless an explicit later decision says otherwise (see design doc Open Decisions) — do not silently duplicate it into a new warehouse.
 - Query and pass through whatever fields Socrata returns rather than hardcoding today's field set, so the app keeps working when the dataset is updated to include commercial-vehicle data — but do not build separate commercial/non-commercial display logic; that's explicitly out of scope (see design doc Non-Goals).
-- Database access (Postgres and Socrata) stays inside the backend. Frontend code should never talk to either directly.
+- Do not build login, signup, account settings, or admin functionality in the new app — that capability is being removed, confirmed to have no reachable UI entry point in the current app (see design doc Non-Goals).
+- Any database access (Socrata always; Postgres only if provisioned for feedback) stays inside the backend. Frontend code should never talk to either directly.
 - During migration, the old and new systems should coexist with explicit handoff points instead of shared hidden state.
 - Avoid redesigning unrelated product areas during the platform rewrite.
 
@@ -104,8 +107,8 @@ SOCRATA_USERNAME=
 SOCRATA_PASSWORD=
 SOCRATA_APP_TOKEN_MTC=
 VMT_DATA_KEY=
-DATABASE_URL=postgres://localhost:5432/capvmt
-SESSION_SECRET=
+# No DATABASE_URL by default — the API is stateless (Socrata proxy only).
+# Add one only if Task 5 decides to bring feedback in-house.
 ```
 
 - [ ] **Step 4: Run the workspace commands**
@@ -121,24 +124,20 @@ git add package.json web api .env.example docker-compose.yml
 git commit -m "chore: add modern workspace scaffolding"
 ```
 
-### Task 2: Socrata Client and Operational Postgres Schema
+### Task 2: Socrata Client for VMT Data
 
-> Replaces the original "PostgreSQL Schema and Import Path" task. There is no SQL Server or legacy warehouse to import from — VMT data already lives in Socrata. This task has two independent halves: (a) a typed wrapper around the existing Socrata integration, and (b) a small Postgres schema for the operational data (auth/users) that's currently sitting in an ad hoc SQLite file. The client passes through whatever fields Socrata returns rather than hardcoding today's field set, so it keeps working once the dataset is updated (outside this codebase) to include commercial-vehicle data — no `vehicleType` parameter or dual-series handling needed here.
+> Replaces the original "PostgreSQL Schema and Import Path" task. There is no SQL Server or legacy warehouse to import from — VMT data already lives in Socrata. This task is now just a typed wrapper around the existing Socrata integration — no Postgres, no Prisma, no `User` model. Auth/account/admin is being removed rather than migrated (see design doc), which was the only thing that needed a database, so this task has no operational-data half anymore. The client passes through whatever fields Socrata returns rather than hardcoding today's field set, so it keeps working once the dataset is updated (outside this codebase) to include commercial-vehicle data — no `vehicleType` parameter or dual-series handling needed here.
 
 **Files:**
 - Create: `api/src/socrata/client.ts`
 - Create: `api/src/socrata/vmt.ts`
-- Create: `api/prisma/schema.prisma` (operational data only: `User`, session table; not VMT data)
-- Create: `api/prisma/migrations/0001_init/migration.sql`
-- Create: `api/src/db/prisma.ts`
-- Create: `api/scripts/import-legacy-users.ts` (reads the existing `dev.sqlite`/`dist.sqlite` `Users` table and loads it into Postgres)
 - Create: `docs/data/socrata-integration.md`
 
 **Interfaces:**
-- Consumes: `VMT_DATA_KEY`, `SOCRATA_USERNAME`, `SOCRATA_PASSWORD`, `SOCRATA_APP_TOKEN_MTC` from env; the existing SQLite `User` table (`server/api/user/user.model.js`) as the import source
-- Produces: a `SocrataVmtClient` with `getJurisdictions()`, `getVmtByJurisdiction(modelRun, cityName)`, `getModelRunYears()` methods that later tasks call instead of hitting `soda-js` directly from route handlers; a Prisma-backed `User` model for auth
+- Consumes: `VMT_DATA_KEY`, `SOCRATA_USERNAME`, `SOCRATA_PASSWORD`, `SOCRATA_APP_TOKEN_MTC` from env
+- Produces: a `SocrataVmtClient` with `getJurisdictions()`, `getVmtByJurisdiction(modelRun, cityName)`, `getModelRunYears()` methods that later tasks call instead of hitting `soda-js` directly from route handlers
 
-- [ ] **Step 1: Write failing tests for the Socrata client contract and the Postgres schema**
+- [ ] **Step 1: Write a failing test for the Socrata client contract**
 
 ```ts
 // api/test/socrata/vmt.test.ts
@@ -154,22 +153,11 @@ describe('SocrataVmtClient', () => {
 });
 ```
 
-```ts
-// api/test/schema.test.ts
-import { describe, it, expect } from 'vitest';
+- [ ] **Step 2: Run the test and confirm the client is absent**
 
-describe('operational database schema', () => {
-  it('defines a User table for auth, not VMT data', () => {
-    expect(true).toBe(true);
-  });
-});
-```
+Run: `npm --workspace api test`
 
-- [ ] **Step 2: Run the tests and confirm the client/schema are absent**
-
-Run: `npm --workspace api test` and `npm --workspace api exec prisma validate`
-
-Expected: failure until `socrata/vmt.ts` and `schema.prisma` exist.
+Expected: failure until `socrata/vmt.ts` exists.
 
 - [ ] **Step 3: Wrap the existing Socrata contract in a typed client**
 
@@ -231,32 +219,17 @@ export class SocrataVmtClient {
 }
 ```
 
-- [ ] **Step 4: Model the operational Postgres schema (auth only — not VMT data)**
+- [ ] **Step 4: Run the Socrata client test**
 
-```prisma
-// api/prisma/schema.prisma
-model User {
-  id        Int      @id @default(autoincrement())
-  provider  String
-  role      String   @default("user")
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-}
-```
+Run: `npm --workspace api test`
 
-- [ ] **Step 5: Run migration, Socrata client test, and the legacy-user import script against a copy of `dev.sqlite`**
+Expected: passes against a mocked/sandboxed Socrata dataset.
 
-Run: `npm --workspace api exec prisma migrate dev`, `npm --workspace api test`, `npm --workspace api run import-legacy-users`
-
-Expected: migration applies, Socrata client tests pass against a mocked/sandboxed dataset, and existing users carry over.
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/socrata api/prisma api/src/db api/scripts docs/data/socrata-integration.md
-git commit -m "feat: add typed socrata client and operational postgres schema"
+git add api/src/socrata docs/data/socrata-integration.md
+git commit -m "feat: add typed socrata client"
 ```
 
 ### Task 3: Core Node API and Read Endpoints
@@ -442,77 +415,7 @@ git add web/app web/components web/lib web/test
 git commit -m "feat: add nextjs public route shell"
 ```
 
-### Task 5: Auth, Account, and Admin Migration
-
-> The legacy auth stack (`server/auth/*`, `client/app/account`, `client/app/admin`) is genuinely live today — unlike the `Data`/`Thing` CRUD scaffolding, this is real and used for login/signup/admin gating in the navbar (`isLoggedIn()`, `isAdmin()`). It's backed by the SQLite `User` table being migrated to Postgres in Task 2.
-
-**Files:**
-- Create: `api/src/routes/auth.ts`
-- Create: `api/src/routes/users.ts`
-- Create: `api/src/auth/session.ts`
-- Create: `web/app/(auth)/login/page.tsx`
-- Create: `web/app/(auth)/signup/page.tsx`
-- Create: `web/app/(account)/settings/page.tsx`
-- Create: `web/app/(admin)/page.tsx`
-- Create: `api/test/routes/auth.test.ts`
-- Create: `web/test/auth.spec.ts`
-
-**Interfaces:**
-- Consumes: current auth expectations from `client/components/auth/*`, `server/auth/*`, and the Postgres `User` model from Task 2
-- Produces: login/logout/session APIs plus migrated account/admin screens in Next.js
-
-- [ ] **Step 1: Write a failing auth contract test**
-
-```ts
-// api/test/routes/auth.test.ts
-import request from 'supertest';
-import { app } from '../../src/app';
-
-describe('auth', () => {
-  it('exposes a session endpoint', async () => {
-    await request(app).get('/api/auth/session').expect(200);
-  });
-});
-```
-
-- [ ] **Step 2: Run the auth test and confirm the contract is missing**
-
-Run: `npm --workspace api test -- --runInBand api/test/routes/auth.test.ts`
-
-Expected: route not found.
-
-- [ ] **Step 3: Add session-backed auth and the matching Next.js forms**
-
-```ts
-// api/src/routes/auth.ts
-import { Router } from 'express';
-
-export const authRouter = Router();
-
-authRouter.get('/session', (_req, res) => res.json({ authenticated: false }));
-```
-
-```tsx
-// web/app/(auth)/login/page.tsx
-export default function LoginPage() {
-  return <form>Login</form>;
-}
-```
-
-- [ ] **Step 4: Run auth integration and browser tests**
-
-Run: `npm --workspace api test` and `npm --workspace web test`
-
-Expected: auth/session flow works end-to-end enough for migrated pages, including the admin-only nav gating.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add api/src/routes/auth.ts api/src/auth web/app/(auth) web/app/(account) web/app/(admin) api/test/routes/auth.test.ts web/test/auth.spec.ts
-git commit -m "feat: migrate auth and account surfaces"
-```
-
-### Task 6: Feedback Decision and ETL-to-Socrata Publish Automation
+### Task 5: Feedback Decision and ETL-to-Socrata Publish Automation
 
 > New task, not in the original plan — both of these are real gaps this audit surfaced. The commercial-vehicle dataset update is owned outside this repo (see design doc), so it's not part of this task's scope — this script only automates publishing the existing non-commercial `vmt_results.csv` pipeline.
 
@@ -528,7 +431,7 @@ git commit -m "feat: migrate auth and account surfaces"
 
 - [ ] **Step 1: Resolve the feedback decision with product/stakeholders**
 
-This is a product call, not a technical one — record the answer in `docs/superpowers/specs/2026-08-14-modernization-design.md`'s Open Decisions section before writing code.
+This is a product call, not a technical one — record the answer in `docs/superpowers/specs/2026-08-14-modernization-design.md`'s Open Decisions section before writing code. If the decision is "bring in-house," this is also the point where a minimal Postgres + Prisma schema gets introduced for the first time in this plan — scoped to just a feedback submissions table, not the broader operational schema the original (pre-audit) plan assumed. If the decision is "keep the external Elastic Beanstalk integration," the new app stays fully stateless and no database is provisioned anywhere in this plan.
 
 - [ ] **Step 2: Write a failing test for the ETL publish step**
 
@@ -585,7 +488,7 @@ git add etl/publish_to_socrata.py etl/test_publish_to_socrata.py docs/data/etl-t
 git commit -m "feat: automate the etl-to-socrata publish step"
 ```
 
-### Task 7: Cutover, Parity, and Legacy Retirement
+### Task 6: Cutover, Parity, and Legacy Retirement
 
 **Files:**
 - Modify: `package.json`
@@ -595,9 +498,10 @@ git commit -m "feat: automate the etl-to-socrata publish step"
 - Create: `docs/migration/route-parity.md`
 - Create: `docs/migration/cutover-checklist.md`
 - Delete: `mssql` from `package.json` dependencies (confirmed unused — see design doc), and the unused `Data`/`Thing` Sequelize models/routes
+- Delete: `server/auth/*`, `server/api/user/*`, `client/app/account/*`, `client/app/admin/*`, `client/components/auth/*` — not migrated (see design doc's "Auth/account/admin scope"), retired along with the rest of the legacy tree in Step 4 below
 
 **Interfaces:**
-- Consumes: all migrated routes and services from Tasks 1–6
+- Consumes: all migrated routes and services from Tasks 1–5
 - Produces: root startup scripts, docs, and cleanup commits that make the legacy app a temporary bridge instead of the default runtime
 
 - [ ] **Step 1: Write a parity checklist test/document pair**
@@ -609,11 +513,9 @@ git commit -m "feat: automate the etl-to-socrata publish step"
 - /map
 - /feedback
 - /about
-- /login
-- /signup
-- /settings
-- /admin
 ```
+
+Deliberately no `/login`, `/signup`, `/settings`, `/admin` entries — that functionality isn't in the new stack and parity isn't expected for it (see design doc Non-Goals).
 
 - [ ] **Step 2: Run the app in the new stack and confirm the migrated routes load**
 
@@ -639,7 +541,7 @@ Expected: all migrated routes load without relying on the AngularJS client, and 
 git rm -r client server
 ```
 
-Only do this after the route parity checklist is complete and the new stack is the default runtime. Also drop the now-dead `mssql`, `soda-js`, `sodajs`, and `sqlite3` npm dependencies from the root `package.json` once nothing references them.
+Only do this after the route parity checklist is complete and the new stack is the default runtime. Also drop the now-dead `mssql`, `soda-js`, `sodajs`, `sqlite3`, and — since auth/account/admin isn't being carried forward — `passport`, `passport-local`, `express-jwt`, `express-session`, `express-sequelize-session`, `jsonwebtoken`, and `lusca` npm dependencies from the root `package.json` once nothing references them.
 
 - [ ] **Step 5: Commit**
 
