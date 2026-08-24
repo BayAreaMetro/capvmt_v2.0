@@ -131,6 +131,10 @@ Socrata access and Postgres access both stay inside the backend. Frontend code s
 
 During migration, the old and new systems should coexist with explicit handoff points instead of shared hidden state.
 
+### External API consumption — decided: frontend-only
+
+**Decision (2026-08-24): the new API is internal to this app, not a public/external API.** This was worth checking rather than assuming, because there's real precedent the other way: this repo's own `gh-pages` branch (still linked from the current `about.html` FAQ) hosts a 2016-era page documenting a public `Data API` (`.../api/vmt/jurisdictionId/modelRunYear`) against a since-retired Elastic Beanstalk deployment, with sample requests and JSON responses meant for external consumers. That page has since moved its own "download the dataset" buttons to query Socrata directly instead of that old API, and the current app's Express routes have no CORS middleware and aren't documented anywhere as public. Given that pattern — and to keep the modernized app fully self-contained — the new API is scoped as **frontend-only**: no CORS configuration, no public API documentation, no stability guarantees for external callers. Anyone wanting programmatic access to the underlying VMT data should go to Socrata directly (`data.bayareametro.gov`), the same place the legacy `about.html` FAQ and the old gh-pages page already point external users. If a genuine external-consumer requirement surfaces later, that's a deliberate scope change, not something to build in preemptively.
+
 ## Risks and Mitigations
 
 - **Socrata dependency risk:** the app's core data already depends on an external, rate-limited, third-party-hosted dataset with undocumented credentials. Document the required env vars and add error handling/caching so Socrata latency or throttling doesn't take down the whole data page (today, `getJurisdictions`/`getVMTbyJurisdiction` have no caching and minimal error handling).
@@ -155,6 +159,7 @@ During migration, the old and new systems should coexist with explicit handoff p
 - Introducing extra platform layers unless they solve a concrete migration problem
 - Replacing Socrata with an owned data warehouse as part of this modernization, unless a separate decision explicitly calls for it
 - Building app-side UI or API logic to distinguish, filter, or separately display commercial vs. non-commercial VMT — the dataset update is handled outside this codebase, and the app is not required to change to support it
+- Building the new API as a public/external-facing API (CORS support, public API docs, versioning for outside consumers) — it's frontend-only by decision; external programmatic access to VMT data is Socrata's job, not this app's
 
 ## Open Decisions
 
