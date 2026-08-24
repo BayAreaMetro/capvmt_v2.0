@@ -2,12 +2,10 @@
 
 import { useState, type FormEvent } from 'react';
 
-// Posts directly to the same external Elastic Beanstalk service the
-// legacy client/app/feedback/feedback.component.js does. Whether this
-// stays external or moves in-house behind the new API is an open
-// decision for plan Task 5 - not decided here, so this is a faithful
-// port of the current behavior, not a redesign.
-const FEEDBACK_ENDPOINT = 'http://basis-dev-2022.us-west-2.elasticbeanstalk.com/api/feedback/add';
+// Resolved by plan Task 5: feedback is brought in-house, posted as a
+// task in a configurable Asana project (api/src/routes/feedback.ts)
+// instead of the legacy external Elastic Beanstalk service.
+const FEEDBACK_ENDPOINT = '/api/feedback';
 
 const FEEDBACK_TYPES = [
   { value: '1', label: 'None' },
@@ -35,14 +33,7 @@ export default function FeedbackPage() {
       const response = await fetch(FEEDBACK_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          type,
-          comment,
-          recid: crypto.randomUUID(),
-          source: 'CAPVMT 2.0',
-        }),
+        body: JSON.stringify({ name, email, type, comment }),
       });
       if (!response.ok) throw new Error(`Request failed: ${response.status}`);
 

@@ -13,7 +13,7 @@
 Replace the legacy AngularJS 1.x + Express + ad hoc data layer with a modern architecture built around:
 
 - **Frontend:** Next.js
-- **Backend:** Node API — expected to be stateless, proxying Socrata only, since auth/users is being dropped rather than migrated (see below) and feedback storage is still an open decision
+- **Backend:** Node API — stateless, proxying Socrata for VMT data and Asana for feedback submissions; no database. Auth/users is being dropped rather than migrated (see below), and feedback (also below) is brought in-house but backed by Asana instead of a database
 
 The end state should preserve current product behavior while removing the oldest platform constraints and making future feature work safer and faster. The Socrata VMT dataset is expected to be updated separately (outside this codebase) to include commercial-vehicle data; the app does not need code changes to support that update — see "Vehicle type scope" below. Login/signup/account/admin functionality is being retired, not carried forward — see "Auth/account/admin scope" below.
 
@@ -46,8 +46,9 @@ There are **three independent data paths**, not one:
    - `User` (`server/api/user/*`) is backed by this SQLite DB and is *functionally* live — the JWT signing, `isAuthenticated`/`hasRole` middleware, and passport local strategy all work — but as established in "Auth/account/admin scope" below, nothing in the app's UI ever reaches it. It's real code with no real users.
    - `Data` (`server/api/data/data.model.js`, full CRUD in `data.controller.js`: `index`/`show`/`create`/`upsert`/`patch`/`destroy`) and `Thing` are also Sequelize models on the same SQLite DB, but **nothing in the client calls them** — the client only hits `/years/all`, `/jurisdictions/all`, and `/vmt/:model_run/:cityname`. This is unused scaffolding inherited from the generator template, not part of the real data flow.
 
-3. **Feedback — an entirely separate external service, not this repo's backend at all.**
+3. **Feedback — an entirely separate external service, not this repo's backend at all.** *(Legacy state; resolved differently in the new app — see below.)*
    `client/app/feedback/feedback.component.js` POSTs directly to `http://basis-dev-2022.us-west-2.elasticbeanstalk.com/api/feedback/add`. There is no `/api/feedback` route in this server. Feedback data does not touch this app's database or Socrata.
+   **Decided for the new app (2026-08-24):** feedback is brought in-house behind a real `/api/feedback` route (`api/src/routes/feedback.ts`), but instead of a database it posts each submission as a task in a configurable Asana project via `api/src/asana/client.ts` (Personal Access Token auth, `ASANA_ACCESS_TOKEN`/`ASANA_PROJECT_ID` env vars — the project id is intentionally left blank in `.env.example` pending which Asana project this should target). This keeps the API fully stateless — no Postgres needed for feedback after all, closing the last open question in the Data Layer section below.
 
 ### Auth/account/admin scope — decided: remove, don't migrate
 
@@ -96,7 +97,7 @@ Build a new Next.js application as the user-facing client.
 - Keep server/client boundaries explicit
 - Replace ui-router page flows with Next.js routes: `/`, `/data`, `/map`, `/feedback`, `/about` — the only routes with a real navigation path today (see "Auth/account/admin scope" above; `/login`, `/signup`, `/settings`, `/admin` are not carried forward)
 - Treat the frontend as a thin product layer that talks to the API only — including for the Mapbox jurisdiction layer, which currently bundles a static GeoJSON client-side; keep that as a static asset served by the new frontend unless there's a reason to move it server-side
-- Bring the feedback form back in-house behind the new API instead of pointing at the `basis-dev-2022` Elastic Beanstalk endpoint, *or* explicitly keep that integration and document it — this needs a product decision, not just a lift-and-shift (see Open Decisions)
+- Feedback is now handled by the new API (`POST /api/feedback`) instead of the legacy `basis-dev-2022` Elastic Beanstalk endpoint — see the "Feedback" item above and Open Decisions for the Asana project id still pending
 
 ### Backend
 
@@ -116,7 +117,7 @@ This is the section that changes most from the original plan — twice over now.
 
 - **VMT reporting data already lives in Socrata and should stay there.** Building a Postgres warehouse to replace it is a bigger, separate decision (see Open Decisions) — not a default part of this modernization.
 - **There is no default need for a database in the new app.** With auth/account/admin removed (not migrated) and the `Data`/`Thing` CRUD scaffolding deleted (it was unused), nothing left requires persistent operational storage. The new API can be stateless — a typed proxy over Socrata and nothing else.
-- **The one thing that could still require a small database is feedback, and only if it's brought in-house** (still an open decision — see below). If that's the call, scope a minimal Postgres schema just for feedback submissions at that point, rather than provisioning Postgres speculatively now.
+- **Feedback is brought in-house but doesn't need a database either.** Submissions are posted as tasks to a configured Asana project instead of being stored in Postgres — see the "Feedback" item above. This was the last thing that could have required a database, so the new app has none.
 - If in-repo caching of Socrata results ever becomes necessary (e.g. for the years/jurisdictions lookups, which change rarely), that's a candidate for whatever database ends up existing (if any) rather than a reason to provision one on its own.
 - **Commercial-vehicle VMT is a dataset-owner concern, not an app data-layer concern.** The Socrata dataset will be updated externally to include it; the app's data layer doesn't need a new table, a new dataset key, or a `vehicle_type` dimension of its own — it keeps querying the same dataset the same way and displays whatever comes back.
 
@@ -140,7 +141,7 @@ The Next.js app must not depend on legacy server internals or call Socrata direc
 
 ### API/data boundary
 
-Socrata access (and Postgres access, if the feedback decision ends up needing it) stays inside the backend. Frontend code should never hold Socrata credentials or a database connection directly.
+Socrata and Asana access both stay inside the backend. Frontend code should never hold Socrata or Asana credentials directly.
 
 ### Legacy/new boundary
 
@@ -156,7 +157,8 @@ During migration, the old and new systems should coexist with explicit handoff p
 - **ETL-to-Socrata gap risk:** the hand-off from `vmt-results-etl.py`'s output CSV to the live Socrata dataset is undocumented and unscripted. Losing the person who runs that step manually is a real operational risk worth closing during modernization.
 - **Dataset-shape-change risk:** when the Socrata dataset is updated to include commercial-vehicle data, verify it doesn't silently change the shape the app assumes (extra rows per `model_run`/`cityname`, a redefined `total` field, etc.) in a way that breaks the existing non-commercial totals math. The app isn't expected to add commercial-specific handling, but it should keep working correctly on the updated dataset.
 - **Auth/account/admin removal risk:** this is a product decision to drop working capability (login, signup, account settings, admin gating), not just delete dead code — confirmed 2026-08-24 based on the functionality having no reachable UI entry point today. Worth a paper trail in case the capability is requested again later; if it resurfaces, it needs to be built fresh against the new API rather than assumed to still exist somewhere.
-- **Feature drift risk:** migrate in small slices and verify parity per route/feature, especially the map page's Mapbox usage and the feedback form's external POST.
+- **Feature drift risk:** migrate in small slices and verify parity per route/feature, especially the map page's Mapbox usage.
+- **Asana-as-feedback-store risk:** unlike a database, Asana is a third-party service with its own rate limits and outage modes; a feedback submission failing shows the user an error (see the route's 502 handling) rather than silently succeeding, but there's no local fallback/retry queue if Asana is down. Acceptable for a low-volume feedback form; revisit if that assumption changes.
 - **Scope creep risk:** avoid redesigning unrelated product areas during the platform rewrite, and avoid building a Postgres VMT warehouse unless a real requirement (not just "it's more modern than Socrata") drives it.
 
 ## Testing Strategy
@@ -180,14 +182,14 @@ During migration, the old and new systems should coexist with explicit handoff p
 ## Open Decisions
 
 - **Does Socrata stay the system of record for VMT data, or does the modernization also want to own that data in Postgres?** The current app already depends on Socrata in production; treat "stay on Socrata" as the default unless there's a stated reason (latency, offline access, query flexibility) to change it.
-- **Feedback: bring the `/api/feedback` endpoint in-house, or keep pointing at the `basis-dev-2022` Elastic Beanstalk service?** That external dependency wasn't mentioned in the original plan at all. This is now also the only remaining decision that could introduce a database into the new app — see Data Layer above.
+- ~~Feedback: bring the `/api/feedback` endpoint in-house, or keep pointing at the `basis-dev-2022` Elastic Beanstalk service?~~ **Resolved (2026-08-24): in-house, backed by Asana** (see the "Feedback" item above). Still open: which Asana project — `ASANA_PROJECT_ID` is deliberately blank in `.env.example` pending that choice.
 - Whether to finish the abandoned `getYears` → Socrata migration as part of this work or leave the hardcoded list
 - Feature-by-feature cutover order
 - Whether the `about.html`/`data.html` "non-commercial only" copy needs a content update once the underlying dataset changes — a product/content decision outside this plan's engineering scope
 
 ## Success Criteria
 
-- The app runs on Next.js and a Node API, with VMT reporting data continuing to flow from Socrata; the app has no database unless the feedback decision requires one
+- The app runs on Next.js and a Node API, with VMT reporting data continuing to flow from Socrata and feedback submissions flowing to Asana; the app has no database
 - Core user flows — data explorer, map, feedback — are available in the new stack (login/signup/settings/admin are intentionally not part of this list — see Non-Goals)
 - The app correctly displays whatever the Socrata dataset returns, including after it's updated to include commercial-vehicle data, without requiring an app code change to do so
 - Legacy AngularJS usage is removed or reduced to a temporary migration bridge

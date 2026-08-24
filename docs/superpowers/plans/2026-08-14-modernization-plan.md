@@ -7,12 +7,14 @@
 > **Updated again 2026-08-24, then superseded the same day:** an intermediate revision of this plan added a task to source commercial-vehicle VMT data and thread a `vehicleType` dimension through the Socrata client, API, and UI so the app could show both non-commercial and commercial stats side by side. **Product has since clarified that's not required.** The Socrata dataset will be updated separately (outside this codebase) to include commercial-vehicle data, but the app itself does not need code changes to display it — it just needs to keep displaying whatever the updated dataset returns. The task list below is back to matching that simpler scope; see the design doc's "Vehicle type scope" section for the full reasoning.
 >
 > **Updated again 2026-08-24:** the former Task 5 ("Auth, Account, and Admin Migration") is removed. Confirmed by reading the actual rendered markup: the navbar block linking to `login`/`signup`/`settings`/`admin`/`logout` is commented out in `client/components/navbar/navbar.html`, and no other UI path reaches them — this is working backend code with zero real users, not a live feature. Decision: remove it rather than migrate it. That also removes the only reason this plan needed Postgres/Prisma at all, so Task 2 is simplified down to just the Socrata client — see the design doc's "Auth/account/admin scope" and rewritten "Data Layer" sections.
+>
+> **Updated again 2026-08-24:** Task 5's feedback decision is resolved — bring it in-house, backed by **Asana** (each submission becomes a task in a configured Asana project) rather than a database or the legacy external Elastic Beanstalk service. This means the new app ends up with no database at all. `ASANA_PROJECT_ID` is deliberately left blank in `.env.example` pending which Asana project this should target.
 
-**Goal:** Rebuild the app on Next.js and a separate Node API, keeping Socrata as the system of record for VMT reporting data, while preserving current behavior. Login/signup/account/admin functionality is being **removed, not migrated** — see Non-Goals below. The Socrata dataset is expected to be updated externally to include commercial-vehicle data; no task below adds app-side logic to distinguish or display that separately (see design doc Non-Goals).
+**Goal:** Rebuild the app on Next.js and a separate Node API, keeping Socrata as the system of record for VMT reporting data, while preserving current behavior. Login/signup/account/admin functionality is being **removed, not migrated** — see Non-Goals below. The Socrata dataset is expected to be updated externally to include commercial-vehicle data; no task below adds app-side logic to distinguish or display that separately (see design doc Non-Goals). Feedback is brought in-house behind the new API, backed by Asana rather than a database.
 
-**Architecture:** Stand up the new stack beside the legacy app, then migrate one surface at a time behind explicit API contracts. Keep frontend, API, and Socrata boundaries strict so each layer can be tested independently and the old app can be retired without a big-bang rewrite. The new API is expected to be stateless by default — no database, unless the feedback decision (Task 5) requires one.
+**Architecture:** Stand up the new stack beside the legacy app, then migrate one surface at a time behind explicit API contracts. Keep frontend, API, Socrata, and Asana boundaries strict so each layer can be tested independently and the old app can be retired without a big-bang rewrite. The new API is stateless — no database anywhere in this plan.
 
-**Tech Stack:** Next.js (App Router, TypeScript), Node.js API (Express + TypeScript), a typed Socrata (SODA API) client, Vitest, Playwright, supertest. PostgreSQL + Prisma only if the feedback task decides to bring feedback in-house — not provisioned by default.
+**Tech Stack:** Next.js (App Router, TypeScript), Node.js API (Express + TypeScript), a typed Socrata (SODA API) client, a typed Asana REST API client, Vitest, Playwright, supertest. No database.
 
 ## Global Constraints
 
@@ -21,7 +23,7 @@
 - Socrata stays the source of truth for VMT reporting data unless an explicit later decision says otherwise (see design doc Open Decisions) — do not silently duplicate it into a new warehouse.
 - Query and pass through whatever fields Socrata returns rather than hardcoding today's field set, so the app keeps working when the dataset is updated to include commercial-vehicle data — but do not build separate commercial/non-commercial display logic; that's explicitly out of scope (see design doc Non-Goals).
 - Do not build login, signup, account settings, or admin functionality in the new app — that capability is being removed, confirmed to have no reachable UI entry point in the current app (see design doc Non-Goals).
-- Any database access (Socrata always; Postgres only if provisioned for feedback) stays inside the backend. Frontend code should never talk to either directly.
+- Socrata and Asana access both stay inside the backend. Frontend code should never hold either's credentials directly.
 - During migration, the old and new systems should coexist with explicit handoff points instead of shared hidden state.
 - Avoid redesigning unrelated product areas during the platform rewrite.
 
@@ -49,7 +51,7 @@
 - Consumes: current root scripts in `package.json`, current legacy app entry points in `server/app.js` and `client/app/app.js`
 - Produces: `npm run dev:web`, `npm run dev:api`, `npm test`, `web/*` and `api/*` project roots that later tasks can build on
 
-- [ ] **Step 1: Write a failing workspace sanity test**
+- [x] **Step 1: Write a failing workspace sanity test**
 
 ```ts
 // api/test/sanity.test.ts
@@ -62,13 +64,13 @@ describe('workspace sanity', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test command and confirm the workspace does not yet exist**
+- [x] **Step 2: Run the test command and confirm the workspace does not yet exist**
 
 Run: `npm test`
 
 Expected: failure until the new workspace scripts and package roots exist.
 
-- [ ] **Step 3: Add the modern workspace shell**
+- [x] **Step 3: Add the modern workspace shell**
 
 ```json
 {
@@ -111,13 +113,13 @@ VMT_DATA_KEY=
 # Add one only if Task 5 decides to bring feedback in-house.
 ```
 
-- [ ] **Step 4: Run the workspace commands**
+- [x] **Step 4: Run the workspace commands**
 
 Run: `npm run dev:api` and `npm run dev:web`
 
 Expected: both services start cleanly.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add package.json web api .env.example docker-compose.yml
@@ -137,7 +139,7 @@ git commit -m "chore: add modern workspace scaffolding"
 - Consumes: `VMT_DATA_KEY`, `SOCRATA_USERNAME`, `SOCRATA_PASSWORD`, `SOCRATA_APP_TOKEN_MTC` from env
 - Produces: a `SocrataVmtClient` with `getJurisdictions()`, `getVmtByJurisdiction(modelRun, cityName)`, `getModelRunYears()` methods that later tasks call instead of hitting `soda-js` directly from route handlers
 
-- [ ] **Step 1: Write a failing test for the Socrata client contract**
+- [x] **Step 1: Write a failing test for the Socrata client contract**
 
 ```ts
 // api/test/socrata/vmt.test.ts
@@ -153,13 +155,13 @@ describe('SocrataVmtClient', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test and confirm the client is absent**
+- [x] **Step 2: Run the test and confirm the client is absent**
 
 Run: `npm --workspace api test`
 
 Expected: failure until `socrata/vmt.ts` exists.
 
-- [ ] **Step 3: Wrap the existing Socrata contract in a typed client**
+- [x] **Step 3: Wrap the existing Socrata contract in a typed client**
 
 ```ts
 // api/src/socrata/client.ts
@@ -219,13 +221,13 @@ export class SocrataVmtClient {
 }
 ```
 
-- [ ] **Step 4: Run the Socrata client test**
+- [x] **Step 4: Run the Socrata client test**
 
 Run: `npm --workspace api test`
 
 Expected: passes against a mocked/sandboxed Socrata dataset.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add api/src/socrata docs/data/socrata-integration.md
@@ -248,7 +250,7 @@ git commit -m "feat: add typed socrata client"
 - Consumes: `SocrataVmtClient` from Task 2
 - Produces: `GET /health`, `GET /api/data/years/all`, `GET /api/data/jurisdictions/all`, `GET /api/data/vmt/:modelRun/:cityName` with JSON responses usable by the new frontend — the same paths the legacy Angular client already calls, so the frontend migration in Task 4 doesn't need parallel contract changes. The route passes through whatever Socrata returns rather than reshaping it, so a future commercial-vehicle field on the dataset flows through without an API change.
 
-- [ ] **Step 1: Write a failing route test for the health endpoint**
+- [x] **Step 1: Write a failing route test for the health endpoint**
 
 ```ts
 // api/test/routes/health.test.ts
@@ -262,13 +264,13 @@ describe('health', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test and confirm the route is missing**
+- [x] **Step 2: Run the test and confirm the route is missing**
 
 Run: `npm --workspace api test -- --runInBand api/test/routes/health.test.ts`
 
 Expected: 404 or route-not-found failure.
 
-- [ ] **Step 3: Implement the route layer over the Socrata client**
+- [x] **Step 3: Implement the route layer over the Socrata client**
 
 ```ts
 // api/src/routes/vmt.ts
@@ -320,13 +322,13 @@ app.use('/health', healthRouter);
 app.use('/api/data', vmtRouter);
 ```
 
-- [ ] **Step 4: Run the route tests and the API smoke test**
+- [x] **Step 4: Run the route tests and the API smoke test**
 
 Run: `npm --workspace api test`
 
 Expected: health and VMT read endpoints return stable JSON, sourced from Socrata (mocked in tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add api/src/routes api/src/app.ts api/test/routes
@@ -354,7 +356,7 @@ git commit -m "feat: add core api routes over the socrata client"
 - Consumes: API base URL from `web/lib/api.ts`, routes from Task 3
 - Produces: Next.js pages that replace the legacy AngularJS public screens and call the Node API only
 
-- [ ] **Step 1: Write a failing page test**
+- [x] **Step 1: Write a failing page test**
 
 ```ts
 // web/test/home.spec.ts
@@ -366,13 +368,13 @@ test('home page renders', async ({ page }) => {
 });
 ```
 
-- [ ] **Step 2: Run the browser test and confirm the page is not yet implemented**
+- [x] **Step 2: Run the browser test and confirm the page is not yet implemented**
 
 Run: `npm --workspace web test`
 
 Expected: failure until the Next.js app and routes exist.
 
-- [ ] **Step 3: Build the shared shell and route pages**
+- [x] **Step 3: Build the shared shell and route pages**
 
 ```tsx
 // web/components/site-nav.tsx
@@ -402,38 +404,44 @@ The `data` page should call `apiGet('/api/data/years/all')`, `apiGet('/api/data/
 
 The `map` page should port the Mapbox GL + Turf.js jurisdiction-boundary logic from `client/app/map/map.component.js`, including the static GeoJSON asset it uses for boundaries — that data is not Socrata-backed and doesn't need an API call.
 
-- [ ] **Step 4: Run the Next.js tests and verify the public pages render**
+- [x] **Step 4: Run the Next.js tests and verify the public pages render**
 
 Run: `npm --workspace web test`
 
 Expected: home/about/data/map/feedback pages render and use the API client.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add web/app web/components web/lib web/test
 git commit -m "feat: add nextjs public route shell"
 ```
 
-### Task 5: Feedback Decision and ETL-to-Socrata Publish Automation
+### Task 5: Feedback (Asana) and ETL-to-Socrata Publish Automation
 
-> New task, not in the original plan — both of these are real gaps this audit surfaced. The commercial-vehicle dataset update is owned outside this repo (see design doc), so it's not part of this task's scope — this script only automates publishing the existing non-commercial `vmt_results.csv` pipeline.
+> New task, not in the original plan — both of these are real gaps this audit surfaced. The commercial-vehicle dataset update is owned outside this repo (see design doc), so it's not part of this task's scope — the ETL publish script only automates publishing the existing non-commercial `vmt_results.csv` pipeline.
+
+**Part A — Feedback: done.** Resolved 2026-08-24: bring it in-house, backed by Asana (each submission becomes a task in a configured Asana project) instead of a database or the legacy `basis-dev-2022` Elastic Beanstalk endpoint.
+
+- [x] `api/src/asana/client.ts` — typed wrapper over the Asana REST API (`POST /tasks`), Personal Access Token auth.
+- [x] `api/src/routes/feedback.ts` — `POST /api/feedback`, validates the payload (a non-empty `comment` is required; `name`/`email`/`type` optional), creates an Asana task with a formatted name/notes, guards on `ASANA_ACCESS_TOKEN`/`ASANA_PROJECT_ID` being configured (fails clearly with a 500 rather than silently calling Asana with empty credentials, same pattern as the Socrata `VMT_DATA_KEY` guard), and maps Asana failures to a 502.
+- [x] `web/app/(public)/feedback/page.tsx` — updated to POST to `/api/feedback` (proxied same-origin, same as the VMT routes) instead of the external Elastic Beanstalk URL.
+- [x] `.env.example` — documents `ASANA_ACCESS_TOKEN`/`ASANA_PROJECT_ID`; `ASANA_PROJECT_ID` deliberately left blank pending which project this should target.
+- [x] Tests: `api/test/asana/client.test.ts`, `api/test/routes/feedback.test.ts`, `api/test/routes/feedback-not-configured.test.ts`, `web/test/feedback.spec.ts` — all passing, verified against a real running server too (not just mocks).
+
+This confirms the new app has **no database anywhere** — Asana closed the last path that could have needed Postgres.
+
+**Part B — ETL-to-Socrata publish automation: not yet done.**
 
 **Files:**
-- Modify or create: `api/src/routes/feedback.ts` (only if the decision below is "bring in-house")
-- Create: `web/app/(public)/feedback/page.tsx` updates to point at the new endpoint or explicitly keep the external one
 - Create: `etl/publish_to_socrata.py`
 - Create: `docs/data/etl-to-socrata.md`
 
 **Interfaces:**
-- Consumes: the product decision on feedback (see design doc Open Decisions), and `etl/vmt-results-etl.py`'s `vmt_results.csv` output
-- Produces: either an in-house `/api/feedback` endpoint, or documentation that the `basis-dev-2022` Elastic Beanstalk integration is intentional; and a scripted, repeatable path from `vmt_results.csv` to the live Socrata dataset
+- Consumes: `etl/vmt-results-etl.py`'s `vmt_results.csv` output
+- Produces: a scripted, repeatable path from `vmt_results.csv` to the live Socrata dataset
 
-- [ ] **Step 1: Resolve the feedback decision with product/stakeholders**
-
-This is a product call, not a technical one — record the answer in `docs/superpowers/specs/2026-08-14-modernization-design.md`'s Open Decisions section before writing code. If the decision is "bring in-house," this is also the point where a minimal Postgres + Prisma schema gets introduced for the first time in this plan — scoped to just a feedback submissions table, not the broader operational schema the original (pre-audit) plan assumed. If the decision is "keep the external Elastic Beanstalk integration," the new app stays fully stateless and no database is provisioned anywhere in this plan.
-
-- [ ] **Step 2: Write a failing test for the ETL publish step**
+- [ ] **Step 1: Write a failing test for the ETL publish step**
 
 ```python
 # etl/test_publish_to_socrata.py
@@ -447,7 +455,7 @@ def test_publish_requires_dataset_key(monkeypatch):
         pass
 ```
 
-- [ ] **Step 3: Script the publish step using the same soda-js-equivalent credentials the API already documents**
+- [ ] **Step 2: Script the publish step using the same soda-js-equivalent credentials the API already documents**
 
 ```python
 # etl/publish_to_socrata.py
@@ -475,13 +483,13 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 4: Run the ETL script end-to-end against a sandbox/staging Socrata dataset**
+- [ ] **Step 3: Run the ETL script end-to-end against a sandbox/staging Socrata dataset**
 
 Run: `python etl/vmt-results-etl.py && python etl/publish_to_socrata.py`
 
 Expected: `vmt_results.csv` is produced and lands in the staging Socrata dataset without manual steps.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add etl/publish_to_socrata.py etl/test_publish_to_socrata.py docs/data/etl-to-socrata.md
