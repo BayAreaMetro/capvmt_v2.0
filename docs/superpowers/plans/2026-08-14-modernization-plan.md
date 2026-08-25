@@ -433,70 +433,38 @@ git commit -m "feat: add nextjs public route shell"
 
 This confirms the new app has **no database anywhere** — Asana closed the last path that could have needed Postgres.
 
-**Part B — ETL-to-Socrata publish automation: not yet done.**
+**Part B — ETL-to-Socrata publish automation: done, except the full live-pipeline rehearsal.**
+
+Scoped as a **manually-run script**, per explicit direction — not a scheduled job. That matches the actual cadence: new travel-model output isn't produced on a fixed schedule, so scheduling a publish job would have nothing new to publish most of the time. Someone runs it by hand when new data is ready. A CI-triggered (`workflow_dispatch`) variant was considered and explicitly declined in favor of the plain local script.
 
 **Files:**
-- Create: `etl/publish_to_socrata.py`
-- Create: `docs/data/etl-to-socrata.md`
+- [x] Create: `etl/publish_to_socrata.py`
+- [x] Create: `etl/test_publish_to_socrata.py`
+- [x] Create: `etl/requirements.txt`, `etl/requirements-dev.txt` — previously undocumented anywhere, including `vmt-results-etl.py`'s existing hard dependency on `pandas`
+- [x] Create: `docs/data/etl-to-socrata.md`
+- [x] Modify: `etl/readme.md` — its "Outputs" section ended at "can be copied into a database"; added a section pointing at the new script instead of leaving that hand-off undocumented
 
 **Interfaces:**
-- Consumes: `etl/vmt-results-etl.py`'s `vmt_results.csv` output
+- Consumes: `etl/vmt-results-etl.py`'s `vmt_results.csv` output; the same `SOCRATA_*`/`VMT_DATA_KEY` env vars the `api` workspace uses (loaded from the same monorepo-root `.env`, via `python-dotenv`)
 - Produces: a scripted, repeatable path from `vmt_results.csv` to the live Socrata dataset
 
-- [ ] **Step 1: Write a failing test for the ETL publish step**
+- [x] **Step 1: Write failing tests for the publish step**
 
-```python
-# etl/test_publish_to_socrata.py
-def test_publish_requires_dataset_key(monkeypatch):
-    monkeypatch.delenv("VMT_DATA_KEY", raising=False)
-    import publish_to_socrata
-    try:
-        publish_to_socrata.main()
-        assert False, "expected a missing-config error"
-    except SystemExit:
-        pass
-```
+Three cases: missing `VMT_DATA_KEY`, missing `vmt_results.csv`, and the happy path (mocked Socrata client, no real network calls). Confirmed failing (`ModuleNotFoundError`) before the script existed.
 
-- [ ] **Step 2: Script the publish step using the same soda-js-equivalent credentials the API already documents**
+- [x] **Step 2: Script the publish step**
 
-```python
-# etl/publish_to_socrata.py
-import os
-import sys
-import pandas as pd
-from sodapy import Socrata
+Matches the original sketch (`sodapy.Socrata(...).replace(dataset_key, records)`), plus two additions beyond the sketch: loads the shared root `.env` via `python-dotenv` (consistent with how `api`/`web` load config), and fails clearly if `vmt_results.csv` doesn't exist yet instead of an unhandled `FileNotFoundError` traceback — same "fail clearly" pattern used throughout this codebase (`VMT_DATA_KEY`/`ASANA_*` guards in `api/src/routes/`).
 
-def main():
-    dataset_key = os.environ.get("VMT_DATA_KEY")
-    if not dataset_key:
-        print("VMT_DATA_KEY is required", file=sys.stderr)
-        sys.exit(1)
+- [x] **Step 3 (partial): Verify against the real Socrata dataset — read-only**
 
-    client = Socrata(
-        "data.bayareametro.gov",
-        os.environ.get("SOCRATA_APP_TOKEN_MTC"),
-        username=os.environ.get("SOCRATA_USERNAME"),
-        password=os.environ.get("SOCRATA_PASSWORD"),
-    )
-    df = pd.read_csv("vmt_results.csv")
-    client.replace(dataset_key, df.to_dict("records"))
+Confirmed the real configured credentials and `VMT_DATA_KEY` genuinely reach the live dataset, using `client.get(dataset_key, limit=1)` — deliberately **not** `client.replace()`, since that would overwrite live production data and isn't something to do without an explicit, deliberate publish. The real dataset's fields matched exactly what the app already expects (`lives`, `works`, `inside`, `partially_in`, `outside`, `total`, `persons`, `tazlist`, `model_run`, `cityname`).
 
-if __name__ == "__main__":
-    main()
-```
+- [ ] **Step 3 (remaining): Full pipeline rehearsal against a sandbox/staging Socrata dataset**
 
-- [ ] **Step 3: Run the ETL script end-to-end against a sandbox/staging Socrata dataset**
+Not done — needs real travel-model input CSVs (this environment doesn't have any) and a non-production Socrata dataset to publish to, so a full `vmt-results-etl.py` → `publish_to_socrata.py` write-path run hasn't been rehearsed end-to-end. Worth doing before the first real publish against production.
 
-Run: `python etl/vmt-results-etl.py && python etl/publish_to_socrata.py`
-
-Expected: `vmt_results.csv` is produced and lands in the staging Socrata dataset without manual steps.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add etl/publish_to_socrata.py etl/test_publish_to_socrata.py docs/data/etl-to-socrata.md
-git commit -m "feat: automate the etl-to-socrata publish step"
-```
+- [x] **Step 4: Commit**
 
 ### Task 6: Containerize and Deploy to ECS
 

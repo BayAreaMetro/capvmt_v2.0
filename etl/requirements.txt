@@ -1,0 +1,6 @@
+# Runtime dependencies for the ETL pipeline (vmt-results-etl.py,
+# publish_to_socrata.py). Previously undocumented anywhere in the repo -
+# pandas was already a hard dependency of vmt-results-etl.py.
+pandas
+sodapy
+python-dotenv

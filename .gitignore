@@ -14,3 +14,10 @@ web/next-env.d.ts
 web/test-results
 web/playwright-report
 api/dist
+
+# etl/ (Python)
+etl/__pycache__
+etl/.pytest_cache
+etl/venv
+etl/.venv
+etl/vmt_results.csv
