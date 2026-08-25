@@ -13,6 +13,7 @@
     "lint": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^4.19.2"
   },
   "devDependencies": {
