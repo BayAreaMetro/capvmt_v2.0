@@ -1,0 +1,124 @@
+name: CI/CD
+
+# This is the first CI/CD this repo has ever had - previously just a
+# stale, non-functional .travis.yml (Node 6, a MongoDB service this
+# app doesn't use). See docs/deploy/ecs.md for the full picture.
+#
+# `test` and `build` run on every push/PR and need no AWS setup.
+# `deploy` only runs on a manual workflow_dispatch, since the ECR
+# repos / ECS cluster / secrets it needs don't exist yet - see
+# docs/deploy/ecs.md for what to provision before using it.
+
+on:
+  push:
+    branches: [main, modernization]
+  pull_request:
+    branches: [main, modernization]
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    name: Test (${{ matrix.workspace }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [api, web]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright browsers
+        if: matrix.workspace == 'web'
+        run: npx --workspace web playwright install --with-deps chromium
+
+      - name: Lint
+        run: npm run lint --workspace ${{ matrix.workspace }} --if-present
+
+      - name: Test
+        run: npm test --workspace ${{ matrix.workspace }}
+
+  build:
+    name: Build Docker image (${{ matrix.service }})
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [web, api]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build ${{ matrix.service }} image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.service }}/Dockerfile
+          push: false
+          tags: capvmt-${{ matrix.service }}:ci
+          # NEXT_PUBLIC_* vars and the rewrites() destination are baked
+          # in at build time by Next.js, not read at container runtime
+          # (see web/Dockerfile and docs/deploy/ecs.md) - CI just needs
+          # the build to succeed, so placeholder values are fine here.
+          build-args: |
+            API_INTERNAL_URL=http://localhost:4000
+            NEXT_PUBLIC_MAPBOX_TOKEN=
+
+  deploy:
+    name: Push and deploy to ECS (${{ matrix.service }})
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        service: [web, api]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Requires an IAM role trusting GitHub's OIDC provider - see
+      # docs/deploy/ecs.md. AWS_ROLE_ARN / AWS_REGION / ECS_CLUSTER /
+      # ECR repo names below are repo variables (Settings > Secrets and
+      # variables > Actions > Variables), none of which are set yet.
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: ecr
+
+      - name: Build and push ${{ matrix.service }} image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.service }}/Dockerfile
+          push: true
+          tags: ${{ steps.ecr.outputs.registry }}/capvmt-${{ matrix.service }}:${{ github.sha }}
+          build-args: |
+            API_INTERNAL_URL=${{ vars.WEB_API_INTERNAL_URL }}
+            NEXT_PUBLIC_MAPBOX_TOKEN=${{ vars.NEXT_PUBLIC_MAPBOX_TOKEN }}
+
+      - name: Render ${{ matrix.service }} task definition
+        id: render
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: deploy/ecs/${{ matrix.service }}-task-definition.json
+          container-name: capvmt-${{ matrix.service }}
+          image: ${{ steps.ecr.outputs.registry }}/capvmt-${{ matrix.service }}:${{ github.sha }}
+
+      - name: Deploy ${{ matrix.service }} to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render.outputs.task-definition }}
+          service: capvmt-${{ matrix.service }}
+          cluster: ${{ vars.ECS_CLUSTER }}
+          wait-for-service-stability: true

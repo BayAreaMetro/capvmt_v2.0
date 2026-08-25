@@ -8,3 +8,12 @@ dist/server/Archive.zip
 server/config/local.env.js
 server/config/local.env.js.prod
 server/config/local.env.sample.js
+
+# web/api workspaces (see web/Dockerfile, api/Dockerfile)
+.git
+.env
+web/.next
+web/test-results
+web/playwright-report
+api/dist
+.codegraph

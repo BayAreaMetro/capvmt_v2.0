@@ -9,12 +9,14 @@
 > **Updated again 2026-08-24:** the former Task 5 ("Auth, Account, and Admin Migration") is removed. Confirmed by reading the actual rendered markup: the navbar block linking to `login`/`signup`/`settings`/`admin`/`logout` is commented out in `client/components/navbar/navbar.html`, and no other UI path reaches them — this is working backend code with zero real users, not a live feature. Decision: remove it rather than migrate it. That also removes the only reason this plan needed Postgres/Prisma at all, so Task 2 is simplified down to just the Socrata client — see the design doc's "Auth/account/admin scope" and rewritten "Data Layer" sections.
 >
 > **Updated again 2026-08-24:** Task 5's feedback decision is resolved — bring it in-house, backed by **Asana** (each submission becomes a task in a configured Asana project) rather than a database or the legacy external Elastic Beanstalk service. This means the new app ends up with no database at all. `ASANA_PROJECT_ID` is deliberately left blank in `.env.example` pending which Asana project this should target.
+>
+> **Updated again 2026-08-24:** the deployment target is decided — **AWS ECS (Fargate), two services (`web`, `api`) behind one ALB with path-based routing**, not the single-Elastic-Beanstalk-environment pattern the legacy app and its siblings use. Deciding between AWS Amplify and ECS also settled a question left open earlier the same day (consolidate `web`+`api` into one Next.js app, or keep them separate): Amplify would have forced consolidation (it hosts one full-stack Next.js deployable, not a second arbitrary Express service alongside it); ECS handles two services behind one ALB cleanly, so Tasks 2, 3, and 5's work in `api/` didn't need to be undone. New Task 6 below covers containerizing both services and the first working CI/CD this repo has ever had; see `docs/deploy/ecs.md` for the full picture, including a real gotcha (Next.js bakes `rewrites()` destinations and `NEXT_PUBLIC_*` vars in at Docker build time, not container runtime — confirmed by testing an actual running container). Cutover is renumbered to Task 7.
 
-**Goal:** Rebuild the app on Next.js and a separate Node API, keeping Socrata as the system of record for VMT reporting data, while preserving current behavior. Login/signup/account/admin functionality is being **removed, not migrated** — see Non-Goals below. The Socrata dataset is expected to be updated externally to include commercial-vehicle data; no task below adds app-side logic to distinguish or display that separately (see design doc Non-Goals). Feedback is brought in-house behind the new API, backed by Asana rather than a database.
+**Goal:** Rebuild the app on Next.js and a separate Node API, keeping Socrata as the system of record for VMT reporting data, while preserving current behavior. Login/signup/account/admin functionality is being **removed, not migrated** — see Non-Goals below. The Socrata dataset is expected to be updated externally to include commercial-vehicle data; no task below adds app-side logic to distinguish or display that separately (see design doc Non-Goals). Feedback is brought in-house behind the new API, backed by Asana rather than a database. Both services deploy to ECS as separate containers behind one ALB.
 
 **Architecture:** Stand up the new stack beside the legacy app, then migrate one surface at a time behind explicit API contracts. Keep frontend, API, Socrata, and Asana boundaries strict so each layer can be tested independently and the old app can be retired without a big-bang rewrite. The new API is stateless — no database anywhere in this plan.
 
-**Tech Stack:** Next.js (App Router, TypeScript), Node.js API (Express + TypeScript), a typed Socrata (SODA API) client, a typed Asana REST API client, Vitest, Playwright, supertest. No database.
+**Tech Stack:** Next.js (App Router, TypeScript), Node.js API (Express + TypeScript), a typed Socrata (SODA API) client, a typed Asana REST API client, Vitest, Playwright, supertest. No database. Deployed as two Docker images (esbuild-bundled `api`, Next.js `standalone`-output `web`) to ECS Fargate.
 
 ## Global Constraints
 
@@ -496,7 +498,66 @@ git add etl/publish_to_socrata.py etl/test_publish_to_socrata.py docs/data/etl-t
 git commit -m "feat: automate the etl-to-socrata publish step"
 ```
 
-### Task 6: Cutover, Parity, and Legacy Retirement
+### Task 6: Containerize and Deploy to ECS
+
+> New task, not in the original plan. Done: Dockerfiles for both services, ECS task definition templates, and a working `test`/`build` CI pipeline (this repo's first). Not done: any of the actual AWS infrastructure the `deploy` job and task definitions need — see the checklist in `docs/deploy/ecs.md`, which is the source of truth for this task rather than duplicating it here.
+
+**Files:**
+- [x] Create: `web/Dockerfile` — multi-stage, uses `output: 'standalone'` (added to `web/next.config.js`) so the runtime image only ships the node_modules this app actually uses, not the monorepo's shared (legacy-dependency-laden) tree
+- [x] Create: `api/Dockerfile` — multi-stage, bundles `api` with esbuild (`npm run bundle`, added to `api/package.json`) into a single `dist/server.js` with `express` inlined, so the runtime image ships no `node_modules` at all
+- [x] Modify: `.dockerignore` — covers both new workspaces
+- [x] Create: `deploy/ecs/web-task-definition.json`, `deploy/ecs/api-task-definition.json` — Fargate task definition templates with placeholder ARNs/URIs
+- [x] Create: `.github/workflows/ci-cd.yml` — `test` (lint+test both workspaces) and `build` (build both images) run on every push/PR; `deploy` (push to ECR, render + deploy task definitions) is manual-`workflow_dispatch`-only since the AWS infra it needs doesn't exist yet
+- [x] Create: `docs/deploy/ecs.md` — the ECS architecture decision, the build-time-vs-runtime env var gotcha, and the full provisioning checklist
+- [x] Modify: root `package.json` — added a `dev` script (`concurrently`) that runs `dev:web` and `dev:api` together, since the two-service architecture means both must run locally for the app to work end-to-end
+
+**Interfaces:**
+- Consumes: the `web` and `api` workspaces from Tasks 1–5
+- Produces: two Docker images that build and run correctly (verified locally: both built with `docker build`, run with `docker run`, and the web container's proxy to a real running api container was confirmed working end-to-end — including catching and fixing a real bug where a build-time-vs-runtime env var mismatch silently broke the proxy); ECS task definition templates and a CI/CD pipeline whose `test`/`build` stages work today
+
+- [x] **Step 1: Add `output: 'standalone'` to `web/next.config.js` and verify the traced output**
+
+Run: `npm run build --workspace web` and inspect `web/.next/standalone/` — confirmed to contain only `web/server.js`, a lean traced `node_modules` (next/react/sharp/etc.), not the monorepo's shared tree.
+
+- [x] **Step 2: Add the esbuild bundle script to `api/package.json` and verify it's truly self-contained**
+
+Run: `npm run bundle --workspace api`, then copy just `dist/server.js` into an empty directory and run it there with no `node_modules` present.
+
+Expected: it starts and serves `/health` normally. Confirmed.
+
+- [x] **Step 3: Write both Dockerfiles, building from the monorepo root as the context**
+
+```bash
+docker build -f api/Dockerfile -t capvmt-api .
+docker build -f web/Dockerfile -t capvmt-web \
+  --build-arg API_INTERNAL_URL=http://localhost:4000 \
+  --build-arg NEXT_PUBLIC_MAPBOX_TOKEN=
+```
+
+Expected: both build successfully. Confirmed — and along the way, discovered and fixed the build-time-vs-runtime env var issue documented in `docs/deploy/ecs.md`.
+
+- [x] **Step 4: Run both containers together and verify the full request path**
+
+Run both with `docker run`, then `curl` the api container directly and the web container's `/api/*` proxy.
+
+Expected: both respond; the proxied request reaches the real api container and returns its actual response (not a generic proxy failure). Confirmed.
+
+- [x] **Step 5: Add the CI/CD workflow and verify its non-AWS-dependent jobs are sound**
+
+`.github/workflows/ci-cd.yml`'s `test` and `build` jobs don't require any secrets or AWS setup — reviewed for correctness (matrix over both workspaces, Playwright browser install for `web`, `--if-present` on lint so `web`'s missing lint script doesn't fail the job).
+
+- [ ] **Step 6: Provision the AWS infrastructure listed in `docs/deploy/ecs.md`**
+
+Not done — ECR repos, ECS cluster/services, the ALB and its target groups/routing rule, IAM execution role, CloudWatch log groups, a Secrets Manager secret for `SOCRATA_*`/`ASANA_*`, and a GitHub OIDC IAM role all need to exist before the `deploy` job (or the task definitions as anything other than templates) can actually work.
+
+- [x] **Step 7: Commit**
+
+```bash
+git add web/Dockerfile web/next.config.js api/Dockerfile api/package.json .dockerignore deploy/ecs .github/workflows/ci-cd.yml docs/deploy/ecs.md package.json package-lock.json
+git commit -m "feat: containerize web/api and add ECS deployment scaffolding"
+```
+
+### Task 7: Cutover, Parity, and Legacy Retirement
 
 **Files:**
 - Modify: `package.json`
@@ -509,7 +570,7 @@ git commit -m "feat: automate the etl-to-socrata publish step"
 - Delete: `server/auth/*`, `server/api/user/*`, `client/app/account/*`, `client/app/admin/*`, `client/components/auth/*` — not migrated (see design doc's "Auth/account/admin scope"), retired along with the rest of the legacy tree in Step 4 below
 
 **Interfaces:**
-- Consumes: all migrated routes and services from Tasks 1–5
+- Consumes: all migrated routes and services from Tasks 1–6
 - Produces: root startup scripts, docs, and cleanup commits that make the legacy app a temporary bridge instead of the default runtime
 
 - [ ] **Step 1: Write a parity checklist test/document pair**

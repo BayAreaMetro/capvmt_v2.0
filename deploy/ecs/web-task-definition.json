@@ -1,0 +1,33 @@
+{
+  "family": "capvmt-web",
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "<ECS_EXECUTION_ROLE_ARN>",
+  "taskRoleArn": "<ECS_TASK_ROLE_ARN>",
+  "containerDefinitions": [
+    {
+      "name": "capvmt-web",
+      "image": "<ECR_REPOSITORY_URI_WEB>:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "PORT", "value": "3000" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/capvmt-web",
+          "awslogs-region": "<AWS_REGION>",
+          "awslogs-stream-prefix": "capvmt-web"
+        }
+      }
+    }
+  ]
+}

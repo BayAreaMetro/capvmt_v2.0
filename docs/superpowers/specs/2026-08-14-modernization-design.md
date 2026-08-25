@@ -151,6 +151,35 @@ During migration, the old and new systems should coexist with explicit handoff p
 
 **Decision (2026-08-24): the new API is internal to this app, not a public/external API.** This was worth checking rather than assuming, because there's real precedent the other way: this repo's own `gh-pages` branch (still linked from the current `about.html` FAQ) hosts a 2016-era page documenting a public `Data API` (`.../api/vmt/jurisdictionId/modelRunYear`) against a since-retired Elastic Beanstalk deployment, with sample requests and JSON responses meant for external consumers. That page has since moved its own "download the dataset" buttons to query Socrata directly instead of that old API, and the current app's Express routes have no CORS middleware and aren't documented anywhere as public. Given that pattern — and to keep the modernized app fully self-contained — the new API is scoped as **frontend-only**: no CORS configuration, no public API documentation, no stability guarantees for external callers. Anyone wanting programmatic access to the underlying VMT data should go to Socrata directly (`data.bayareametro.gov`), the same place the legacy `about.html` FAQ and the old gh-pages page already point external users. If a genuine external-consumer requirement surfaces later, that's a deliberate scope change, not something to build in preemptively.
 
+## Deployment — decided: ECS, two services, one ALB
+
+**Decision (2026-08-24): deploy to AWS ECS (Fargate) as two separate services** —
+`capvmt-web` and `capvmt-api` — **behind one ALB with path-based routing**
+(`/api/*` → api, everything else → web). Full detail, including a real gotcha
+worth reading before touching either Dockerfile (Next.js resolves
+`rewrites()` destinations and inlines `NEXT_PUBLIC_*` vars at build time, not
+container runtime — confirmed by testing a real running container, not
+assumed), lives in `docs/deploy/ecs.md`.
+
+This is a deliberate departure from how MTC deploys its other apps today —
+the legacy app and its siblings (`basis-dev-2022...elasticbeanstalk.com`, the
+old `capvmt...elasticbeanstalk.com`) all run on a single, manually-deployed
+AWS Elastic Beanstalk environment with no CI/CD. That pattern doesn't fit two
+independently-deployed services. The choice between ECS and AWS Amplify was
+the deciding factor for keeping the `web`/`api` split at all: Amplify Hosting
+deploys a single full-stack Next.js app and isn't a natural place to also run
+a separate Express service, which would have forced consolidating `api`'s
+routes into Next.js Route Handlers (undoing Tasks 2, 3, and 5's work in
+`api/`). ECS handles two services behind one ALB cleanly, so that
+consolidation wasn't necessary.
+
+`.github/workflows/ci-cd.yml` is this repo's first working CI/CD — previously
+just a stale, non-functional `.travis.yml` (Node 6, a MongoDB service never
+used). Its `test`/`build` jobs run on every push with no new infrastructure;
+its `deploy` job needs real AWS infra (ECR, ECS cluster/services, IAM roles,
+Secrets Manager) that doesn't exist yet, so it's manual-trigger-only until
+that's provisioned — see `docs/deploy/ecs.md` for the full checklist.
+
 ## Risks and Mitigations
 
 - **Socrata dependency risk:** the app's core data already depends on an external, rate-limited, third-party-hosted dataset with undocumented credentials. Document the required env vars and add error handling/caching so Socrata latency or throttling doesn't take down the whole data page (today, `getJurisdictions`/`getVMTbyJurisdiction` have no caching and minimal error handling).
@@ -160,6 +189,7 @@ During migration, the old and new systems should coexist with explicit handoff p
 - **Feature drift risk:** migrate in small slices and verify parity per route/feature, especially the map page's Mapbox usage.
 - **Asana-as-feedback-store risk:** unlike a database, Asana is a third-party service with its own rate limits and outage modes; a feedback submission failing shows the user an error (see the route's 502 handling) rather than silently succeeding, but there's no local fallback/retry queue if Asana is down. Acceptable for a low-volume feedback form; revisit if that assumption changes.
 - **Scope creep risk:** avoid redesigning unrelated product areas during the platform rewrite, and avoid building a Postgres VMT warehouse unless a real requirement (not just "it's more modern than Socrata") drives it.
+- **Build-time-vs-runtime env var risk (ECS):** `web`'s rewrite destination and any `NEXT_PUBLIC_*` var are baked into the Docker image at build time by Next.js, not read from the ECS task definition at runtime — a mistake here (e.g. adding a new `NEXT_PUBLIC_*` var to the task definition instead of the CI build args) would silently ship a broken/empty value with no error. See `docs/deploy/ecs.md`.
 
 ## Testing Strategy
 
@@ -186,6 +216,7 @@ During migration, the old and new systems should coexist with explicit handoff p
 - Whether to finish the abandoned `getYears` → Socrata migration as part of this work or leave the hardcoded list
 - Feature-by-feature cutover order
 - Whether the `about.html`/`data.html` "non-commercial only" copy needs a content update once the underlying dataset changes — a product/content decision outside this plan's engineering scope
+- ~~Deployment target: keep the two-service architecture, or consolidate into one Next.js app?~~ **Resolved (2026-08-24): keep two services, deploy to ECS** (see Deployment above). Still open: provisioning the actual AWS infrastructure listed in `docs/deploy/ecs.md`'s checklist — none of it exists yet.
 
 ## Success Criteria
 
@@ -195,3 +226,4 @@ During migration, the old and new systems should coexist with explicit handoff p
 - Legacy AngularJS usage is removed or reduced to a temporary migration bridge
 - The Socrata integration is documented (required env vars, dataset key, error handling) instead of tribal knowledge
 - The new architecture is easier to maintain and extend than the current one
+- Both services build as working Docker images and deploy to ECS behind a path-routing ALB, with working CI (`test`/`build` on every push) — this repo's first CI/CD, replacing a stale `.travis.yml` that never actually ran against this app's real dependencies
