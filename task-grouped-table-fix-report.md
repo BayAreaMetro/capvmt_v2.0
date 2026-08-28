@@ -43,3 +43,16 @@ The repository already has Playwright configured for browser verification agains
 - The custom `renderGroupedTableHead` is intentionally page-local and tailored to the current `/data` grouped column structure; if the column hierarchy changes, this renderer/test should be updated together.
 - Build/test output still includes pre-existing Sass deprecation warnings from Bootstrap/mtc-ui imports; not related to this fix.
 - The worktree contains unrelated dirty files that were preserved and not staged.
+
+## Fix report - 2026-08-28
+
+Chosen DataTable hook: kept renderTableHead but reconstructed it with mtc-ui default-equivalent header props (aria-sort, th/thead classes, pinned class) and reused renderGroupedHeader for grouped cells, so three-row structure remains while preserving styling/accessibility behavior feasible through installed extension points.
+
+Commands run:
+1. CI=1 npm test --workspace web -- data.spec.ts
+Result: passed (3/3 Chromium tests). Output included Sass deprecation warnings from bootstrap/mtc-ui.
+
+2. npm run build --workspace web
+Result: passed. Output included Sass deprecation warnings from bootstrap/mtc-ui and successful static route optimization for /, /about, /data, /feedback, /map.
+
+Combined final command output saved by tool at: /Users/trodriguez/.local/share/opencode/tool-output/tool_04a342da200128hfPlbYKvbMqm

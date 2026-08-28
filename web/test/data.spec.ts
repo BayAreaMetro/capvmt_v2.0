@@ -59,6 +59,11 @@ test('renders grouped VMT table headers without repeated placeholder labels', as
   await expect(headerRows.nth(0).locator('th').nth(2)).toHaveAttribute('colspan', '8');
   await expect(headerRows.nth(0).locator('th').nth(3)).toHaveAttribute('rowspan', '3');
   await expect(headerRows.nth(1).locator('th').first()).toHaveAttribute('colspan', '2');
+
+  await expect(page.locator('thead')).toHaveClass(/table-dark/);
+  await expect(page.locator('thead')).toHaveClass(/thead/);
+  await expect(headerRows.nth(0).locator('th').first()).toHaveClass(/th/);
+  await expect(headerRows.nth(0).locator('th').first()).toHaveAttribute('aria-sort', 'none');
 });
 
 test('shows a no-data message when Socrata returns nothing for the combination', async ({ page }) => {

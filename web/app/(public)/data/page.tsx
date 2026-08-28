@@ -5,7 +5,17 @@ import type { ThHTMLAttributes } from 'react';
 import { flexRender, type ColumnDef, type Header, type HeaderGroup } from '@tanstack/react-table';
 import { apiGet } from '../../../lib/api';
 import backgroundStyles from '../../../components/shell/page-backgrounds.module.scss';
-import { Card, Typography, Select, Button, VStack, HStack, DataTable, NotificationBox } from '@bayareametro/mtc-ui';
+import {
+  Card,
+  Typography,
+  Select,
+  Button,
+  VStack,
+  HStack,
+  DataTable,
+  NotificationBox,
+  clsx,
+} from '@bayareametro/mtc-ui';
 
 interface YearRow {
   model_run: string;
@@ -220,15 +230,7 @@ function renderGroupedHeader(
 ) {
   const headerGroups = header.getContext().table.getHeaderGroups();
 
-  if (header.isPlaceholder) {
-    if (header.depth > 0) return null;
-
-    return (
-      <th {...props} colSpan={header.colSpan} rowSpan={headerGroups.length}>
-        {flexRender(header.column.columnDef.header, header.getContext())}
-      </th>
-    );
-  }
+  if (header.isPlaceholder) return null;
 
   if (header.subHeaders.length === 0 && header.column.depth === 0 && header.depth > 0) return null;
 
@@ -241,32 +243,51 @@ function renderGroupedHeader(
   );
 }
 
+const ariaSortValues = { false: 'none', asc: 'ascending', desc: 'descending' } as const;
+
+function getHeaderProps(header: Header<TableRow, unknown>): ThHTMLAttributes<HTMLTableHeaderCellElement> {
+  return {
+    'aria-sort': ariaSortValues[String(header.column.getIsSorted()) as keyof typeof ariaSortValues],
+    className: clsx('th', { pinnedLeft: header.column.getIsPinned() === 'left' }),
+  };
+}
+
+function renderHeaderWithContext(header: Header<TableRow, unknown>) {
+  return (
+    renderGroupedHeader(getHeaderProps(header), header)
+  );
+}
+
+function renderStandaloneHeader(header: Header<TableRow, unknown>) {
+  return (
+    <th {...getHeaderProps(header)} colSpan={header.colSpan} rowSpan={header.getContext().table.getHeaderGroups().length}>
+      {flexRender(header.column.columnDef.header, header.getContext())}
+    </th>
+  );
+}
+
 function renderGroupedTableHead(headerGroups: HeaderGroup<TableRow>[]) {
   const [topHeaderGroup, metricHeaderGroup, leafHeaderGroup] = headerGroups;
   const leafHeaders = leafHeaderGroup.headers;
   const standaloneHeaders = [leafHeaders[0], leafHeaders[1], leafHeaders[10]];
 
   return (
-    <thead className="table-dark">
+    <thead className={clsx('thead', 'table-dark')}>
       <tr>
         {standaloneHeaders.slice(0, 2).map((header) => (
-          <th key={header.id} colSpan={header.colSpan} rowSpan={headerGroups.length}>
-            {flexRender(header.column.columnDef.header, header.getContext())}
-          </th>
+          <Fragment key={header.id}>{renderStandaloneHeader(header)}</Fragment>
         ))}
-        {renderGroupedHeader({}, topHeaderGroup.headers[2])}
-        <th colSpan={standaloneHeaders[2].colSpan} rowSpan={headerGroups.length}>
-          {flexRender(standaloneHeaders[2].column.columnDef.header, standaloneHeaders[2].getContext())}
-        </th>
+        {renderHeaderWithContext(topHeaderGroup.headers[2])}
+        {renderStandaloneHeader(standaloneHeaders[2])}
       </tr>
       <tr>
         {metricHeaderGroup.headers.slice(2, 6).map((header) => (
-          <Fragment key={header.id}>{renderGroupedHeader({}, header)}</Fragment>
+          <Fragment key={header.id}>{renderHeaderWithContext(header)}</Fragment>
         ))}
       </tr>
       <tr>
         {leafHeaders.slice(2, 10).map((header) => (
-          <Fragment key={header.id}>{renderGroupedHeader({}, header)}</Fragment>
+          <Fragment key={header.id}>{renderHeaderWithContext(header)}</Fragment>
         ))}
       </tr>
     </thead>
