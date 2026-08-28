@@ -140,41 +140,77 @@ function downloadCsv(rows: VmtRow[], placeName: string, modelRun: string) {
 }
 
 const columns: ColumnDef<TableRow>[] = [
-  { header: 'Population Segment', accessorKey: 'populationSegment' },
+  {
+    header: 'Population Segment',
+    accessorKey: 'populationSegment',
+  },
   {
     header: 'Persons',
     accessorKey: 'persons',
     cell: (info) => info.getValue<number>().toLocaleString(),
   },
   {
-    id: 'insideValue',
-    header: 'Entirely within (VMT)',
-    accessorKey: 'insideValue',
-    cell: (info) => info.getValue<number>().toLocaleString(),
+    id: 'nonCommercialPassengerVmt',
+    header: 'Non-commercial Passenger Vehicle Miles Traveled',
+    columns: [
+      {
+        id: 'inside',
+        header: 'Entirely within',
+        columns: [
+          {
+            id: 'insideValue',
+            header: 'VMT',
+            accessorKey: 'insideValue',
+            cell: (info) => info.getValue<number>().toLocaleString(),
+          },
+          { id: 'insidePct', header: '%', accessorKey: 'insidePct' },
+        ],
+      },
+      {
+        id: 'partial',
+        header: 'Partially in',
+        columns: [
+          {
+            id: 'partialValue',
+            header: 'VMT',
+            accessorKey: 'partialValue',
+            cell: (info) => info.getValue<number>().toLocaleString(),
+          },
+          { id: 'partialPct', header: '%', accessorKey: 'partialPct' },
+        ],
+      },
+      {
+        id: 'outside',
+        header: 'Entirely outside',
+        columns: [
+          {
+            id: 'outsideValue',
+            header: 'VMT',
+            accessorKey: 'outsideValue',
+            cell: (info) => info.getValue<number>().toLocaleString(),
+          },
+          { id: 'outsidePct', header: '%', accessorKey: 'outsidePct' },
+        ],
+      },
+      {
+        id: 'total',
+        header: 'Total',
+        columns: [
+          {
+            id: 'totalValue',
+            header: 'VMT',
+            accessorKey: 'totalValue',
+            cell: (info) => info.getValue<number>().toLocaleString(),
+          },
+          { id: 'totalPct', header: '%', accessorKey: 'totalPct' },
+        ],
+      },
+    ],
   },
-  { id: 'insidePct', header: 'Entirely within (%)', accessorKey: 'insidePct' },
   {
-    id: 'partialValue',
-    header: 'Partially in (VMT)',
-    accessorKey: 'partialValue',
-    cell: (info) => info.getValue<number>().toLocaleString(),
+    header: 'Vehicle miles traveled per capita',
+    accessorKey: 'vmtPerCapita',
   },
-  { id: 'partialPct', header: 'Partially in (%)', accessorKey: 'partialPct' },
-  {
-    id: 'outsideValue',
-    header: 'Entirely outside (VMT)',
-    accessorKey: 'outsideValue',
-    cell: (info) => info.getValue<number>().toLocaleString(),
-  },
-  { id: 'outsidePct', header: 'Entirely outside (%)', accessorKey: 'outsidePct' },
-  {
-    id: 'totalValue',
-    header: 'Total (VMT)',
-    accessorKey: 'totalValue',
-    cell: (info) => info.getValue<number>().toLocaleString(),
-  },
-  { id: 'totalPct', header: 'Total (%)', accessorKey: 'totalPct' },
-  { header: 'VMT per capita', accessorKey: 'vmtPerCapita' },
 ];
 
 export default function DataPage() {
