@@ -1,7 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 import { apiGet } from '../../../lib/api';
+import backgroundStyles from '../../../components/shell/page-backgrounds.module.scss';
+import { Card, Typography, Select, Button, VStack, HStack, DataTable, NotificationBox } from '@bayareametro/mtc-ui';
 
 interface YearRow {
   model_run: string;
@@ -33,6 +36,20 @@ interface Totals {
   totalVMTPerCapita: number;
 }
 
+interface TableRow {
+  populationSegment: string;
+  persons: number;
+  insideValue: number;
+  insidePct: string;
+  partialValue: number;
+  partialPct: string;
+  outsideValue: number;
+  outsidePct: string;
+  totalValue: number;
+  totalPct: string;
+  vmtPerCapita: string;
+}
+
 const DEFAULT_MODEL_RUN = '2050_06_YYY';
 const DEFAULT_JURISDICTION = 'Alameda';
 
@@ -61,6 +78,46 @@ function percentage(part: number, whole: number): string {
   return `${((part / whole) * 100).toFixed(1)}%`;
 }
 
+function toTableRows(rows: VmtRow[], totals: Totals): TableRow[] {
+  const dataRows: TableRow[] = rows.map((row) => {
+    const persons = parseFloat(row.persons);
+    const insideValue = parseFloat(row.inside);
+    const partialValue = parseFloat(row.partially_in);
+    const outsideValue = parseFloat(row.outside);
+    const totalValue = parseFloat(row.total);
+    return {
+      populationSegment: `${row.lives} / ${row.works}`,
+      persons,
+      insideValue,
+      insidePct: percentage(insideValue, totalValue),
+      partialValue,
+      partialPct: percentage(partialValue, totalValue),
+      outsideValue,
+      outsidePct: percentage(outsideValue, totalValue),
+      totalValue,
+      totalPct: '100%',
+      vmtPerCapita: (totalValue / persons).toFixed(2),
+    };
+  });
+
+  return [
+    ...dataRows,
+    {
+      populationSegment: 'Total',
+      persons: totals.totalPersons,
+      insideValue: totals.totalInside,
+      insidePct: '',
+      partialValue: totals.totalPartial,
+      partialPct: '',
+      outsideValue: totals.totalOutside,
+      outsidePct: '',
+      totalValue: totals.totalVMT,
+      totalPct: '',
+      vmtPerCapita: totals.totalVMTPerCapita.toFixed(2),
+    },
+  ];
+}
+
 /** Replaces the legacy jsonToCSVConverter in client/app/data/data.component.js. */
 function downloadCsv(rows: VmtRow[], placeName: string, modelRun: string) {
   const header = Object.keys(rows[0]) as (keyof VmtRow)[];
@@ -81,6 +138,44 @@ function downloadCsv(rows: VmtRow[], placeName: string, modelRun: string) {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+
+const columns: ColumnDef<TableRow>[] = [
+  { header: 'Population Segment', accessorKey: 'populationSegment' },
+  {
+    header: 'Persons',
+    accessorKey: 'persons',
+    cell: (info) => info.getValue<number>().toLocaleString(),
+  },
+  {
+    id: 'insideValue',
+    header: 'Entirely within (VMT)',
+    accessorKey: 'insideValue',
+    cell: (info) => info.getValue<number>().toLocaleString(),
+  },
+  { id: 'insidePct', header: 'Entirely within (%)', accessorKey: 'insidePct' },
+  {
+    id: 'partialValue',
+    header: 'Partially in (VMT)',
+    accessorKey: 'partialValue',
+    cell: (info) => info.getValue<number>().toLocaleString(),
+  },
+  { id: 'partialPct', header: 'Partially in (%)', accessorKey: 'partialPct' },
+  {
+    id: 'outsideValue',
+    header: 'Entirely outside (VMT)',
+    accessorKey: 'outsideValue',
+    cell: (info) => info.getValue<number>().toLocaleString(),
+  },
+  { id: 'outsidePct', header: 'Entirely outside (%)', accessorKey: 'outsidePct' },
+  {
+    id: 'totalValue',
+    header: 'Total (VMT)',
+    accessorKey: 'totalValue',
+    cell: (info) => info.getValue<number>().toLocaleString(),
+  },
+  { id: 'totalPct', header: 'Total (%)', accessorKey: 'totalPct' },
+  { header: 'VMT per capita', accessorKey: 'vmtPerCapita' },
+];
 
 export default function DataPage() {
   const [years, setYears] = useState<YearRow[]>([]);
@@ -113,110 +208,63 @@ export default function DataPage() {
 
   const totals = vmtData.length > 0 ? computeTotals(vmtData) : null;
   const tazList = vmtData[0]?.tazlist.replace(/,/g, ', ') ?? '';
+  const tableRows = useMemo(() => (totals ? toTableRows(vmtData, totals) : []), [vmtData, totals]);
 
   return (
-    <main className="data-page">
-      <form
-        className="data-page__controls"
-        onSubmit={(event) => event.preventDefault()}
-      >
-        <select value={modelRun} onChange={(event) => setModelRun(event.target.value)}>
-          <option value="">Choose a Scenario Year</option>
-          {years.map((year) => (
-            <option key={year.model_run} value={year.model_run}>
-              {year.model_run.split('_')[0]}
-            </option>
-          ))}
-        </select>
-        <select value={jurisdiction} onChange={(event) => setJurisdiction(event.target.value)}>
-          <option value="">Choose a Jurisdiction</option>
-          {jurisdictions.map((row) => (
-            <option key={row.cityname} value={row.cityname}>
-              {row.cityname}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          className="button"
-          disabled={vmtData.length === 0}
-          onClick={() => downloadCsv(vmtData, jurisdiction, modelRun)}
-        >
-          Download Data
-        </button>
-      </form>
+    <VStack className={`${backgroundStyles.dataBackground} data-page gap-3`}>
+      <Card.Root>
+        <Card.Body>
+          <form onSubmit={(event) => event.preventDefault()}>
+            <HStack className="gap-3 flex-wrap align-items-center">
+              <Select.Field value={modelRun} onChange={(event) => setModelRun(event.target.value)}>
+                <option value="">Choose a Scenario Year</option>
+                {years.map((year) => (
+                  <option key={year.model_run} value={year.model_run}>
+                    {year.model_run.split('_')[0]}
+                  </option>
+                ))}
+              </Select.Field>
+              <Select.Field value={jurisdiction} onChange={(event) => setJurisdiction(event.target.value)}>
+                <option value="">Choose a Jurisdiction</option>
+                {jurisdictions.map((row) => (
+                  <option key={row.cityname} value={row.cityname}>
+                    {row.cityname}
+                  </option>
+                ))}
+              </Select.Field>
+              <Button
+                type="button"
+                disabled={vmtData.length === 0}
+                onClick={() => downloadCsv(vmtData, jurisdiction, modelRun)}
+              >
+                Download Data
+              </Button>
+            </HStack>
+          </form>
+        </Card.Body>
+      </Card.Root>
 
-      {error && <p className="data-page__error">{error}</p>}
-      {noData && !error && <p className="data-page__error">No data available for this combination!</p>}
+      {error && <NotificationBox type="info">{error}</NotificationBox>}
+      {noData && !error && <NotificationBox type="info">No data available for this combination!</NotificationBox>}
 
       {vmtData.length > 0 && totals && (
-        <>
-          <h2>Climate Action Plan VMT Data</h2>
-          <p>
-            <strong>Place Name:</strong> {jurisdiction} &nbsp;
-            <strong>Model Run:</strong> {modelRun}
-          </p>
+        <Card.Root>
+          <Card.Body>
+            <VStack className="gap-3">
+              <Typography as="h2">Climate Action Plan VMT Data</Typography>
+              <Typography as="p">
+                <strong>Place Name:</strong> {jurisdiction} &nbsp;
+                <strong>Model Run:</strong> {modelRun}
+              </Typography>
 
-          <table className="data-page__table">
-            <thead>
-              <tr>
-                <th rowSpan={2}>Population Segment</th>
-                <th rowSpan={2}>Persons</th>
-                <th colSpan={8}>Non-commercial Passenger Vehicle Miles Traveled</th>
-                <th rowSpan={2}>VMT per capita</th>
-              </tr>
-              <tr>
-                <th colSpan={2}>Entirely within</th>
-                <th colSpan={2}>Partially in</th>
-                <th colSpan={2}>Entirely outside</th>
-                <th colSpan={2}>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vmtData.map((row, index) => {
-                const persons = parseFloat(row.persons);
-                const inside = parseFloat(row.inside);
-                const partiallyIn = parseFloat(row.partially_in);
-                const outside = parseFloat(row.outside);
-                const total = parseFloat(row.total);
-                return (
-                  <tr key={index}>
-                    <td>
-                      {row.lives} / {row.works}
-                    </td>
-                    <td>{persons.toLocaleString()}</td>
-                    <td>{inside.toLocaleString()}</td>
-                    <td>{percentage(inside, total)}</td>
-                    <td>{partiallyIn.toLocaleString()}</td>
-                    <td>{percentage(partiallyIn, total)}</td>
-                    <td>{outside.toLocaleString()}</td>
-                    <td>{percentage(outside, total)}</td>
-                    <td>{total.toLocaleString()}</td>
-                    <td>100%</td>
-                    <td>{(total / persons).toFixed(2)}</td>
-                  </tr>
-                );
-              })}
-              <tr>
-                <td>Total</td>
-                <td>{totals.totalPersons.toLocaleString()}</td>
-                <td>{totals.totalInside.toLocaleString()}</td>
-                <td />
-                <td>{totals.totalPartial.toLocaleString()}</td>
-                <td />
-                <td>{totals.totalOutside.toLocaleString()}</td>
-                <td />
-                <td>{totals.totalVMT.toLocaleString()}</td>
-                <td />
-                <td>{totals.totalVMTPerCapita.toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
+              <DataTable.Table columns={columns} data={tableRows} variant="dark" />
 
-          <h4>Selected Transportation Analysis Zones:</h4>
-          <p>{tazList}</p>
-        </>
+              <Typography as="h4">Selected Transportation Analysis Zones:</Typography>
+              <Typography as="p">{tazList}</Typography>
+            </VStack>
+          </Card.Body>
+        </Card.Root>
       )}
-    </main>
+    </VStack>
   );
 }
