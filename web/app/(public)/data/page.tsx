@@ -258,13 +258,13 @@ function renderGroupedTableHead(headerGroups: HeaderGroup<TableRow>[]) {
     throw new Error('Expected grouped VMT table to render exactly three header rows.');
   }
 
-  const populationSegmentHeader = getHeaderByColumnId(leafHeaderGroup.headers, 'populationSegment');
-  const personsHeader = getHeaderByColumnId(leafHeaderGroup.headers, 'persons');
+  const populationSegmentHeader = getHeaderByColumnId(topHeaderGroup.headers, 'populationSegment');
+  const personsHeader = getHeaderByColumnId(topHeaderGroup.headers, 'persons');
   const nonCommercialPassengerVmtHeader = getHeaderByColumnId(
     topHeaderGroup.headers,
     'nonCommercialPassengerVmt',
   );
-  const vmtPerCapitaHeader = getHeaderByColumnId(leafHeaderGroup.headers, 'vmtPerCapita');
+  const vmtPerCapitaHeader = getHeaderByColumnId(topHeaderGroup.headers, 'vmtPerCapita');
   const metricGroupHeaders = ['inside', 'partial', 'outside', 'total'].map((columnId) =>
     getHeaderByColumnId(metricHeaderGroup.headers, columnId),
   );

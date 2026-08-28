@@ -56,3 +56,69 @@ Result: passed (3/3 Chromium tests). Output included Sass deprecation warnings f
 Result: passed. Output included Sass deprecation warnings from bootstrap/mtc-ui and successful static route optimization for /, /about, /data, /feedback, /map.
 
 Combined final command output saved by tool at: /Users/trodriguez/.local/share/opencode/tool-output/tool_04a342da200128hfPlbYKvbMqm
+
+
+---
+
+## Follow-up fix: scoped grouped header styling
+
+### Root cause
+
+The page-local grouped table head intentionally bypassed mtc-ui's default header renderer so placeholder rows could be collapsed into a semantic three-row grouped header. However, that custom renderer emitted literal `thead`, `table-dark`, and `th` class names instead of mtc-ui's scoped CSS module classes, so the DataTable header styling did not apply. The `renderHeader` prop was also left attached even though `renderTableHead` owns all header rendering, leaving a dead path and confusing header context.
+
+### Files changed
+
+- `web/app/(public)/data/page.tsx`
+  - Removed the dead `renderHeader` prop and removed helper code that only supported that dead path.
+  - Kept the semantic three-row `<thead>/<tr>/<th>` structure with existing grouped columns/data unchanged.
+  - Added ID-based header lookup for `populationSegment`, `persons`, `nonCommercialPassengerVmt`, `vmtPerCapita`, metric groups, and metric leaves, with clear errors when an expected ID is missing.
+  - Preserved `aria-sort` on every rendered header cell.
+- `web/app/(public)/data/data.module.scss`
+  - Added page-local grouped-header styles for dark background, white text, 15px typography, vertical centering, nowrap, and 20px/16px padding. `background-color` and `color` use `!important` because the existing table CSS applies later cell-level styles that otherwise override the page-local module.
+- `web/test/data.spec.ts`
+  - Updated the grouped-header regression test to assert stable page-local module class names, computed dark background/white text, and valid `aria-sort` values on all rendered header cells instead of generic `thead`/`th` literal class names.
+
+### Validation commands / outputs
+
+- `CI=1 npm test --workspace web -- data.spec.ts`
+  - Result: passed. Output summary: `3 passed (3.0s)`.
+  - Notes: emitted existing Sass deprecation warnings from Bootstrap / `@bayareametro/mtc-ui` imports.
+- `npm run build --workspace web`
+  - Result: passed. Output summary included static route generation for `/`, `/_not-found`, `/about`, `/data`, `/feedback`, and `/map`.
+  - Notes: emitted existing Sass deprecation warnings from Bootstrap / `@bayareametro/mtc-ui` imports.
+
+### Commit
+
+- `7af204e Fix grouped data header styling`
+
+### Residual concerns
+
+- Browser desktop/mobile visual inspection was not performed; validation was limited to the requested automated Playwright test and production build.
+- The working tree still contains unrelated pre-existing dirty/untracked files, intentionally preserved and not included in this commit.
+- Sass deprecation warnings remain in dependency/style imports and were not addressed.
+
+
+---
+
+## Review improvement: canonical top headers
+
+### Files changed
+
+- `web/app/(public)/data/page.tsx`
+  - Changed `populationSegment`, `persons`, and `vmtPerCapita` header lookups from `leafHeaderGroup.headers` to `topHeaderGroup.headers` so standalone depth-0 columns use canonical non-placeholder TanStack headers.
+
+### Validation commands / outputs
+
+- `CI=1 npm test --workspace web -- data.spec.ts`
+  - Result: passed.
+  - Exact output summary: `3 passed (2.9s)`.
+  - Notes: emitted existing Sass deprecation warnings from Bootstrap / `@bayareametro/mtc-ui` imports.
+- `npm run build --workspace web`
+  - Result: passed.
+  - Exact output summary: `✓ Compiled successfully in 458ms`; `✓ Generating static pages using 8 workers (7/7) in 384ms`; route output included `/`, `/_not-found`, `/about`, `/data`, `/feedback`, and `/map` as static prerendered routes.
+  - Notes: emitted `Turbopack build encountered 84 warnings`, including existing Sass deprecation warnings from Bootstrap / `@bayareametro/mtc-ui` imports.
+
+### Output files
+
+- Test output saved by tool at: `/Users/trodriguez/.local/share/opencode/tool-output/tool_04a42b2fe001CUDKC8Iq2iHW23`
+- Build output saved by tool at: `/Users/trodriguez/.local/share/opencode/tool-output/tool_04a42bb75001H6D2vM06c2fNcK`
