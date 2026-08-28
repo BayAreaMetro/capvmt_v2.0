@@ -60,10 +60,20 @@ test('renders grouped VMT table headers without repeated placeholder labels', as
   await expect(headerRows.nth(0).locator('th').nth(3)).toHaveAttribute('rowspan', '3');
   await expect(headerRows.nth(1).locator('th').first()).toHaveAttribute('colspan', '2');
 
-  await expect(page.locator('thead')).toHaveClass(/table-dark/);
-  await expect(page.locator('thead')).toHaveClass(/thead/);
-  await expect(headerRows.nth(0).locator('th').first()).toHaveClass(/th/);
-  await expect(headerRows.nth(0).locator('th').first()).toHaveAttribute('aria-sort', 'none');
+  const tableHead = page.locator('thead');
+  const firstHeaderCell = headerRows.nth(0).locator('th').first();
+
+  await expect(tableHead).toHaveClass(/groupedTableHead/);
+  await expect(firstHeaderCell).toHaveClass(/groupedHeaderCell/);
+  await expect(firstHeaderCell).toHaveCSS('background-color', 'rgb(33, 37, 41)');
+  await expect(firstHeaderCell).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(firstHeaderCell).toHaveAttribute('aria-sort', 'none');
+
+  const ariaSortValues = await headerRows.locator('th').evaluateAll((headers) =>
+    headers.map((header) => header.getAttribute('aria-sort')),
+  );
+  expect(ariaSortValues).toHaveLength(16);
+  expect(ariaSortValues.every((value) => /^(none|ascending|descending)$/.test(value ?? ''))).toBe(true);
 });
 
 test('shows a no-data message when Socrata returns nothing for the combination', async ({ page }) => {

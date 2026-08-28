@@ -5,6 +5,7 @@ import type { ThHTMLAttributes } from 'react';
 import { flexRender, type ColumnDef, type Header, type HeaderGroup } from '@tanstack/react-table';
 import { apiGet } from '../../../lib/api';
 import backgroundStyles from '../../../components/shell/page-backgrounds.module.scss';
+import styles from './data.module.scss';
 import {
   Card,
   Typography,
@@ -14,7 +15,6 @@ import {
   HStack,
   DataTable,
   NotificationBox,
-  clsx,
 } from '@bayareametro/mtc-ui';
 
 interface YearRow {
@@ -224,70 +224,78 @@ const columns: ColumnDef<TableRow>[] = [
   },
 ];
 
-function renderGroupedHeader(
-  props: ThHTMLAttributes<HTMLTableHeaderCellElement>,
-  header: Header<TableRow, unknown>,
-) {
-  const headerGroups = header.getContext().table.getHeaderGroups();
-
-  if (header.isPlaceholder) return null;
-
-  if (header.subHeaders.length === 0 && header.column.depth === 0 && header.depth > 0) return null;
-
-  const rowSpan = header.subHeaders.length === 0 ? headerGroups.length - header.depth : 1;
-
-  return (
-    <th {...props} colSpan={header.colSpan} rowSpan={rowSpan}>
-      {flexRender(header.column.columnDef.header, header.getContext())}
-    </th>
-  );
-}
-
 const ariaSortValues = { false: 'none', asc: 'ascending', desc: 'descending' } as const;
 
 function getHeaderProps(header: Header<TableRow, unknown>): ThHTMLAttributes<HTMLTableHeaderCellElement> {
   return {
     'aria-sort': ariaSortValues[String(header.column.getIsSorted()) as keyof typeof ariaSortValues],
-    className: clsx('th', { pinnedLeft: header.column.getIsPinned() === 'left' }),
+    className: styles.groupedHeaderCell,
   };
 }
 
-function renderHeaderWithContext(header: Header<TableRow, unknown>) {
+function renderGroupedHeader(header: Header<TableRow, unknown>, rowSpan?: number) {
   return (
-    renderGroupedHeader(getHeaderProps(header), header)
-  );
-}
-
-function renderStandaloneHeader(header: Header<TableRow, unknown>) {
-  return (
-    <th {...getHeaderProps(header)} colSpan={header.colSpan} rowSpan={header.getContext().table.getHeaderGroups().length}>
+    <th {...getHeaderProps(header)} colSpan={header.colSpan} rowSpan={rowSpan}>
       {flexRender(header.column.columnDef.header, header.getContext())}
     </th>
   );
 }
 
+function getHeaderByColumnId(
+  headers: Header<TableRow, unknown>[],
+  columnId: string,
+): Header<TableRow, unknown> {
+  const header = headers.find((candidate) => candidate.column.id === columnId);
+  if (!header) {
+    throw new Error(`Expected grouped VMT table header for column "${columnId}".`);
+  }
+  return header;
+}
+
 function renderGroupedTableHead(headerGroups: HeaderGroup<TableRow>[]) {
   const [topHeaderGroup, metricHeaderGroup, leafHeaderGroup] = headerGroups;
-  const leafHeaders = leafHeaderGroup.headers;
-  const standaloneHeaders = [leafHeaders[0], leafHeaders[1], leafHeaders[10]];
+  if (!topHeaderGroup || !metricHeaderGroup || !leafHeaderGroup) {
+    throw new Error('Expected grouped VMT table to render exactly three header rows.');
+  }
+
+  const populationSegmentHeader = getHeaderByColumnId(leafHeaderGroup.headers, 'populationSegment');
+  const personsHeader = getHeaderByColumnId(leafHeaderGroup.headers, 'persons');
+  const nonCommercialPassengerVmtHeader = getHeaderByColumnId(
+    topHeaderGroup.headers,
+    'nonCommercialPassengerVmt',
+  );
+  const vmtPerCapitaHeader = getHeaderByColumnId(leafHeaderGroup.headers, 'vmtPerCapita');
+  const metricGroupHeaders = ['inside', 'partial', 'outside', 'total'].map((columnId) =>
+    getHeaderByColumnId(metricHeaderGroup.headers, columnId),
+  );
+  const metricLeafHeaders = [
+    'insideValue',
+    'insidePct',
+    'partialValue',
+    'partialPct',
+    'outsideValue',
+    'outsidePct',
+    'totalValue',
+    'totalPct',
+  ].map((columnId) => getHeaderByColumnId(leafHeaderGroup.headers, columnId));
 
   return (
-    <thead className={clsx('thead', 'table-dark')}>
+    <thead className={styles.groupedTableHead}>
       <tr>
-        {standaloneHeaders.slice(0, 2).map((header) => (
-          <Fragment key={header.id}>{renderStandaloneHeader(header)}</Fragment>
+        {[populationSegmentHeader, personsHeader].map((header) => (
+          <Fragment key={header.id}>{renderGroupedHeader(header, headerGroups.length)}</Fragment>
         ))}
-        {renderHeaderWithContext(topHeaderGroup.headers[2])}
-        {renderStandaloneHeader(standaloneHeaders[2])}
+        {renderGroupedHeader(nonCommercialPassengerVmtHeader)}
+        {renderGroupedHeader(vmtPerCapitaHeader, headerGroups.length)}
       </tr>
       <tr>
-        {metricHeaderGroup.headers.slice(2, 6).map((header) => (
-          <Fragment key={header.id}>{renderHeaderWithContext(header)}</Fragment>
+        {metricGroupHeaders.map((header) => (
+          <Fragment key={header.id}>{renderGroupedHeader(header)}</Fragment>
         ))}
       </tr>
       <tr>
-        {leafHeaders.slice(2, 10).map((header) => (
-          <Fragment key={header.id}>{renderHeaderWithContext(header)}</Fragment>
+        {metricLeafHeaders.map((header) => (
+          <Fragment key={header.id}>{renderGroupedHeader(header)}</Fragment>
         ))}
       </tr>
     </thead>
@@ -378,7 +386,6 @@ export default function DataPage() {
                 columns={columns}
                 data={tableRows}
                 variant="dark"
-                renderHeader={renderGroupedHeader}
                 renderTableHead={renderGroupedTableHead}
               />
 
