@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import type { ColumnDef } from '@tanstack/react-table';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import type { ThHTMLAttributes } from 'react';
+import { flexRender, type ColumnDef, type Header, type HeaderGroup } from '@tanstack/react-table';
 import { apiGet } from '../../../lib/api';
 import backgroundStyles from '../../../components/shell/page-backgrounds.module.scss';
 import { Card, Typography, Select, Button, VStack, HStack, DataTable, NotificationBox } from '@bayareametro/mtc-ui';
@@ -213,6 +214,65 @@ const columns: ColumnDef<TableRow>[] = [
   },
 ];
 
+function renderGroupedHeader(
+  props: ThHTMLAttributes<HTMLTableHeaderCellElement>,
+  header: Header<TableRow, unknown>,
+) {
+  const headerGroups = header.getContext().table.getHeaderGroups();
+
+  if (header.isPlaceholder) {
+    if (header.depth > 0) return null;
+
+    return (
+      <th {...props} colSpan={header.colSpan} rowSpan={headerGroups.length}>
+        {flexRender(header.column.columnDef.header, header.getContext())}
+      </th>
+    );
+  }
+
+  if (header.subHeaders.length === 0 && header.column.depth === 0 && header.depth > 0) return null;
+
+  const rowSpan = header.subHeaders.length === 0 ? headerGroups.length - header.depth : 1;
+
+  return (
+    <th {...props} colSpan={header.colSpan} rowSpan={rowSpan}>
+      {flexRender(header.column.columnDef.header, header.getContext())}
+    </th>
+  );
+}
+
+function renderGroupedTableHead(headerGroups: HeaderGroup<TableRow>[]) {
+  const [topHeaderGroup, metricHeaderGroup, leafHeaderGroup] = headerGroups;
+  const leafHeaders = leafHeaderGroup.headers;
+  const standaloneHeaders = [leafHeaders[0], leafHeaders[1], leafHeaders[10]];
+
+  return (
+    <thead className="table-dark">
+      <tr>
+        {standaloneHeaders.slice(0, 2).map((header) => (
+          <th key={header.id} colSpan={header.colSpan} rowSpan={headerGroups.length}>
+            {flexRender(header.column.columnDef.header, header.getContext())}
+          </th>
+        ))}
+        {renderGroupedHeader({}, topHeaderGroup.headers[2])}
+        <th colSpan={standaloneHeaders[2].colSpan} rowSpan={headerGroups.length}>
+          {flexRender(standaloneHeaders[2].column.columnDef.header, standaloneHeaders[2].getContext())}
+        </th>
+      </tr>
+      <tr>
+        {metricHeaderGroup.headers.slice(2, 6).map((header) => (
+          <Fragment key={header.id}>{renderGroupedHeader({}, header)}</Fragment>
+        ))}
+      </tr>
+      <tr>
+        {leafHeaders.slice(2, 10).map((header) => (
+          <Fragment key={header.id}>{renderGroupedHeader({}, header)}</Fragment>
+        ))}
+      </tr>
+    </thead>
+  );
+}
+
 export default function DataPage() {
   const [years, setYears] = useState<YearRow[]>([]);
   const [jurisdictions, setJurisdictions] = useState<JurisdictionRow[]>([]);
@@ -293,7 +353,13 @@ export default function DataPage() {
                 <strong>Model Run:</strong> {modelRun}
               </Typography>
 
-              <DataTable.Table columns={columns} data={tableRows} variant="dark" />
+              <DataTable.Table
+                columns={columns}
+                data={tableRows}
+                variant="dark"
+                renderHeader={renderGroupedHeader}
+                renderTableHead={renderGroupedTableHead}
+              />
 
               <Typography as="h4">Selected Transportation Analysis Zones:</Typography>
               <Typography as="p">{tazList}</Typography>

@@ -34,6 +34,33 @@ test('loads default VMT data and computes totals', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Download Data' })).toBeEnabled();
 });
 
+test('renders grouped VMT table headers without repeated placeholder labels', async ({ page }) => {
+  await page.goto('/data');
+
+  const headerRows = page.locator('thead tr');
+  await expect(headerRows).toHaveCount(3);
+
+  await expect(headerRows.nth(0).locator('th')).toHaveText([
+    'Population Segment',
+    'Persons',
+    'Non-commercial Passenger Vehicle Miles Traveled',
+    'Vehicle miles traveled per capita',
+  ]);
+  await expect(headerRows.nth(1).locator('th')).toHaveText([
+    'Entirely within',
+    'Partially in',
+    'Entirely outside',
+    'Total',
+  ]);
+  await expect(headerRows.nth(2).locator('th')).toHaveText(['VMT', '%', 'VMT', '%', 'VMT', '%', 'VMT', '%']);
+
+  await expect(headerRows.nth(0).locator('th').nth(0)).toHaveAttribute('rowspan', '3');
+  await expect(headerRows.nth(0).locator('th').nth(1)).toHaveAttribute('rowspan', '3');
+  await expect(headerRows.nth(0).locator('th').nth(2)).toHaveAttribute('colspan', '8');
+  await expect(headerRows.nth(0).locator('th').nth(3)).toHaveAttribute('rowspan', '3');
+  await expect(headerRows.nth(1).locator('th').first()).toHaveAttribute('colspan', '2');
+});
+
 test('shows a no-data message when Socrata returns nothing for the combination', async ({ page }) => {
   await page.route('**/api/data/vmt/**', (route) => route.fulfill({ json: [] }));
 
