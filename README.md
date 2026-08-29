@@ -1,48 +1,93 @@
 # capvmt_v2.0
-Climate Action Plan VMT Data Portal (Version 2)
 
-## User Roles and Responsibilities
+Climate Action Plan VMT Data Portal (Version 2).
 
-- WebDev (MZ)
-- UI Requirements (WL/KS)
-- 
+## Applications
+
+This repository is a modern npm workspace with two maintained application workspaces:
+
+- `web`: the Next.js frontend.
+- `api`: the TypeScript Express backend.
+
+The Next.js app proxies browser requests for `/api/*` to the backend URL configured by `API_INTERNAL_URL`. In local development this normally points to `http://localhost:4000`, where the Express API runs.
+
 ## Requirements
 
-### Front End Requirements
-- [ ] initial environment set up (MZ)
-- [ ] Complete front end page buildout (WL)
+- Node.js `>=20.9.0`
+- npm `>=9`
 
-### Data Updates
+## Setup
 
-See the README in the [etl folder](https://github.com/BayAreaMetro/capvmt_v2.0/tree/main/etl)
+Install dependencies from the repository root:
 
+```bash
+npm install
+```
 
-This project was generated with the [Angular Full-Stack Generator](https://github.com/DaftMonk/generator-angular-fullstack) version 4.2.2.
+Create a local `.env` file from `.env.example` and fill in the required values for your environment:
 
-## Getting Started
+```bash
+cp .env.example .env
+```
 
-### Prerequisites
+## Environment variables
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Docker Extension for Visual Code](https://code.visualstudio.com/docs/containers/overview)
+The API loads the repository-root `.env` file for local development. The variables used by `api/src/env.ts` are:
 
-### Developing
+- `PORT`: API port. Defaults to `4000` when unset.
+- `SOCRATA_USERNAME`: Socrata account username for API data access.
+- `SOCRATA_PASSWORD`: Socrata account password for API data access.
+- `SOCRATA_APP_TOKEN_MTC`: Socrata app token.
+- `VMT_DATA_KEY`: Socrata dataset key for VMT data.
+- `ASANA_ACCESS_TOKEN`: Asana Personal Access Token for feedback submissions.
+- `ASANA_PROJECT_ID`: Asana project gid for feedback submissions.
 
-  1. Create "dist" folder at root of the project if it doesn't already exist
-  2. Copy [local.env.js](https://mtcdrive.box.com/s/3mupwj06prg1wwhs5lc34ehv1lqx4x60) file to server/config and rename to local.env.js
-  3. Create Docker Container
-    ` docker compose up `
-  5. Container should now be running in Docker Desktop. Open local browser at localhost:3000
+The web workspace also uses:
 
+- `API_INTERNAL_URL`: server-side target for Next.js rewrites from `/api/*` to the API backend, for example `http://localhost:4000`.
+- `NEXT_PUBLIC_MAPBOX_TOKEN`: Mapbox GL JS token used by client-side map pages.
 
-## Build & development
+## Development
 
-In Docker terminal, run `gulp build` for building and `gulp serve` for preview.
+Run both maintained workspaces from the repository root:
+
+```bash
+npm run dev
+```
+
+This starts the Next.js frontend and the TypeScript Express API concurrently.
+
+To run a single workspace directly:
+
+```bash
+npm run dev:web
+npm run dev:api
+```
+
+## Build
+
+Build all workspaces from the repository root:
+
+```bash
+npm run build
+```
+
+This runs the workspace build scripts, including `next build` for `web` and TypeScript compilation for `api`.
 
 ## Testing
 
-In Docker terminal, running `npm test` will run the unit tests with karma.
+Run all workspace test scripts from the repository root:
+
+```bash
+npm test
+```
+
+This runs the maintained workspace tests, including Playwright tests for `web` and Vitest tests for `api`.
 
 ## Deployment
 
-After running `gulp build`, compress all files in dist/server into a zip file. In AWS EB environment, select `Upload and Deploy`, and point to zip file in dist/server
+Deploy the built Next.js `web` application and TypeScript Express `api` service as separate modern services. Provide production environment variables through the deployment platform rather than committing local `.env` files.
+
+## Data updates
+
+See the README in the [etl folder](https://github.com/BayAreaMetro/capvmt_v2.0/tree/main/etl).
