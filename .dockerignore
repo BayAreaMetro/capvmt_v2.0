@@ -1,13 +1,5 @@
 node_modules
 npm-debug.log
-dist/server/config/local.env.js
-dist/server/config/local.env.js.map
-dist/server/config/local.env.prod.js
-dist/server/config/local.env.prod.js.map
-dist/server/Archive.zip
-server/config/local.env.js
-server/config/local.env.js.prod
-server/config/local.env.sample.js
 
 # web/api workspaces (see web/Dockerfile, api/Dockerfile)
 .git
