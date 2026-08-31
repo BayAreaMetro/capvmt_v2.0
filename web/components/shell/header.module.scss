@@ -2,6 +2,26 @@
   position: sticky;
   top: var(--ribbon-height);
   z-index: $zindex-dropdown + 2;
+
+  :global(.navbar-collapse) {
+    background-color: var(--dv-midnight-blue) !important;
+  }
+
+  :global(.nav-link) {
+    color: var(--dv-white) !important;
+    background: transparent !important;
+    border-bottom: 3px solid transparent !important;
+  }
+
+  :global(.nav-link):hover {
+    background: transparent !important;
+    border-bottom-color: var(--dv-orange) !important;
+  }
+
+  :global(.nav-link):global(.active) {
+    background: transparent !important;
+    border-bottom-color: var(--dv-orange) !important;
+  }
 }
 
 .headerLogo {
