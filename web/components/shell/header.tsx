@@ -1,44 +1,65 @@
-import { StandardHeader, Breakpoint } from '@bayareametro/mtc-ui';
-import styles from './header.module.scss';
-import React from 'react';
-import NavbarOffcanvas from 'react-bootstrap/NavbarOffcanvas';
+'use client';
+
+import { StandardHeader, clsx } from '@bayareametro/mtc-ui';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import NavItem from 'react-bootstrap/NavItem';
 import NextLink from 'next/link';
-import { UtilityHeader, UtilityHeaderProps } from './utility-header';
+import { usePathname } from 'next/navigation';
+import styles from './header.module.scss';
+
+export interface HeaderNavLinkItem {
+  label: string;
+  href: string;
+}
 
 export interface HeaderProps {
   title: string;
-  children: React.ReactNode;
-  utilityHeaderProps: Omit<UtilityHeaderProps, 'children'>;
+  items: HeaderNavLinkItem[];
 }
 
-export const Header = ({ title, utilityHeaderProps, children }: HeaderProps) => (
-  <React.Fragment>
-    <Breakpoint xs sm md>
-      <StandardHeader.Root className={styles.standardHeaderRoot}>
-        <StandardHeader.Navbar>
-          <StandardHeader.TopContent className={styles.topContent}>
-            <StandardHeader.Brand>
-              <NextLink href="/" title="Home page" className={styles.headerTitleLink}>
-                <StandardHeader.Logo id="standard-header-logo--md" className={styles.headerLogo} width={40} />
-                <StandardHeader.Title className={styles.headerTitle} as={'span'}>
-                  {title}
-                </StandardHeader.Title>
-              </NextLink>
-            </StandardHeader.Brand>
-            <StandardHeader.ButtonsContainer>
-              <StandardHeader.NavbarToggle />
-            </StandardHeader.ButtonsContainer>
-          </StandardHeader.TopContent>
-          <StandardHeader.Navigation role="navigation">
-            <NavbarOffcanvas>{children}</NavbarOffcanvas>
-          </StandardHeader.Navigation>
-        </StandardHeader.Navbar>
-      </StandardHeader.Root>
-    </Breakpoint>
-    <Breakpoint lg xl xxl>
-      <div className={styles.utilityHeaderRoot}>
-        <UtilityHeader {...utilityHeaderProps} />
-      </div>
-    </Breakpoint>
-  </React.Fragment>
+function HeaderNavLink({ label, href }: HeaderNavLinkItem) {
+  const pathname = usePathname();
+  const isActive = new RegExp(`^${href}(/|$)`).test(pathname);
+
+  return (
+    <NavItem>
+      <NextLink href={href} className={clsx('nav-link', { active: isActive })}>
+        {label}
+      </NextLink>
+    </NavItem>
+  );
+}
+
+export const Header = ({ title, items }: HeaderProps) => (
+  <StandardHeader.Root className={styles.root}>
+    <StandardHeader.Navbar>
+      <StandardHeader.Container>
+        <StandardHeader.TopContent className={styles.topContent}>
+          <StandardHeader.Brand>
+            <NextLink href="/" title="Home page" className={styles.headerTitleLink}>
+              <StandardHeader.Logo id="standard-header-logo" className={styles.headerLogo} width={40} />
+              <StandardHeader.Title as="span" className={styles.headerTitle}>
+                {title}
+              </StandardHeader.Title>
+            </NextLink>
+          </StandardHeader.Brand>
+          <StandardHeader.ButtonsContainer>
+            <StandardHeader.NavbarToggle>
+              <FontAwesomeIcon icon={faBars} />
+            </StandardHeader.NavbarToggle>
+          </StandardHeader.ButtonsContainer>
+        </StandardHeader.TopContent>
+      </StandardHeader.Container>
+      <StandardHeader.Navigation role="navigation">
+        <StandardHeader.Container>
+          <StandardHeader.NavigationMenu className="justify-content-end">
+            {items.map((item) => (
+              <HeaderNavLink key={item.href} {...item} />
+            ))}
+          </StandardHeader.NavigationMenu>
+        </StandardHeader.Container>
+      </StandardHeader.Navigation>
+    </StandardHeader.Navbar>
+  </StandardHeader.Root>
 );

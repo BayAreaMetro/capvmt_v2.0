@@ -1,7 +1,3 @@
-'use client';
-
-import { usePathname } from 'next/navigation';
-import { faHouse, faTable, faComment, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { PageFrame } from './page-frame';
 
 const APP_TITLE = 'Vehicle Miles Traveled Dataportal';
@@ -13,30 +9,15 @@ const APP_TITLE = 'Vehicle Miles Traveled Dataportal';
  * has no working entry point, and the decision was to remove that
  * functionality rather than migrate it (see the design doc's "Auth/account/
  * admin scope"). Map is hidden from navigation but the route itself stays
- * live, so its title is kept here for the breadcrumb/header.
+ * live.
  */
 const NAV_ITEMS = [
-  { label: 'Home', href: '/', icon: faHouse },
-  { label: 'Data', href: '/data', icon: faTable },
-  { label: 'Feedback', href: '/feedback', icon: faComment },
-  { label: 'About', href: '/about', icon: faCircleInfo },
+  { label: 'Home', href: '/' },
+  { label: 'Data', href: '/data' },
+  { label: 'Feedback', href: '/feedback' },
+  { label: 'About', href: '/about' },
 ];
 
-const ROUTE_TITLES = [...NAV_ITEMS, { label: 'Map', href: '/map' }];
-
 export function PageContainer({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const pageTitle = ROUTE_TITLES.find((item) => item.href === pathname)?.label ?? APP_TITLE;
-
-  return (
-    <PageFrame
-      sidebarProps={{ title: APP_TITLE, items: NAV_ITEMS }}
-      headerProps={{
-        title: APP_TITLE,
-        utilityHeaderProps: { pageTitle, quickLinks: [] },
-      }}
-    >
-      {children}
-    </PageFrame>
-  );
+  return <PageFrame headerProps={{ title: APP_TITLE, items: NAV_ITEMS }}>{children}</PageFrame>;
 }
