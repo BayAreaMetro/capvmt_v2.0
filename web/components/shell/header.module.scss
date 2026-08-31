@@ -2,6 +2,7 @@
   position: sticky;
   top: var(--ribbon-height);
   z-index: $zindex-dropdown + 2;
+  background-color: var(--dv-midnight-blue);
 
   :global(.navbar-collapse) {
     width: auto !important;
@@ -31,7 +32,6 @@
   align-items: center;
   justify-content: space-between;
   column-gap: 20px;
-  background-color: var(--dv-midnight-blue);
   padding: 12px 20px;
 }
 

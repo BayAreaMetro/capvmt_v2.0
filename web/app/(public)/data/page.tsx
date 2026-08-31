@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import type { TdHTMLAttributes, ThHTMLAttributes } from 'react';
 import { flexRender, type Cell, type ColumnDef, type Header, type HeaderGroup } from '@tanstack/react-table';
+import Container from 'react-bootstrap/Container';
 import { apiGet } from '../../../lib/api';
 import backgroundStyles from '../../../components/shell/page-backgrounds.module.scss';
 import styles from './data.module.scss';
@@ -364,66 +365,72 @@ export default function DataPage() {
   const tableRows = useMemo(() => (totals ? toTableRows(vmtData, totals) : []), [vmtData, totals]);
 
   return (
-    <VStack className={`${backgroundStyles.dataBackground} data-page gap-3`}>
-      <Card.Root>
-        <Card.Body>
-          <form onSubmit={(event) => event.preventDefault()}>
-            <HStack className="gap-3 flex-wrap align-items-center">
-              <Select.Field value={modelRun} onChange={(event) => setModelRun(event.target.value)}>
-                <option value="">Choose a Scenario Year</option>
-                {years.map((year) => (
-                  <option key={year.model_run} value={year.model_run}>
-                    {year.model_run.split('_')[0]}
-                  </option>
-                ))}
-              </Select.Field>
-              <Select.Field value={jurisdiction} onChange={(event) => setJurisdiction(event.target.value)}>
-                <option value="">Choose a Jurisdiction</option>
-                {jurisdictions.map((row) => (
-                  <option key={row.cityname} value={row.cityname}>
-                    {row.cityname}
-                  </option>
-                ))}
-              </Select.Field>
-              <Button
-                type="button"
-                disabled={vmtData.length === 0}
-                onClick={() => downloadCsv(vmtData, jurisdiction, modelRun)}
-              >
-                Download Data
-              </Button>
-            </HStack>
-          </form>
-        </Card.Body>
-      </Card.Root>
+    <div className={`${backgroundStyles.dataBackground} data-page`}>
+      <Container>
+        <VStack className="gap-3">
+          <Card.Root>
+            <Card.Body>
+              <form onSubmit={(event) => event.preventDefault()}>
+                <HStack className="gap-3 flex-wrap align-items-center">
+                  <Select.Field value={modelRun} onChange={(event) => setModelRun(event.target.value)}>
+                    <option value="">Choose a Scenario Year</option>
+                    {years.map((year) => (
+                      <option key={year.model_run} value={year.model_run}>
+                        {year.model_run.split('_')[0]}
+                      </option>
+                    ))}
+                  </Select.Field>
+                  <Select.Field value={jurisdiction} onChange={(event) => setJurisdiction(event.target.value)}>
+                    <option value="">Choose a Jurisdiction</option>
+                    {jurisdictions.map((row) => (
+                      <option key={row.cityname} value={row.cityname}>
+                        {row.cityname}
+                      </option>
+                    ))}
+                  </Select.Field>
+                  <Button
+                    type="button"
+                    disabled={vmtData.length === 0}
+                    onClick={() => downloadCsv(vmtData, jurisdiction, modelRun)}
+                  >
+                    Download Data
+                  </Button>
+                </HStack>
+              </form>
+            </Card.Body>
+          </Card.Root>
 
-      {error && <NotificationBox type="info">{error}</NotificationBox>}
-      {noData && !error && <NotificationBox type="info">No data available for this combination!</NotificationBox>}
+          {error && <NotificationBox type="info">{error}</NotificationBox>}
+          {noData && !error && (
+            <NotificationBox type="info">No data available for this combination!</NotificationBox>
+          )}
 
-      {vmtData.length > 0 && totals && (
-        <Card.Root>
-          <Card.Body>
-            <VStack className="gap-3">
-              <Typography as="h2">Climate Action Plan VMT Data</Typography>
-              <Typography as="p">
-                <strong>Place Name:</strong> {jurisdiction} &nbsp;
-                <strong>Model Run:</strong> {modelRun}
-              </Typography>
+          {vmtData.length > 0 && totals && (
+            <Card.Root>
+              <Card.Body>
+                <VStack className="gap-3">
+                  <Typography as="h2">Climate Action Plan VMT Data</Typography>
+                  <Typography as="p">
+                    <strong>Place Name:</strong> {jurisdiction} &nbsp;
+                    <strong>Model Run:</strong> {modelRun}
+                  </Typography>
 
-              <DataTable.Table
-                columns={columns}
-                data={tableRows}
-                variant="dark"
-                renderTableHead={renderGroupedTableHead}
-                renderData={renderDataCell}
-              />
+                  <DataTable.Table
+                    columns={columns}
+                    data={tableRows}
+                    variant="dark"
+                    renderTableHead={renderGroupedTableHead}
+                    renderData={renderDataCell}
+                  />
 
-              <Typography as="h4">Selected Transportation Analysis Zones:</Typography>
-              <Typography as="p">{tazList}</Typography>
-            </VStack>
-          </Card.Body>
-        </Card.Root>
-      )}
-    </VStack>
+                  <Typography as="h4">Selected Transportation Analysis Zones:</Typography>
+                  <Typography as="p">{tazList}</Typography>
+                </VStack>
+              </Card.Body>
+            </Card.Root>
+          )}
+        </VStack>
+      </Container>
+    </div>
   );
 }
