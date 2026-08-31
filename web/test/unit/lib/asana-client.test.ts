@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { AsanaClient } from '../../src/asana/client';
+import { AsanaClient } from '../../../lib/asana/client';
 
 function mockFetchOnce(ok: boolean, status: number, body: unknown) {
   vi.stubGlobal(

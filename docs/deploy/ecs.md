@@ -1,5 +1,16 @@
 # Deploying to ECS
 
+> **Superseded (2026-08-31).** The two-service ECS plan described below was
+> never provisioned (see "What still needs to be provisioned" below — none
+> of it exists) and has been reversed: the app is now a single full-stack
+> Next.js app (the `api` workspace was folded into `web/app/api/*` Route
+> Handlers) deployed to Coolify. See
+> `docs/superpowers/specs/2026-08-14-modernization-design.md`'s "Deployment"
+> section for the reversal's rationale and `docs/deploy/coolify.md` for the
+> current deployment guide. This document is kept as a historical record of
+> the original decision, not deleted — nothing below is accurate for the
+> current architecture.
+
 ## Decision (2026-08-24)
 
 The modernized app deploys to **AWS ECS (Fargate)** as **two separate services** —
