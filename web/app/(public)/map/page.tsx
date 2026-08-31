@@ -1,11 +1,12 @@
 'use client';
 
 import { Suspense, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import NextLink from 'next/link';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { bbox } from '@turf/turf';
+import { Card, NotificationBox } from '@bayareametro/mtc-ui';
 
 type PlacesGeoJson = {
   type: 'FeatureCollection';
@@ -90,18 +91,18 @@ function MapView() {
   }
 
   return (
-    <main className="map-page">
-      <Link href="/data" className="button">
+    <div className="map-page">
+      <NextLink href="/data" className="btn btn-outline-primary mb-3">
         Back to Data
-      </Link>
+      </NextLink>
 
       {!token ? (
-        <p className="data-page__error">
+        <NotificationBox type="info">
           NEXT_PUBLIC_MAPBOX_TOKEN is not configured — the map cannot load without a Mapbox access
           token. See .env.example.
-        </p>
+        </NotificationBox>
       ) : (
-        <div className="map-page__container">
+        <Card.Root className="map-page__container">
           <div ref={mapContainerRef} className="map-page__map" />
           <div className="map-page__menu">
             {MAP_STYLES.map((style) => (
@@ -116,9 +117,9 @@ function MapView() {
               </label>
             ))}
           </div>
-        </div>
+        </Card.Root>
       )}
-    </main>
+    </div>
   );
 }
 

@@ -1,10 +1,5 @@
-import { SiteNav } from '../../components/site-nav';
+import { PageContainer } from '../../components/shell/page-container';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <SiteNav />
-      {children}
-    </>
-  );
+  return <PageContainer>{children}</PageContainer>;
 }

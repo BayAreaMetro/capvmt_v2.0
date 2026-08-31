@@ -1,0 +1,46 @@
+.standardHeaderRoot {
+  --xs-top-content-height: 72px;
+
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: sticky;
+  top: 0;
+  padding-top: var(--ribbon-height);
+  z-index: $zindex-dropdown + 2;
+}
+
+.headerLogo {
+  margin-right: 16px;
+}
+
+.headerTitleLink {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  text-decoration: none;
+}
+
+.headerTitle {
+  font-weight: 300;
+  font-size: 24px !important;
+  line-height: 32px !important;
+}
+
+.topContent {
+  height: var(--xs-top-content-height);
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: var(--dv-white);
+}
+
+.utilityHeaderRoot {
+  grid-column: 2;
+  grid-row: 1;
+
+  position: sticky;
+  top: 0;
+
+  padding-top: var(--ribbon-height);
+
+  z-index: $zindex-dropdown + 2;
+}

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
+import '@bayareametro/mtc-ui/bootstrap.css';
 import './globals.css';
+import './fonts';
+import './fontawesome';
 
 export const metadata: Metadata = {
   title: 'Vehicle Miles Traveled Dataportal',

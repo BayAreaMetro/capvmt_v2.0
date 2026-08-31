@@ -16,6 +16,14 @@ const nextConfig = {
   // legacy-dependency-laden node_modules tree. See web/Dockerfile.
   output: 'standalone',
 
+  // @bayareametro/mtc-ui's own .module.scss files (and this app's shell
+  // components, which follow the same convention) reference the shared
+  // Bootstrap config/token partial without an explicit @use - matches the
+  // MTC-UI reference implementation's next.config.
+  sassOptions: {
+    additionalData: '@use "@bayareametro/mtc-ui/config.bootstrap.scss" as *;',
+  },
+
   // Proxy /api/* to the api workspace server-side in local dev, so the
   // browser only ever talks to this app's own origin - no CORS
   // configuration needed on the api server (see the design doc's

@@ -1,6 +1,6 @@
 export default function AboutPage() {
   return (
-    <main className="about">
+    <div className="about narrow-content">
       <details open className="about__section">
         <summary>General</summary>
         <div className="about__section-body">
@@ -294,6 +294,6 @@ export default function AboutPage() {
           </details>
         </div>
       </details>
-    </main>
+    </div>
   );
 }

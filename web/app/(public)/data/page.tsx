@@ -1,8 +1,8 @@
 'use client';
 
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import type { ThHTMLAttributes } from 'react';
-import { flexRender, type ColumnDef, type Header, type HeaderGroup } from '@tanstack/react-table';
+import type { TdHTMLAttributes, ThHTMLAttributes } from 'react';
+import { flexRender, type Cell, type ColumnDef, type Header, type HeaderGroup } from '@tanstack/react-table';
 import { apiGet } from '../../../lib/api';
 import backgroundStyles from '../../../components/shell/page-backgrounds.module.scss';
 import styles from './data.module.scss';
@@ -224,12 +224,40 @@ const columns: ColumnDef<TableRow>[] = [
   },
 ];
 
+const numericColumnIds = new Set<keyof TableRow>([
+  'persons',
+  'insideValue',
+  'insidePct',
+  'partialValue',
+  'partialPct',
+  'outsideValue',
+  'outsidePct',
+  'totalValue',
+  'totalPct',
+  'vmtPerCapita',
+]);
+
+function renderDataCell(
+  props: TdHTMLAttributes<HTMLTableDataCellElement>,
+  cell: Cell<TableRow, unknown>,
+) {
+  const isNumeric = numericColumnIds.has(cell.column.id as keyof TableRow);
+  return (
+    <td {...props} className={[props.className, isNumeric && styles.numericCell].filter(Boolean).join(' ')} />
+  );
+}
+
 const ariaSortValues = { false: 'none', asc: 'ascending', desc: 'descending' } as const;
 
 function getHeaderProps(header: Header<TableRow, unknown>): ThHTMLAttributes<HTMLTableHeaderCellElement> {
   return {
     'aria-sort': ariaSortValues[String(header.column.getIsSorted()) as keyof typeof ariaSortValues],
-    className: styles.groupedHeaderCell,
+    className: [
+      styles.groupedHeaderCell,
+      header.column.id === 'vmtPerCapita' && styles.vmtPerCapitaHeader,
+    ]
+      .filter(Boolean)
+      .join(' '),
   };
 }
 
@@ -387,6 +415,7 @@ export default function DataPage() {
                 data={tableRows}
                 variant="dark"
                 renderTableHead={renderGroupedTableHead}
+                renderData={renderDataCell}
               />
 
               <Typography as="h4">Selected Transportation Analysis Zones:</Typography>

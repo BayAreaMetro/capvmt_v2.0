@@ -10,7 +10,16 @@
   font-weight: 700;
   line-height: 1.5;
   padding: 20px 16px;
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
   white-space: nowrap;
+}
+
+.numericCell {
+  text-align: right;
+}
+
+.vmtPerCapitaHeader {
+  white-space: normal;
+  width: 110px;
 }
