@@ -41,6 +41,8 @@
 }
 
 .main {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   max-width: 100%;
   overflow-x: hidden;

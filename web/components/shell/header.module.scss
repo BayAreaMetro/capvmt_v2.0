@@ -4,6 +4,7 @@
   z-index: $zindex-dropdown + 2;
 
   :global(.navbar-collapse) {
+    width: auto !important;
     background-color: var(--dv-midnight-blue) !important;
   }
 
@@ -24,6 +25,16 @@
   }
 }
 
+.navRow {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 20px;
+  background-color: var(--dv-midnight-blue);
+  padding: 12px 20px;
+}
+
 .headerLogo {
   margin-right: 16px;
 }
@@ -36,8 +47,10 @@
 
 .headerTitle {
   font-weight: 300;
+  color: var(--dv-white) !important;
 }
 
-.topContent {
-  background-color: var(--dv-white);
+.navbarToggle {
+  color: var(--dv-white);
+  border-color: var(--dv-white) !important;
 }

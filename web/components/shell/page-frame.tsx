@@ -1,3 +1,4 @@
+import { LegalFooter } from '@bayareametro/mtc-ui';
 import styles from './page-frame.module.scss';
 import { Header, HeaderProps } from './header';
 import { PageFooter } from './page-footer';
@@ -12,6 +13,7 @@ export const PageFrame = ({ children, headerProps }: PageFrameProps) => (
     <a href="#main-content" className={styles.skipLink}>
       Skip to content
     </a>
+    <LegalFooter.BackToTopLocation />
     <div className={styles.bodyContent}>
       <div className={styles.ribbon} />
       <Header {...headerProps} />
