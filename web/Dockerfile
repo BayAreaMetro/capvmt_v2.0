@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Build context is the MONOREPO ROOT (see docs/deploy/ecs.md), not this
+# Build context is the MONOREPO ROOT (see docs/deploy/coolify.md), not this
 # directory - needed so npm workspaces / the shared root package-lock.json
 # resolve correctly:
 #   docker build -f web/Dockerfile -t capvmt-web .
@@ -13,28 +13,15 @@ WORKDIR /repo
 # even though --workspace scopes the actual install to web.
 COPY package.json package-lock.json ./
 COPY web/package.json web/
-COPY api/package.json api/
 RUN npm ci --workspace web --include-workspace-root=false
 
 COPY web web
 
-# Next.js resolves rewrites() destinations at build time and freezes
-# them into .next/routes-manifest.json - reading process.env at
-# container *runtime* does not work, confirmed by testing this against
-# a real running container (a plain runtime env var was silently
-# ignored). So this has to be a build arg, baked in per image build.
-# In real ECS use this doesn't matter at runtime anyway - the ALB
-# routes /api/* straight to the api service's target group without
-# passing through this container at all (see docs/deploy/ecs.md); this
-# only matters for docker-compose / standalone `docker run` testing.
-ARG API_INTERNAL_URL=http://localhost:4000
-ENV API_INTERNAL_URL=$API_INTERNAL_URL
-
-# Same build-time-only story applies to every NEXT_PUBLIC_* var -
-# Next.js inlines these into the client JS bundle at `next build`
-# (confirmed: grepped a built chunk and found the value literally
-# present in the file). Setting this as an ECS task-definition runtime
-# environment variable would do nothing; it must be a build arg here.
+# Next.js inlines every NEXT_PUBLIC_* env var into the client JS bundle
+# at `next build` time, not at container runtime (confirmed: grepped a
+# built chunk and found the value literally present in the file), so
+# this has to be a build arg, baked in per image build - setting it as
+# a normal runtime environment variable does nothing.
 ARG NEXT_PUBLIC_MAPBOX_TOKEN=""
 ENV NEXT_PUBLIC_MAPBOX_TOKEN=$NEXT_PUBLIC_MAPBOX_TOKEN
 
@@ -58,6 +45,12 @@ ENV HOSTNAME=0.0.0.0
 COPY --from=build /repo/web/.next/standalone ./
 COPY --from=build /repo/web/.next/static ./web/.next/static
 COPY --from=build /repo/web/public ./web/public
+
+# SOCRATA_*, VMT_DATA_KEY, and ASANA_* are read from process.env at
+# request time by the app/api Route Handlers (web/lib/env.ts) - real
+# runtime secrets, set as normal container environment variables (in
+# Coolify's app settings), not build args like NEXT_PUBLIC_MAPBOX_TOKEN
+# above.
 
 EXPOSE 3000
 USER node

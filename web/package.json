@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "playwright test"
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@bayareametro/mtc-ui": "^1.0.0-alpha.36",
@@ -35,6 +37,7 @@
     "@types/react-dom": "^19.0.0",
     "dotenv": "^17.4.2",
     "sass": "^1.74.1",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^4.1.11"
   }
 }

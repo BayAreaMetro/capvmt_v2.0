@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { SocrataVmtClient } from '../../src/socrata/vmt';
+import { SocrataVmtClient } from '../../../lib/socrata/vmt';
 
 function mockFetchOnce(body: unknown) {
   vi.stubGlobal(

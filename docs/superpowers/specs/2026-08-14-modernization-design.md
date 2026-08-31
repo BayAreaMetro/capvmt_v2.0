@@ -12,8 +12,7 @@
 
 Replace the legacy AngularJS 1.x + Express + ad hoc data layer with a modern architecture built around:
 
-- **Frontend:** Next.js
-- **Backend:** Node API — stateless, proxying Socrata for VMT data and Asana for feedback submissions; no database. Auth/users is being dropped rather than migrated (see below), and feedback (also below) is brought in-house but backed by Asana instead of a database
+- **Frontend and backend:** a single Next.js app. Its API (Route Handlers under `web/app/api/*`) is stateless, proxying Socrata for VMT data and Asana for feedback submissions; no database. Auth/users is being dropped rather than migrated (see below), and feedback (also below) is brought in-house but backed by Asana instead of a database. (Originally planned and built as two services — Next.js frontend plus a separate Express API — then consolidated into one app; see "Deployment" below for why.)
 
 The end state should preserve current product behavior while removing the oldest platform constraints and making future feature work safer and faster. The Socrata VMT dataset is expected to be updated separately (outside this codebase) to include commercial-vehicle data; the app does not need code changes to support that update — see "Vehicle type scope" below. Login/signup/account/admin functionality is being retired, not carried forward — see "Auth/account/admin scope" below.
 
@@ -48,7 +47,7 @@ There are **three independent data paths**, not one:
 
 3. **Feedback — an entirely separate external service, not this repo's backend at all.** *(Legacy state; resolved differently in the new app — see below.)*
    `client/app/feedback/feedback.component.js` POSTs directly to `http://basis-dev-2022.us-west-2.elasticbeanstalk.com/api/feedback/add`. There is no `/api/feedback` route in this server. Feedback data does not touch this app's database or Socrata.
-   **Decided for the new app (2026-08-24):** feedback is brought in-house behind a real `/api/feedback` route (`api/src/routes/feedback.ts`), but instead of a database it posts each submission as a task in a configurable Asana project via `api/src/asana/client.ts` (Personal Access Token auth, `ASANA_ACCESS_TOKEN`/`ASANA_PROJECT_ID` env vars — the project id is intentionally left blank in `.env.example` pending which Asana project this should target). This keeps the API fully stateless — no Postgres needed for feedback after all, closing the last open question in the Data Layer section below.
+   **Decided for the new app (2026-08-24):** feedback is brought in-house behind a real `/api/feedback` route (originally `api/src/routes/feedback.ts` in a separate Express service; now `web/app/api/feedback/route.ts` — see "Deployment" below), but instead of a database it posts each submission as a task in a configurable Asana project via an `AsanaClient` (originally `api/src/asana/client.ts`, now `web/lib/asana/client.ts`, ported verbatim — Personal Access Token auth, `ASANA_ACCESS_TOKEN`/`ASANA_PROJECT_ID` env vars — the project id is intentionally left blank in `.env.example` pending which Asana project this should target). This keeps the API fully stateless — no Postgres needed for feedback after all, closing the last open question in the Data Layer section below.
 
 ### Auth/account/admin scope — decided: remove, don't migrate
 
@@ -151,34 +150,57 @@ During migration, the old and new systems should coexist with explicit handoff p
 
 **Decision (2026-08-24): the new API is internal to this app, not a public/external API.** This was worth checking rather than assuming, because there's real precedent the other way: this repo's own `gh-pages` branch (still linked from the current `about.html` FAQ) hosts a 2016-era page documenting a public `Data API` (`.../api/vmt/jurisdictionId/modelRunYear`) against a since-retired Elastic Beanstalk deployment, with sample requests and JSON responses meant for external consumers. That page has since moved its own "download the dataset" buttons to query Socrata directly instead of that old API, and the current app's Express routes have no CORS middleware and aren't documented anywhere as public. Given that pattern — and to keep the modernized app fully self-contained — the new API is scoped as **frontend-only**: no CORS configuration, no public API documentation, no stability guarantees for external callers. Anyone wanting programmatic access to the underlying VMT data should go to Socrata directly (`data.bayareametro.gov`), the same place the legacy `about.html` FAQ and the old gh-pages page already point external users. If a genuine external-consumer requirement surfaces later, that's a deliberate scope change, not something to build in preemptively.
 
-## Deployment — decided: ECS, two services, one ALB
+## Deployment — decided: Coolify, single full-stack Next.js app
 
-**Decision (2026-08-24): deploy to AWS ECS (Fargate) as two separate services** —
-`capvmt-web` and `capvmt-api` — **behind one ALB with path-based routing**
-(`/api/*` → api, everything else → web). Full detail, including a real gotcha
-worth reading before touching either Dockerfile (Next.js resolves
-`rewrites()` destinations and inlines `NEXT_PUBLIC_*` vars at build time, not
-container runtime — confirmed by testing a real running container, not
-assumed), lives in `docs/deploy/ecs.md`.
+~~**Decision (2026-08-24): deploy to AWS ECS (Fargate) as two separate
+services** — `capvmt-web` and `capvmt-api` — **behind one ALB with
+path-based routing** (`/api/*` → api, everything else → web).~~
 
-This is a deliberate departure from how MTC deploys its other apps today —
-the legacy app and its siblings (`basis-dev-2022...elasticbeanstalk.com`, the
-old `capvmt...elasticbeanstalk.com`) all run on a single, manually-deployed
-AWS Elastic Beanstalk environment with no CI/CD. That pattern doesn't fit two
-independently-deployed services. The choice between ECS and AWS Amplify was
-the deciding factor for keeping the `web`/`api` split at all: Amplify Hosting
-deploys a single full-stack Next.js app and isn't a natural place to also run
-a separate Express service, which would have forced consolidating `api`'s
-routes into Next.js Route Handlers (undoing Tasks 2, 3, and 5's work in
-`api/`). ECS handles two services behind one ALB cleanly, so that
-consolidation wasn't necessary.
+**Reversed (2026-08-31): deploy to Coolify as a single full-stack Next.js
+app.** The `api` workspace has been folded into `web` as Next.js Route
+Handlers (`web/app/api/*`); `web/lib/{socrata,asana}` hold the same
+framework-agnostic client code that used to live in `api/src/{socrata,asana}`,
+ported essentially verbatim (no Express dependency existed in that code to
+begin with). `web/lib/env.ts` replaces `api/src/env.ts`, and route-level
+config checks/error formatting are now inline per route (see
+`web/lib/socrata/route-helpers.ts`) instead of Express router middleware.
+Full deployment detail lives in `docs/deploy/coolify.md`; `docs/deploy/ecs.md`
+is kept as a historical record of the superseded decision, not deleted.
 
-`.github/workflows/ci-cd.yml` is this repo's first working CI/CD — previously
-just a stale, non-functional `.travis.yml` (Node 6, a MongoDB service never
-used). Its `test`/`build` jobs run on every push with no new infrastructure;
-its `deploy` job needs real AWS infra (ECR, ECS cluster/services, IAM roles,
-Secrets Manager) that doesn't exist yet, so it's manual-trigger-only until
-that's provisioned — see `docs/deploy/ecs.md` for the full checklist.
+**Why this reverses the original two-service ECS decision:** that decision's
+own rationale (below, preserved for the record) explicitly named the
+ECS-vs-Amplify choice as *the* reason to keep `web`/`api` split at all —
+Amplify only hosts a single full-stack Next.js deployable, and consolidating
+into one app was called out as the alternative if that constraint didn't
+apply. It doesn't apply to Coolify: Coolify deploys arbitrary Dockerfile-based
+services and would have handled two services (as it now handles one) without
+forcing consolidation either way. So switching deployment targets to Coolify
+didn't force this reversal — it just removed the reason the two-service split
+existed in the first place, at which point one Next.js app is simply less to
+run and deploy for an app this size, with no CORS/ALB-routing layer to keep in
+sync and one Docker image instead of two. If a future requirement reintroduces
+a reason for a second service (a separate scaling profile, a non-Node
+component, etc.), that's a fresh decision to make then, not a reason to have
+kept the split speculatively.
+
+Original ECS rationale, preserved for context:
+
+> This is a deliberate departure from how MTC deploys its other apps today —
+> the legacy app and its siblings (`basis-dev-2022...elasticbeanstalk.com`, the
+> old `capvmt...elasticbeanstalk.com`) all run on a single, manually-deployed
+> AWS Elastic Beanstalk environment with no CI/CD. That pattern doesn't fit two
+> independently-deployed services. The choice between ECS and AWS Amplify was
+> the deciding factor for keeping the `web`/`api` split at all: Amplify Hosting
+> deploys a single full-stack Next.js app and isn't a natural place to also run
+> a separate Express service, which would have forced consolidating `api`'s
+> routes into Next.js Route Handlers (undoing Tasks 2, 3, and 5's work in
+> `api/`). ECS handles two services behind one ALB cleanly, so that
+> consolidation wasn't necessary.
+
+`.github/workflows/ci-cd.yml` now has a single `test`/`build` matrix (no
+`api` entry) and no `deploy` job — Coolify builds directly from this repo's
+git history via its own webhook/git integration, not by a GitHub Actions job
+pushing an image to a registry (see `docs/deploy/coolify.md`).
 
 ## Risks and Mitigations
 
@@ -216,14 +238,14 @@ that's provisioned — see `docs/deploy/ecs.md` for the full checklist.
 - Whether to finish the abandoned `getYears` → Socrata migration as part of this work or leave the hardcoded list
 - Feature-by-feature cutover order
 - Whether the `about.html`/`data.html` "non-commercial only" copy needs a content update once the underlying dataset changes — a product/content decision outside this plan's engineering scope
-- ~~Deployment target: keep the two-service architecture, or consolidate into one Next.js app?~~ **Resolved (2026-08-24): keep two services, deploy to ECS** (see Deployment above). Still open: provisioning the actual AWS infrastructure listed in `docs/deploy/ecs.md`'s checklist — none of it exists yet.
+- ~~Deployment target: keep the two-service architecture, or consolidate into one Next.js app?~~ ~~**Resolved (2026-08-24): keep two services, deploy to ECS.**~~ **Re-resolved (2026-08-31): consolidate into one Next.js app, deploy to Coolify** (see Deployment above) — the ECS AWS infrastructure this line originally left open was never provisioned, so nothing had to be torn down to make this change.
 
 ## Success Criteria
 
-- The app runs on Next.js and a Node API, with VMT reporting data continuing to flow from Socrata and feedback submissions flowing to Asana; the app has no database
+- The app runs on Next.js (frontend and API as one deployable), with VMT reporting data continuing to flow from Socrata and feedback submissions flowing to Asana; the app has no database
 - Core user flows — data explorer, map, feedback — are available in the new stack (login/signup/settings/admin are intentionally not part of this list — see Non-Goals)
 - The app correctly displays whatever the Socrata dataset returns, including after it's updated to include commercial-vehicle data, without requiring an app code change to do so
 - Legacy AngularJS usage is removed or reduced to a temporary migration bridge
 - The Socrata integration is documented (required env vars, dataset key, error handling) instead of tribal knowledge
 - The new architecture is easier to maintain and extend than the current one
-- Both services build as working Docker images and deploy to ECS behind a path-routing ALB, with working CI (`test`/`build` on every push) — this repo's first CI/CD, replacing a stale `.travis.yml` that never actually ran against this app's real dependencies
+- The app builds as a single working Docker image and deploys to Coolify, with working CI (`test`/`build` on every push) — this repo's first CI/CD, replacing a stale `.travis.yml` that never actually ran against this app's real dependencies
