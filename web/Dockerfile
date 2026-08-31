@@ -10,10 +10,28 @@ WORKDIR /repo
 
 # Copy just the manifests first for better layer caching. npm needs
 # every workspace's package.json present to reconcile the lockfile,
-# even though --workspace scopes the actual install to web.
-COPY package.json package-lock.json ./
+# even though --workspace scopes the actual install to web. .npmrc
+# configures the @bayareametro/@fortawesome private registries via
+# ${BAYAREAMETRO_NPM_TOKEN}/${FONTAWESOME_AUTH_TOKEN} env var
+# interpolation - npm reads .npmrc from the current directory
+# automatically, no extra flag needed.
+COPY package.json package-lock.json .npmrc ./
 COPY web/package.json web/
-RUN npm ci --workspace web --include-workspace-root=false
+
+# BuildKit secret mounts, not ARG/ENV: unlike NEXT_PUBLIC_MAPBOX_TOKEN
+# below (meant to be public - it ships in the client bundle either
+# way), these are real npm publish-scoped credentials. An ARG/ENV
+# value gets baked into the image's layer history and is recoverable
+# later via `docker history` even after the build finishes; a secret
+# mount exists only for the one RUN step that reads it, never written
+# to any layer. Requires Coolify's build secrets (not its regular
+# build variables) to supply `bayareametro_npm_token` /
+# `fontawesome_auth_token` - see docs/deploy/coolify.md.
+RUN --mount=type=secret,id=bayareametro_npm_token \
+    --mount=type=secret,id=fontawesome_auth_token \
+    BAYAREAMETRO_NPM_TOKEN="$(cat /run/secrets/bayareametro_npm_token)" \
+    FONTAWESOME_AUTH_TOKEN="$(cat /run/secrets/fontawesome_auth_token)" \
+    npm ci --workspace web --include-workspace-root=false
 
 COPY web web
 
