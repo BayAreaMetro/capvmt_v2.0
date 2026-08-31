@@ -48,23 +48,40 @@ by the `app/api/*` Route Handlers (`web/lib/env.ts`), so these are real
 See `docs/data/socrata-integration.md` for what each Socrata variable does,
 and `.env.example` at the repo root for the full list with comments.
 
-## A known gap: private npm registry auth in the build
+## Private npm registry auth in the build
 
 `web/package.json` depends on `@bayareametro/mtc-ui` and
 `@fortawesome/pro-light-svg-icons`, both published to private registries
 (configured in the repo-root `.npmrc` via `${BAYAREAMETRO_NPM_TOKEN}` /
-`${FONTAWESOME_AUTH_TOKEN}` env var interpolation). **`web/Dockerfile` does
-not currently copy `.npmrc` into the build stage or accept those tokens as
-build secrets**, so `npm ci` fails inside the container with a 401 — verified
-by actually running `docker build -f web/Dockerfile .` locally, not assumed.
-This needs `COPY .npmrc ./` plus `--mount=type=secret` for the two tokens
-(and the matching secrets configured in Coolify's build settings) before a
-Coolify build of this image will succeed. Not yet done as of this writing.
+`${FONTAWESOME_AUTH_TOKEN}` env var interpolation). `web/Dockerfile` copies
+`.npmrc` into the build stage and supplies both tokens to the `npm ci` step
+via **BuildKit secret mounts**, not build args — unlike
+`NEXT_PUBLIC_MAPBOX_TOKEN` above (meant to be public either way), these are
+real npm publish-scoped credentials, and a build arg would get baked into
+the image's layer history and stay recoverable (`docker history`) after the
+build finishes. A secret mount exists only for the one `RUN` step that reads
+it.
+
+Coolify needs these supplied via its **build secrets** (a separate concept
+from its regular environment variables — check your Coolify instance's
+current UI for the exact label), with these exact ids, matching the
+`--mount=type=secret,id=...` names in `web/Dockerfile`:
+
+- `bayareametro_npm_token`
+- `fontawesome_auth_token`
+
+Verified with a real `docker build` using both real tokens end-to-end: `npm
+ci` fetched the private packages, `next build` succeeded, `docker history`
+confirmed neither token value appears anywhere in the image, and the
+resulting container correctly served `/api/health` and live Socrata data
+when run standalone.
 
 ## Verifying a build locally before pushing to Coolify
 
 ```bash
 docker build -f web/Dockerfile -t capvmt-web \
+  --secret id=bayareametro_npm_token,src=<path to a file containing the token> \
+  --secret id=fontawesome_auth_token,src=<path to a file containing the token> \
   --build-arg NEXT_PUBLIC_MAPBOX_TOKEN=<your-token> .
 
 docker run -p 3000:3000 \
