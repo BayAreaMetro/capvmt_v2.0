@@ -4,12 +4,11 @@ Climate Action Plan VMT Data Portal (Version 2).
 
 ## Applications
 
-This repository is a modern npm workspace with two maintained application workspaces:
+This repository is a modern npm workspace with one maintained application workspace:
 
-- `web`: the Next.js frontend.
-- `api`: the TypeScript Express backend.
+- `web`: a full-stack Next.js app. Its API (`web/app/api/*` Route Handlers) proxies Socrata for VMT data and Asana for feedback submissions — see `web/lib/env.ts` and `docs/data/socrata-integration.md`.
 
-The Next.js app proxies browser requests for `/api/*` to the backend URL configured by `API_INTERNAL_URL`. In local development this normally points to `http://localhost:4000`, where the Express API runs.
+(Originally built as two services — a Next.js frontend and a separate Express `api` workspace — then consolidated into one app; see `docs/superpowers/specs/2026-08-14-modernization-design.md`'s "Deployment" section for why.)
 
 ## Requirements
 
@@ -32,9 +31,8 @@ cp .env.example .env
 
 ## Environment variables
 
-The API loads the repository-root `.env` file for local development. The variables used by `api/src/env.ts` are:
+The app loads the repository-root `.env` file for local development. The variables used by `web/lib/env.ts` (read by the `app/api/*` Route Handlers at request time):
 
-- `PORT`: API port. Defaults to `4000` when unset.
 - `SOCRATA_USERNAME`: Socrata account username for API data access.
 - `SOCRATA_PASSWORD`: Socrata account password for API data access.
 - `SOCRATA_APP_TOKEN_MTC`: Socrata app token.
@@ -42,37 +40,23 @@ The API loads the repository-root `.env` file for local development. The variabl
 - `ASANA_ACCESS_TOKEN`: Asana Personal Access Token for feedback submissions.
 - `ASANA_PROJECT_ID`: Asana project gid for feedback submissions.
 
-The web workspace also uses:
+Also used, but inlined into the client bundle at build time rather than read at runtime (see `web/Dockerfile`):
 
-- `API_INTERNAL_URL`: server-side target for Next.js rewrites from `/api/*` to the API backend, for example `http://localhost:4000`.
 - `NEXT_PUBLIC_MAPBOX_TOKEN`: Mapbox GL JS token used by client-side map pages.
 
 ## Development
-
-Run both maintained workspaces from the repository root:
 
 ```bash
 npm run dev
 ```
 
-This starts the Next.js frontend and the TypeScript Express API concurrently.
-
-To run a single workspace directly:
-
-```bash
-npm run dev:web
-npm run dev:api
-```
-
 ## Build
-
-Build all workspaces from the repository root:
 
 ```bash
 npm run build
 ```
 
-This runs the workspace build scripts, including `next build` for `web` and TypeScript compilation for `api`.
+This runs `next build` for `web`.
 
 ## Testing
 
@@ -82,11 +66,11 @@ Run all workspace test scripts from the repository root:
 npm test
 ```
 
-This runs the maintained workspace tests, including Playwright tests for `web` and Vitest tests for `api`.
+This runs `web`'s test scripts: Vitest unit tests for the `app/api/*` Route Handlers and their supporting `lib/` code, then Playwright end-to-end tests for the pages.
 
 ## Deployment
 
-Deploy the built Next.js `web` application and TypeScript Express `api` service as separate modern services. Provide production environment variables through the deployment platform rather than committing local `.env` files.
+Deploy the built Next.js app to Coolify as a single application built from `web/Dockerfile`. See `docs/deploy/coolify.md` for the full guide (build pack, required build args vs. runtime environment variables, a known gap in private-registry auth for the build). Provide production environment variables through the deployment platform rather than committing local `.env` files.
 
 ## Data updates
 

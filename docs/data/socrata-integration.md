@@ -7,13 +7,18 @@ of it was written down anywhere in the repo.
 
 ## Client
 
-`api/src/socrata/client.ts` — `SocrataClient` is a thin wrapper over the SODA
+`web/lib/socrata/client.ts` — `SocrataClient` is a thin wrapper over the SODA
 REST API (`GET https://{domain}/resource/{dataset}.json`), replacing the
 legacy `soda-js` `Consumer` used directly in
-`server/api/data/data.controller.js`.
+`server/api/data/data.controller.js`. (Originally `api/src/socrata/client.ts`
+in a separate Express service, ported verbatim when that service was folded
+into this app's own Route Handlers — see
+`docs/superpowers/specs/2026-08-14-modernization-design.md`'s "Deployment"
+section.)
 
-`api/src/socrata/vmt.ts` — `SocrataVmtClient` wraps `SocrataClient` with the
-three queries this app actually needs:
+`web/lib/socrata/vmt.ts` — `SocrataVmtClient` wraps `SocrataClient` with the
+three queries this app actually needs, called from `web/app/api/data/*`
+Route Handlers via `web/lib/socrata/route-helpers.ts`:
 
 | Method | Replaces (legacy) | SODA query |
 | --- | --- | --- |

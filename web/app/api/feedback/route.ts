@@ -1,9 +1,7 @@
-import { Router } from 'express';
-import { AsanaClient } from '../asana/client';
-import { env } from '../env';
-import { toHttpError } from '../lib/http-errors';
-
-export const feedbackRouter = Router();
+import { NextResponse, type NextRequest } from 'next/server';
+import { AsanaClient } from '@/lib/asana/client';
+import { env } from '@/lib/env';
+import { toHttpError } from '@/lib/http-errors';
 
 const FEEDBACK_TYPE_LABELS: Record<string, string> = {
   '1': 'None',
@@ -38,40 +36,38 @@ const client = new AsanaClient({
   projectId: env.asanaProjectId ?? '',
 });
 
-// Fail clearly at request time rather than silently calling Asana with
-// empty credentials/project id.
-feedbackRouter.use((_req, res, next) => {
+export async function POST(request: NextRequest) {
   if (!env.asanaAccessToken || !env.asanaProjectId) {
-    res.status(500).json({ error: 'Asana feedback integration is not configured (ASANA_ACCESS_TOKEN / ASANA_PROJECT_ID)' });
-    return;
-  }
-  next();
-});
-
-feedbackRouter.post('/', async (req, res, next) => {
-  if (!isFeedbackPayload(req.body)) {
-    res.status(400).json({ error: 'comment is required' });
-    return;
+    return NextResponse.json(
+      { error: 'Asana feedback integration is not configured (ASANA_ACCESS_TOKEN / ASANA_PROJECT_ID)' },
+      { status: 500 },
+    );
   }
 
-  const typeLabel = req.body.type ? (FEEDBACK_TYPE_LABELS[req.body.type] ?? req.body.type) : 'Unspecified';
+  const body: unknown = await request.json();
+  if (!isFeedbackPayload(body)) {
+    return NextResponse.json({ error: 'comment is required' }, { status: 400 });
+  }
+
+  const typeLabel = body.type ? (FEEDBACK_TYPE_LABELS[body.type] ?? body.type) : 'Unspecified';
 
   try {
     const task = await client.createTask({
       name: `VMT Data Portal feedback: ${typeLabel}`,
       notes: [
-        `Name: ${req.body.name || '(not provided)'}`,
-        `Email: ${req.body.email || '(not provided)'}`,
+        `Name: ${body.name || '(not provided)'}`,
+        `Email: ${body.email || '(not provided)'}`,
         `Type: ${typeLabel}`,
         '',
-        req.body.comment,
+        body.comment,
         '',
         `Submitted: ${new Date().toISOString()}`,
         'Source: CAPVMT Data Portal',
       ].join('\n'),
     });
-    res.status(201).json({ ok: true, taskGid: task.gid });
+    return NextResponse.json({ ok: true, taskGid: task.gid }, { status: 201 });
   } catch (error) {
-    next(toHttpError(error));
+    const httpError = toHttpError(error);
+    return NextResponse.json({ error: httpError.message }, { status: httpError.statusCode });
   }
-});
+}
