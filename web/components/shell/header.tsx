@@ -49,7 +49,7 @@ export const Header = ({ title, items }: HeaderProps) => (
           </StandardHeader.NavbarToggle>
         </StandardHeader.ButtonsContainer>
         <StandardHeader.Navigation role="navigation">
-          <StandardHeader.NavigationMenu className="justify-content-end">
+          <StandardHeader.NavigationMenu className="ms-auto">
             {items.map((item) => (
               <HeaderNavLink key={item.href} {...item} />
             ))}
