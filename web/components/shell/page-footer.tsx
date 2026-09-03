@@ -36,7 +36,7 @@ export const PageFooter = () => (
           </address>
           <p className={styles.contactLine}>
             <a href="tel:1-415-749-5000">415.749.5000</a> |{' '}
-            <a href="TEL:1-800-435-7247">1.800.HELP AIR</a>
+            <a href="tel:1-800-435-7247">1.800.HELP AIR</a>
           </p>
           <a
             href="https://www.baaqmd.gov/about-the-air-district/contact-us/location-and-directions"
@@ -135,12 +135,12 @@ export const PageFooter = () => (
         </div>
       </div>
 
-      <section className={styles.bottomBarSection}>
+      <div className={styles.bottomBarSection}>
         <div className={styles.bottomBar}>
           <span>&copy; {new Date().getFullYear()} Bay Area Air District. All rights reserved.</span>
           <LegalFooter.BackToTopLink className={styles.backToTop} />
         </div>
-      </section>
+      </div>
     </div>
   </StandardFooter.Root>
 );

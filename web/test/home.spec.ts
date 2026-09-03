@@ -32,7 +32,7 @@ test('home footer renders Bay Area Air District content', async ({ page }) => {
   await expect(footer.locator('img[src="/images/spare_the_air.png"]')).toHaveCount(1);
   await expect(footer.getByRole('link', { name: 'Directions' })).toBeVisible();
   await expect(footer.getByRole('link', { name: 'Subscribe' })).toBeVisible();
-  await expect(footer.locator('a[href^="tel:"]')).toBeVisible();
+  await expect(footer.locator('a[href^="tel:"]').first()).toBeVisible();
 });
 
 test('feedback route is not available', async ({ page }) => {

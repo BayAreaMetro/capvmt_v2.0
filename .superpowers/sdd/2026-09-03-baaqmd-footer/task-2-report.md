@@ -139,3 +139,44 @@ Running 6 tests using 6 workers
 
   6 passed (1.3s)
 ```
+
+---
+
+# Task 2 Final Review Findings Fix Report
+
+## Findings Addressed
+1. **Assets**: Tracked and added the 3 required BAAQMD footer local image assets without byte modification:
+   - `web/public/images/HorizLogo-WHT.png`
+   - `web/public/images/spare_the_air.png`
+   - `web/public/images/no_burn.png`
+2. **Footer Markup Cleanups**:
+   - Replaced unlabelled `<section className={styles.bottomBarSection}>` with plain `<div className={styles.bottomBarSection}>` for the bottom bar container in `web/components/shell/page-footer.tsx`.
+   - Normalized toll-free link target from `TEL:1-800-435-7247` to lowercase `tel:1-800-435-7247`.
+   - Updated e2e assertion in `web/test/home.spec.ts` for strict mode compatibility with multiple `tel:` links.
+
+## Verification Command and Output
+
+```bash
+npm run test:e2e --workspace web -- home.spec.ts
+```
+
+Output:
+```text
+> web@0.1.0 test:e2e
+> playwright test home.spec.ts
+
+
+Running 6 tests using 6 workers
+
+  ✓  2 [chromium] › test/home.spec.ts:38:5 › feedback route is not available (601ms)
+  ✓  1 [chromium] › test/home.spec.ts:17:5 › home navigation does not expose the feedback menu item (693ms)
+  ✓  3 [chromium] › test/home.spec.ts:44:5 › about page does not embed the overview video (706ms)
+  ✓  6 [chromium] › test/home.spec.ts:23:5 › home footer renders Bay Area Air District content (713ms)
+  ✓  5 [chromium] › test/home.spec.ts:11:5 › home navigation does not expose the map menu item (720ms)
+  ✓  4 [chromium] › test/home.spec.ts:3:5 › home page renders and links to the data explorer (901ms)
+
+  6 passed (1.3s)
+```
+
+## Concerns
+- None.
