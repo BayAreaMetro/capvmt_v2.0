@@ -1,4 +1,4 @@
-import { StandardFooter } from '@bayareametro/mtc-ui';
+import { StandardFooter, LegalFooter } from '@bayareametro/mtc-ui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faXTwitter,
@@ -35,13 +35,16 @@ export const PageFooter = () => (
             San Francisco, CA 94105
           </address>
           <p className={styles.contactLine}>
-            <a href="tel:1-415-749-5000">415.749.5000 | 1.800.HELP AIR</a>
+            <a href="tel:1-415-749-5000">415.749.5000</a> |{' '}
+            <a href="TEL:1-800-435-7247">1.800.HELP AIR</a>
           </p>
           <a
             href="https://www.baaqmd.gov/about-the-air-district/contact-us/location-and-directions"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.directionsLink}
+            aria-label="Directions to Bay Area Air District"
+            title="Directions to Bay Area Air District"
           >
             <FontAwesomeIcon icon={faLocationDot} aria-hidden="true" />
             <span>Directions</span>
@@ -132,9 +135,12 @@ export const PageFooter = () => (
         </div>
       </div>
 
-      <footer className={styles.bottomBar}>
-        <span>&copy; {new Date().getFullYear()} Bay Area Air District. All rights reserved.</span>
-      </footer>
+      <section className={styles.bottomBarSection}>
+        <footer className={styles.bottomBar}>
+          <span>&copy; {new Date().getFullYear()} Bay Area Air District. All rights reserved.</span>
+          <LegalFooter.BackToTopLink className={styles.backToTop} />
+        </footer>
+      </section>
     </div>
   </StandardFooter.Root>
 );

@@ -247,6 +247,10 @@
   }
 }
 
+.bottomBarSection {
+  width: 100%;
+}
+
 .bottomBar {
   padding-top: 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
@@ -257,4 +261,21 @@
   gap: 16px;
   font-size: 0.85rem;
   color: #b0bec5;
+}
+
+.backToTop {
+  color: #80deea;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #80deea;
+    outline-offset: 2px;
+  }
 }
