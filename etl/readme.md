@@ -31,6 +31,5 @@ The `vmt_results` output from this script contains a table that can be copied in
 The CAPVMT web application reads this data from a Socrata dataset, not directly from this script's output. `publish_to_socrata.py` (in this directory) scripts the hand-off from `vmt_results.csv` to that live dataset - see `docs/data/etl-to-socrata.md` for usage and configuration. Run it after this script, once new output is ready to publish:
 
 ```bash
-python vmt-results-etl.py
-python publish_to_socrata.py
+python vmt-results-etl.py && python publish_to_socrata.py
 ```

@@ -12,7 +12,9 @@ import sys
 
 import pandas as pd
 from dotenv import load_dotenv
-from sodapy import Socrata
+from mtcpy.socrata import replace_df_socrata
+
+from config import INPUTS_FOLDER
 
 # Loads the monorepo-root .env (see .env.example) - the same
 # SOCRATA_*/VMT_DATA_KEY credentials the api workspace uses
@@ -27,18 +29,17 @@ def main():
         print("VMT_DATA_KEY is required", file=sys.stderr)
         sys.exit(1)
 
-    if not os.path.exists("vmt_results.csv"):
+    vmt_results_path = INPUTS_FOLDER / "vmt_results.csv"
+    if not os.path.exists(vmt_results_path):
         print("vmt_results.csv not found - run vmt-results-etl.py first", file=sys.stderr)
         sys.exit(1)
 
-    client = Socrata(
-        "data.bayareametro.gov",
-        os.environ.get("SOCRATA_APP_TOKEN_MTC"),
-        username=os.environ.get("SOCRATA_USERNAME"),
-        password=os.environ.get("SOCRATA_PASSWORD"),
+    df = pd.read_csv(vmt_results_path)
+    replace_df_socrata(
+        df=df,
+        socrata_data_id=dataset_key,
+        creds_label="default"
     )
-    df = pd.read_csv("vmt_results.csv")
-    client.replace(dataset_key, df.to_dict("records"))
     print(f"Published {len(df)} rows to Socrata dataset {dataset_key}")
 
 
