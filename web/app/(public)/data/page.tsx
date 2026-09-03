@@ -62,8 +62,8 @@ interface TableRow {
   vmtPerCapita: string;
 }
 
-const DEFAULT_MODEL_RUN = '2050_06_YYY';
-const DEFAULT_JURISDICTION = 'Alameda';
+const DEFAULT_MODEL_RUN = '';
+const DEFAULT_JURISDICTION = '';
 
 function sumBy(rows: VmtRow[], key: 'persons' | 'inside' | 'partially_in' | 'outside' | 'total'): number {
   return rows.reduce((total, row) => total + parseFloat(row[key]), 0);
@@ -370,65 +370,83 @@ export default function DataPage() {
         <VStack className="gap-3">
           <Card.Root>
             <Card.Body>
-              <form onSubmit={(event) => event.preventDefault()}>
-                <HStack className="gap-3 flex-wrap align-items-center">
-                  <Select.Field value={modelRun} onChange={(event) => setModelRun(event.target.value)}>
-                    <option value="">Choose a Scenario Year</option>
-                    {years.map((year) => (
-                      <option key={year.model_run} value={year.model_run}>
-                        {year.model_run.split('_')[0]}
-                      </option>
-                    ))}
-                  </Select.Field>
-                  <Select.Field value={jurisdiction} onChange={(event) => setJurisdiction(event.target.value)}>
-                    <option value="">Choose a Jurisdiction</option>
-                    {jurisdictions.map((row) => (
-                      <option key={row.cityname} value={row.cityname}>
-                        {row.cityname}
-                      </option>
-                    ))}
-                  </Select.Field>
-                  <Button
-                    type="button"
-                    disabled={vmtData.length === 0}
-                    onClick={() => downloadCsv(vmtData, jurisdiction, modelRun)}
-                  >
-                    Download Data
-                  </Button>
-                </HStack>
-              </form>
+              <VStack className="gap-3">
+                <Typography as="h2">Climate Action Plan VMT Data</Typography>
+                <form onSubmit={(event) => event.preventDefault()}>
+                  <VStack className="gap-3">
+                    <div className="row g-3">
+                      <div className="col-12 col-md-6">
+                        <label className="form-label" htmlFor="scenario-year">
+                          Scenario Year
+                        </label>
+                        <Select.Field
+                          id="scenario-year"
+                          value={modelRun}
+                          onChange={(event) => setModelRun(event.target.value)}
+                        >
+                          <option value="">Choose a Scenario Year</option>
+                          {years.map((year) => (
+                            <option key={year.model_run} value={year.model_run}>
+                              {year.model_run.split('_')[0]}
+                            </option>
+                          ))}
+                        </Select.Field>
+                      </div>
+                      <div className="col-12 col-md-6">
+                        <label className="form-label" htmlFor="jurisdiction">
+                          Place Name
+                        </label>
+                        <Select.Field
+                          id="jurisdiction"
+                          value={jurisdiction}
+                          onChange={(event) => setJurisdiction(event.target.value)}
+                        >
+                          <option value="">Choose a Jurisdiction</option>
+                          {jurisdictions.map((row) => (
+                            <option key={row.cityname} value={row.cityname}>
+                              {row.cityname}
+                            </option>
+                          ))}
+                        </Select.Field>
+                      </div>
+                    </div>
+                    <div className="d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                      <Typography as="p" className="mb-0">
+                        <strong>Model Run:</strong> {modelRun}
+                      </Typography>
+                      <Button
+                        type="button"
+                        disabled={vmtData.length === 0}
+                        onClick={() => downloadCsv(vmtData, jurisdiction, modelRun)}
+                      >
+                        Download Data
+                      </Button>
+                    </div>
+                  </VStack>
+                </form>
+
+                {error && <NotificationBox type="info">{error}</NotificationBox>}
+                {noData && !error && (
+                  <NotificationBox type="info">No data available for this combination!</NotificationBox>
+                )}
+
+                {vmtData.length > 0 && totals && (
+                  <VStack className="gap-3">
+                    <DataTable.Table
+                      columns={columns}
+                      data={tableRows}
+                      variant="dark"
+                      renderTableHead={renderGroupedTableHead}
+                      renderData={renderDataCell}
+                    />
+
+                    <Typography as="h4">Selected Transportation Analysis Zones:</Typography>
+                    <Typography as="p">{tazList}</Typography>
+                  </VStack>
+                )}
+              </VStack>
             </Card.Body>
           </Card.Root>
-
-          {error && <NotificationBox type="info">{error}</NotificationBox>}
-          {noData && !error && (
-            <NotificationBox type="info">No data available for this combination!</NotificationBox>
-          )}
-
-          {vmtData.length > 0 && totals && (
-            <Card.Root>
-              <Card.Body>
-                <VStack className="gap-3">
-                  <Typography as="h2">Climate Action Plan VMT Data</Typography>
-                  <Typography as="p">
-                    <strong>Place Name:</strong> {jurisdiction} &nbsp;
-                    <strong>Model Run:</strong> {modelRun}
-                  </Typography>
-
-                  <DataTable.Table
-                    columns={columns}
-                    data={tableRows}
-                    variant="dark"
-                    renderTableHead={renderGroupedTableHead}
-                    renderData={renderDataCell}
-                  />
-
-                  <Typography as="h4">Selected Transportation Analysis Zones:</Typography>
-                  <Typography as="p">{tazList}</Typography>
-                </VStack>
-              </Card.Body>
-            </Card.Root>
-          )}
         </VStack>
       </Container>
     </div>

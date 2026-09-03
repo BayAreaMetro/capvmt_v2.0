@@ -26,16 +26,42 @@ test.beforeEach(async ({ page }) => {
 test('loads default VMT data and computes totals', async ({ page }) => {
   await page.goto('/data');
 
+  await page.getByRole('combobox').nth(0).selectOption('2050_06_YYY');
+  await page.getByRole('combobox').nth(1).selectOption('Alameda');
+
   await expect(page.getByText('Climate Action Plan VMT Data')).toBeVisible();
+  const headingBox = await page.getByRole('heading', { name: 'Climate Action Plan VMT Data' }).boundingBox();
+  const formBox = await page.locator('form').boundingBox();
+  expect(headingBox).not.toBeNull();
+  expect(formBox).not.toBeNull();
+  expect(headingBox!.y).toBeLessThan(formBox!.y);
   // With a single data row, the row's total and the aggregate total both
   // read 43,338 - assert both cells exist rather than a single unique match.
   await expect(page.getByRole('cell', { name: '43,338' })).toHaveCount(2);
   await expect(page.getByText('948, 949, 950')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Download Data' })).toBeEnabled();
+  const controls = page.locator('form');
+  await expect(controls.getByText('Model Run: 2050_06_YYY')).toBeVisible();
+  await expect(controls.getByRole('button', { name: 'Download Data' })).toBeVisible();
+});
+
+test('starts with blank scenario and jurisdiction selections', async ({ page }) => {
+  await page.goto('/data');
+
+  await expect(page.getByRole('combobox').nth(0)).toHaveValue('');
+  await expect(page.getByRole('combobox').nth(1)).toHaveValue('');
+  await expect(page.getByText('Scenario Year', { exact: true })).toBeVisible();
+  await expect(page.getByText('Place Name', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Download Data' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Download Data' })).toBeDisabled();
+  await expect(page.getByRole('heading', { name: 'Climate Action Plan VMT Data' })).toBeVisible();
+  await expect(page.locator('table')).toHaveCount(0);
 });
 
 test('renders grouped VMT table headers without repeated placeholder labels', async ({ page }) => {
   await page.goto('/data');
+  await page.getByRole('combobox').nth(0).selectOption('2050_06_YYY');
+  await page.getByRole('combobox').nth(1).selectOption('Alameda');
 
   const headerRows = page.locator('thead tr');
   await expect(headerRows).toHaveCount(3);
@@ -80,6 +106,8 @@ test('shows a no-data message when Socrata returns nothing for the combination',
   await page.route('**/api/data/vmt/**', (route) => route.fulfill({ json: [] }));
 
   await page.goto('/data');
+  await page.getByRole('combobox').nth(0).selectOption('2050_06_YYY');
+  await page.getByRole('combobox').nth(1).selectOption('Alameda');
 
   await expect(page.getByText('No data available for this combination!')).toBeVisible();
 });
