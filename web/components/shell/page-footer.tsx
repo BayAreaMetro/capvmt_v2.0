@@ -136,10 +136,10 @@ export const PageFooter = () => (
       </div>
 
       <section className={styles.bottomBarSection}>
-        <footer className={styles.bottomBar}>
+        <div className={styles.bottomBar}>
           <span>&copy; {new Date().getFullYear()} Bay Area Air District. All rights reserved.</span>
           <LegalFooter.BackToTopLink className={styles.backToTop} />
-        </footer>
+        </div>
       </section>
     </div>
   </StandardFooter.Root>
