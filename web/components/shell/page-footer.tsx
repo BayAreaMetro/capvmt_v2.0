@@ -1,4 +1,5 @@
 import { StandardFooter, LegalFooter } from '@bayareametro/mtc-ui';
+import Container from 'react-bootstrap/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faXTwitter,
@@ -11,7 +12,7 @@ import styles from './page-footer.module.scss';
 
 export const PageFooter = () => (
   <StandardFooter.Root className={styles.root}>
-    <div className={styles.container}>
+    <Container className={styles.container}>
       <div className={styles.grid}>
         {/* Column 1: Contact & Logo */}
         <div className={styles.column}>
@@ -28,7 +29,6 @@ export const PageFooter = () => (
               className={styles.logo}
             />
           </a>
-          <p className={styles.districtTitle}>Bay Area Air District</p>
           <address className={styles.address}>
             375 Beale Street, Suite 600
             <br />
@@ -124,7 +124,6 @@ export const PageFooter = () => (
               />
             </a>
             <div className={styles.noBurnSection}>
-              <p className={styles.phoneText}>877-4NO-BURN</p>
               <img
                 src="/images/no_burn.png"
                 alt="Wood Smoke Regulations / No Burn"
@@ -141,6 +140,6 @@ export const PageFooter = () => (
           <LegalFooter.BackToTopLink className={styles.backToTop} />
         </div>
       </div>
-    </div>
+    </Container>
   </StandardFooter.Root>
 );

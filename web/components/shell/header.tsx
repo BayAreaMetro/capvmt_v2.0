@@ -14,7 +14,7 @@ export interface HeaderNavLinkItem {
 }
 
 export interface HeaderProps {
-  title: string;
+  title?: string;
   items: HeaderNavLinkItem[];
 }
 
@@ -31,16 +31,17 @@ function HeaderNavLink({ label, href }: HeaderNavLinkItem) {
   );
 }
 
-export const Header = ({ title, items }: HeaderProps) => (
+export const Header = ({ items }: HeaderProps) => (
   <StandardHeader.Root className={styles.root}>
     <StandardHeader.Navbar>
       <StandardHeader.Container className={styles.navRow}>
         <StandardHeader.Brand>
           <NextLink href="/" title="Home page" className={styles.headerTitleLink}>
-            <StandardHeader.Logo id="standard-header-logo" className={styles.headerLogo} width={40} />
-            <StandardHeader.Title as="span" className={styles.headerTitle}>
-              {title}
-            </StandardHeader.Title>
+            <img
+              src="/images/HorizLogo-WHT.png"
+              alt="Bay Area Air Quality Management District Logo"
+              className={styles.headerLogo}
+            />
           </NextLink>
         </StandardHeader.Brand>
         <StandardHeader.ButtonsContainer>

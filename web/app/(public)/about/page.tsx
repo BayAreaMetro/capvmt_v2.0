@@ -217,18 +217,6 @@ export default function AboutPage() {
           </details>
 
           <details>
-            <summary>
-              When using the MacOS Safari Browser or Windows IE web browser, the download data
-              option does not work. What should I do?
-            </summary>
-            <p>
-              Unfortunately, these two web browsers handle csv files differently than other
-              browsers. We suggest you use another popular web browser like Mozilla&apos;s
-              Firefox, or Google&apos;s Chrome Browser.
-            </p>
-          </details>
-
-          <details>
             <summary>What is the difference between a Place Boundary and a TAZ Boundary?</summary>
             <p>
               Place geography used by this tool is provided and maintained by the U.S. Census
@@ -244,47 +232,16 @@ export default function AboutPage() {
             <p>
               Resources for more information on:
               <br />
-              <a href="https://www.census.gov/geo/reference/gtc/gtc_place.html">CDP</a>
+              <a href="https://www.census.gov/programs-surveys/bas/information/cdp.html">CDP</a>
               <br />
               <a href="https://www.fhwa.dot.gov/planning/tmip/publications/other_reports/technical_synthesis_report/page01.cfm">
                 TAZ
               </a>
               <br />
-              <a href="https://www.census.gov/geo/reference/gtc/gtc_place.html">CDP vs. TAZ</a>
+              <a href="https://www.census.gov/programs-surveys/bas/information/cdp.html">CDP vs. TAZ</a>
             </p>
           </details>
 
-          <details>
-            <summary>Where can I download the entire VMT dataset for all Places within the nine-county Bay Area region?</summary>
-            <p>
-              The Metropolitan Transportation Commission (MTC) maintains a data set that hosts the
-              VMT data by Place for the nine-county Bay Area, click{' '}
-              <a href="https://bayareametro.github.io/capvmt_v2.0/">here</a> to get more
-              information.
-            </p>
-          </details>
-
-          <details>
-            <summary>What happens after I submit Feedback to this site?</summary>
-            <p>
-              Feedback is vital to the success of this tool, and we welcome any and all feedback
-              that our users wish to provide. We periodically review feedback in an effort to fix
-              software bugs, answer technical questions about the website, and enhance the website
-              with future improvements that our users request. All submitted feedback is stored
-              and maintained by this website repository and can be viewed by clicking this{' '}
-              <a href="https://github.com/BayAreaMetro/CAPVMT/issues">link</a>.
-            </p>
-          </details>
-
-          <details>
-            <summary>Not all of the features are available when I try to view this website on my mobile device.</summary>
-            <p>
-              This site is best viewed using a Tablet, Laptop or Desktop device. Mobile devices
-              are typically restricted from downloading directly to the device. Therefore, this
-              website does not allow users to download data when using a mobile device such as a
-              smart phone.
-            </p>
-          </details>
         </div>
       </details>
     </div>
