@@ -23,7 +23,7 @@ test('home navigation does not expose the feedback menu item', async ({ page }) 
 test('home footer renders Bay Area Air District content', async ({ page }) => {
   await page.goto('/');
 
-  const footer = page.getByRole('contentinfo').filter({ has: page.locator('footer') });
+  const footer = page.getByRole('contentinfo').filter({ has: page.locator('address') });
 
   await expect(footer).toContainText('Bay Area Air District');
   await expect(footer).toContainText('Stay Informed');

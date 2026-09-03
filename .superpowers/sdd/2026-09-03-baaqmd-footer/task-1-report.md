@@ -188,3 +188,9 @@ npm error command sh -c playwright test home.spec.ts
 ```
 - Result: failed as expected only because the current standard footer still lacks BAAQMD content; locator strictness remains resolved without depending on legacy MTC/ABAG text.
 </fix-report>
+
+<fix-report>
+- Change: Updated the home footer regression selector to identify the standard footer structurally by filtering the `contentinfo` landmarks for an `address` descendant, avoiding the removed nested `footer` landmark and avoiding legacy/implementation copy.
+- Performed: `npm run test:e2e --workspace web -- home.spec.ts`
+- Result: passed; 6 tests passed in 1.4s.
+</fix-report>
