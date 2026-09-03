@@ -24,13 +24,6 @@ export default function AboutPage() {
             Transportation Commission&apos;s long-range transportation plan, which meets a
             state-mandated GHG reduction target.
           </p>
-          <iframe
-            width="500"
-            height="315"
-            src="https://www.youtube.com/embed/fTG_xdCqpIo"
-            title="Climate Action Plan VMT Data Portal overview"
-            allowFullScreen
-          />
         </div>
       </details>
 
