@@ -31,7 +31,7 @@ function HeaderNavLink({ label, href }: HeaderNavLinkItem) {
   );
 }
 
-export const Header = ({ items }: HeaderProps) => (
+export const Header = ({ title = 'Vehicle Miles Traveled Dataportal', items }: HeaderProps) => (
   <StandardHeader.Root className={styles.root}>
     <StandardHeader.Navbar aria-label="Primary navigation">
       <StandardHeader.Container className={styles.navRow}>
@@ -42,6 +42,7 @@ export const Header = ({ items }: HeaderProps) => (
               alt="Bay Area Air Quality Management District Logo"
               className={styles.headerLogo}
             />
+            {title && <span className={styles.headerTitle}>{title}</span>}
           </NextLink>
         </StandardHeader.Brand>
         <StandardHeader.ButtonsContainer>

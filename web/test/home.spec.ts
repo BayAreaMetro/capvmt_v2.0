@@ -25,7 +25,7 @@ test('pages expose a description and labeled navigation landmarks', async ({ pag
   await expect(navigationLandmarks).not.toHaveAttribute('aria-expanded', /.+/);
 });
 
-test('header renders Bay Area Air Quality Management District branding without text or overflow', async ({ page }) => {
+test('header renders Bay Area Air Quality Management District branding with title and aligned logo artwork', async ({ page }) => {
   for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 }]) {
     await page.setViewportSize(viewport);
     await page.goto('/');
@@ -36,10 +36,11 @@ test('header renders Bay Area Air Quality Management District branding without t
       'alt',
       'Bay Area Air Quality Management District Logo'
     );
-    await expect(header.getByText('Vehicle Miles Traveled Dataportal')).toHaveCount(0);
+    await expect(header.getByText('Vehicle Miles Traveled Dataportal', { exact: true })).toBeVisible();
 
     const homeLink = header.locator('a[href="/"]').first();
     await expect(homeLink).toBeVisible();
+    await expect(homeLink.getByText('Vehicle Miles Traveled Dataportal', { exact: true })).toBeVisible();
 
     const logoImg = header.locator('img[src="/images/HorizLogo-WHT.png"]');
     const logoBox = await logoImg.boundingBox();
@@ -58,6 +59,47 @@ test('header renders Bay Area Air Quality Management District branding without t
 
     expect(logoBox!.y).toBeGreaterThanOrEqual(headerBox!.y);
     expect(logoBox!.y + logoBox!.height).toBeLessThanOrEqual(headerBox!.y + headerBox!.height + 1);
+
+    const logoArtworkLeft = await page.evaluate(() => {
+      const headerEl = document.querySelector('header, nav, .navbar');
+      const img = headerEl?.querySelector('img[src="/images/HorizLogo-WHT.png"]') as HTMLImageElement;
+      const container = headerEl?.querySelector('[class*="navRow"], .container, .container-fluid') as HTMLElement;
+      if (!headerEl || !img || !container) return null;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.drawImage(img, 0, 0);
+
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let minX = canvas.width;
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          const i = (y * canvas.width + x) * 4;
+          if (data[i + 3] > 200 && data[i] > 200) {
+            if (x < minX) minX = x;
+          }
+        }
+      }
+
+      const imgRect = img.getBoundingClientRect();
+      const containerStyle = window.getComputedStyle(container);
+      const paddingLeft = parseFloat(containerStyle.paddingLeft) || 0;
+      const containerRect = container.getBoundingClientRect();
+      const contentLeft = containerRect.left + paddingLeft;
+      const artworkLeft = imgRect.left + (minX / canvas.width) * imgRect.width;
+
+      return {
+        artworkLeft,
+        contentLeft,
+        diff: artworkLeft - contentLeft,
+      };
+    });
+
+    expect(logoArtworkLeft).not.toBeNull();
+    expect(Math.abs(logoArtworkLeft!.diff)).toBeLessThanOrEqual(1.0);
 
     const hasNoOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
