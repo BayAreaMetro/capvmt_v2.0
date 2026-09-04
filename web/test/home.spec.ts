@@ -242,3 +242,15 @@ test('about page does not embed the overview video', async ({ page }) => {
 
   await expect(page.locator('iframe[src*="youtube.com"]')).toHaveCount(0);
 });
+
+test('about FAQ links other questions and issues to the Air District contact form', async ({ page }) => {
+  await page.goto('/about');
+
+  const faq = page.locator('details').filter({ has: page.locator('.about__faq') });
+  await faq.locator('> summary').click();
+  await faq.getByText('Other questions or issues?', { exact: true }).click();
+  await expect(faq.getByText('Other questions or issues?', { exact: true })).toBeVisible();
+  await expect(
+    faq.getByRole('link', { name: 'official contact form' }),
+  ).toHaveAttribute('href', 'https://www.baaqmd.gov/en/Contact-Us');
+});

@@ -242,6 +242,15 @@ export default function AboutPage() {
             </p>
           </details>
 
+          <details>
+            <summary>Other questions or issues?</summary>
+            <p>
+              If you have additional questions or encounter issues using this portal, please reach
+              out through the Bay Area Air District{' '}
+              <a href="https://www.baaqmd.gov/en/Contact-Us">official contact form</a>.
+            </p>
+          </details>
+
         </div>
       </details>
     </div>
