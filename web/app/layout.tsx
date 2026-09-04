@@ -6,6 +6,8 @@ import './fontawesome';
 
 export const metadata: Metadata = {
   title: 'Vehicle Miles Traveled Dataportal',
+  description:
+    'Explore Bay Area vehicle miles traveled data and climate action planning resources.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

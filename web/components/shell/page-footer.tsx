@@ -22,6 +22,7 @@ export const PageFooter = () => (
             rel="noopener noreferrer"
             className={styles.logoLink}
             title="Bay Area Air Quality Management District Website"
+            aria-label="Bay Area Air Quality Management District Website, opens in a new window"
           >
             <img
               src="/images/HorizLogo-WHT.png"
@@ -43,7 +44,7 @@ export const PageFooter = () => (
             target="_blank"
             rel="noopener noreferrer"
             className={styles.directionsLink}
-            aria-label="Directions to Bay Area Air District"
+            aria-label="Directions to Bay Area Air District, opens in a new window"
             title="Directions to Bay Area Air District"
           >
             <FontAwesomeIcon icon={faLocationDot} aria-hidden="true" />
@@ -61,7 +62,7 @@ export const PageFooter = () => (
               rel="noopener noreferrer"
               className={styles.socialLink}
               title="Follow Bay Area Air District on X / Twitter"
-              aria-label="X / Twitter"
+              aria-label="X / Twitter, opens in a new window"
             >
               <FontAwesomeIcon icon={faXTwitter} />
             </a>
@@ -71,7 +72,7 @@ export const PageFooter = () => (
               rel="noopener noreferrer"
               className={styles.socialLink}
               title="Follow Bay Area Air District on Facebook"
-              aria-label="Facebook"
+              aria-label="Facebook, opens in a new window"
             >
               <FontAwesomeIcon icon={faFacebookSquare} />
             </a>
@@ -81,7 +82,7 @@ export const PageFooter = () => (
               rel="noopener noreferrer"
               className={styles.socialLink}
               title="Watch Bay Area Air District videos on YouTube"
-              aria-label="YouTube"
+              aria-label="YouTube, opens in a new window"
             >
               <FontAwesomeIcon icon={faYoutube} />
             </a>
@@ -91,7 +92,7 @@ export const PageFooter = () => (
               rel="noopener noreferrer"
               className={styles.socialLink}
               title="Follow Bay Area Air District on Instagram"
-              aria-label="Instagram"
+              aria-label="Instagram, opens in a new window"
             >
               <FontAwesomeIcon icon={faInstagram} />
             </a>
@@ -101,6 +102,7 @@ export const PageFooter = () => (
             target="_blank"
             rel="noopener noreferrer"
             className={styles.subscribeLink}
+            aria-label="Subscribe, opens in a new window"
           >
             Subscribe
           </a>
@@ -116,6 +118,7 @@ export const PageFooter = () => (
               rel="noopener noreferrer"
               className={styles.initiativeLink}
               title="Spare the Air"
+              aria-label="Spare the Air, opens in a new window"
             >
               <img
                 src="/images/spare_the_air.png"

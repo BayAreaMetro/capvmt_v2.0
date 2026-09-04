@@ -33,7 +33,7 @@ function HeaderNavLink({ label, href }: HeaderNavLinkItem) {
 
 export const Header = ({ items }: HeaderProps) => (
   <StandardHeader.Root className={styles.root}>
-    <StandardHeader.Navbar>
+    <StandardHeader.Navbar aria-label="Primary navigation">
       <StandardHeader.Container className={styles.navRow}>
         <StandardHeader.Brand>
           <NextLink href="/" title="Home page" className={styles.headerTitleLink}>
@@ -49,7 +49,7 @@ export const Header = ({ items }: HeaderProps) => (
             <FontAwesomeIcon icon={faBars} />
           </StandardHeader.NavbarToggle>
         </StandardHeader.ButtonsContainer>
-        <StandardHeader.Navigation role="navigation">
+        <StandardHeader.Navigation aria-label="Primary navigation menu">
           <StandardHeader.NavigationMenu className="ms-auto">
             {items.map((item) => (
               <HeaderNavLink key={item.href} {...item} />

@@ -8,6 +8,23 @@ test('home page renders and links to the data explorer', async ({ page }) => {
   await expect(page).toHaveURL('/data');
 });
 
+test('pages expose a description and labeled navigation landmarks', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.+/);
+
+  const navigationLandmarks = page.getByRole('navigation');
+  const navigationCount = await navigationLandmarks.count();
+  expect(navigationCount).toBeGreaterThan(0);
+
+  const labels = await navigationLandmarks.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute('aria-label'))
+  );
+  expect(labels.every((label) => label)).toBe(true);
+  expect(new Set(labels).size).toBe(labels.length);
+  await expect(navigationLandmarks).not.toHaveAttribute('aria-expanded', /.+/);
+});
+
 test('header renders Bay Area Air Quality Management District branding without text or overflow', async ({ page }) => {
   for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 }]) {
     await page.setViewportSize(viewport);
@@ -125,6 +142,19 @@ test('home footer renders Bay Area Air District content', async ({ page }) => {
   await expect(footer.getByRole('link', { name: 'Directions' })).toBeVisible();
   await expect(footer.getByRole('link', { name: 'Subscribe' })).toBeVisible();
   await expect(footer.locator('a[href^="tel:"]').first()).toBeVisible();
+});
+
+test('external footer links announce that they open a new window', async ({ page }) => {
+  await page.goto('/');
+
+  const footer = page.getByRole('contentinfo').filter({ has: page.locator('address') });
+  const externalLinks = footer.locator('a[target="_blank"]');
+  const externalLinkCount = await externalLinks.count();
+  expect(externalLinkCount).toBeGreaterThan(0);
+
+  for (let index = 0; index < externalLinkCount; index += 1) {
+    await expect(externalLinks.nth(index)).toHaveAccessibleName(/opens in a new window/i);
+  }
 });
 
 test('footer content width and alignment match shared page container at desktop and mobile viewports', async ({ page }) => {
