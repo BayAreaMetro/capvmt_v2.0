@@ -426,11 +426,16 @@ export default function DataPage() {
                 </form>
 
                 {error && <NotificationBox type="info">{error}</NotificationBox>}
+                {!error && !noData && (!modelRun || !jurisdiction) && (
+                  <NotificationBox type="info">
+                    To get started, select a model year and jurisdiction.
+                  </NotificationBox>
+                )}
                 {noData && !error && (
                   <NotificationBox type="info">No data available for this combination!</NotificationBox>
                 )}
 
-                {vmtData.length > 0 && totals && (
+                {modelRun && jurisdiction && vmtData.length > 0 && totals && (
                   <VStack className="gap-3">
                     <DataTable.Table
                       columns={columns}

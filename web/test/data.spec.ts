@@ -45,6 +45,18 @@ test('loads default VMT data and computes totals', async ({ page }) => {
   await expect(controls.getByRole('button', { name: 'Download Data' })).toBeVisible();
 });
 
+test('hides results when either selection is cleared', async ({ page }) => {
+  await page.goto('/data');
+  await page.getByRole('combobox').nth(0).selectOption('2050_06_YYY');
+  await page.getByRole('combobox').nth(1).selectOption('Alameda');
+  await expect(page.locator('table')).toBeVisible();
+
+  await page.getByRole('combobox').nth(1).selectOption('');
+
+  await expect(page.locator('table')).toHaveCount(0);
+  await expect(page.getByText('To get started, select a model year and jurisdiction.')).toBeVisible();
+});
+
 test('starts with blank scenario and jurisdiction selections', async ({ page }) => {
   await page.goto('/data');
 
@@ -55,7 +67,11 @@ test('starts with blank scenario and jurisdiction selections', async ({ page }) 
   await expect(page.getByRole('button', { name: 'Download Data' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Download Data' })).toBeDisabled();
   await expect(page.getByRole('heading', { name: 'Climate Action Plan VMT Data' })).toBeVisible();
+  await expect(page.getByText('To get started, select a model year and jurisdiction.')).toBeVisible();
   await expect(page.locator('table')).toHaveCount(0);
+
+  await page.getByRole('combobox').nth(0).selectOption('2050_06_YYY');
+  await expect(page.getByText('To get started, select a model year and jurisdiction.')).toBeVisible();
 });
 
 test('renders grouped VMT table headers without repeated placeholder labels', async ({ page }) => {
