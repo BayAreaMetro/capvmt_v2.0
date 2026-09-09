@@ -22,7 +22,6 @@
     "@tanstack/react-table": "^8.21.3",
     "@turf/turf": "^7.4.0",
     "bootstrap": "^5.3.8",
-    "mapbox-gl": "^3.29.0",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.10",
@@ -31,7 +30,6 @@
   "devDependencies": {
     "@playwright/test": "^1.47.0",
     "@types/geojson": "^7946.0.16",
-    "@types/mapbox-gl": "^3.5.0",
     "@types/node": "^20.14.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

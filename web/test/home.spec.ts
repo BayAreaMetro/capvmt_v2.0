@@ -114,6 +114,13 @@ test('home navigation does not expose the map menu item', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Map', exact: true })).toHaveCount(0);
 });
 
+test('retired map and feedback routes are unavailable', async ({ page }) => {
+  for (const route of ['/map', '/api/feedback']) {
+    const response = await page.goto(route);
+    expect(response?.status()).toBe(404);
+  }
+});
+
 test('home navigation does not expose the feedback menu item', async ({ page }) => {
   await page.goto('/');
 

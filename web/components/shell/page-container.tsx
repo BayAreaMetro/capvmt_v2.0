@@ -8,8 +8,7 @@ const APP_TITLE = 'Vehicle Miles Traveled Dataportal';
  * not included: that entire block is commented out in the legacy markup and
  * has no working entry point, and the decision was to remove that
  * functionality rather than migrate it (see the design doc's "Auth/account/
- * admin scope"). Map is hidden from navigation but the route itself stays
- * live.
+ * admin scope"). Map and feedback have also been retired.
  */
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },

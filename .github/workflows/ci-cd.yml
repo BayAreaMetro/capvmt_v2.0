@@ -53,9 +53,3 @@ jobs:
           file: web/Dockerfile
           push: false
           tags: capvmt-web:ci
-          # NEXT_PUBLIC_* vars are baked in at build time by Next.js, not
-          # read at container runtime (see web/Dockerfile and
-          # docs/deploy/coolify.md) - CI just needs the build to
-          # succeed, so a placeholder value is fine here.
-          build-args: |
-            NEXT_PUBLIC_MAPBOX_TOKEN=

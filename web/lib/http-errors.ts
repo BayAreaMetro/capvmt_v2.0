@@ -10,7 +10,7 @@ export class HttpError extends Error {
 
 /**
  * Wraps an unknown error as an HttpError. These routes only fail when
- * an upstream API (Socrata, Asana) fails, so anything that isn't
+ * an upstream API (Socrata) fails, so anything that isn't
  * already an HttpError defaults to 502 (Bad Gateway) rather than a
  * generic 500.
  */
