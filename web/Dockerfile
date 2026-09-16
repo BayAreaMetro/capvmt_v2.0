@@ -18,30 +18,21 @@ WORKDIR /repo
 COPY package.json package-lock.json .npmrc ./
 COPY web/package.json web/
 
-# BuildKit secret mounts, not ARG/ENV: unlike NEXT_PUBLIC_MAPBOX_TOKEN
-# below (meant to be public - it ships in the client bundle either
-# way), these are real npm publish-scoped credentials. An ARG/ENV
-# value gets baked into the image's layer history and is recoverable
-# later via `docker history` even after the build finishes; a secret
-# mount exists only for the one RUN step that reads it, never written
-# to any layer. Requires Coolify's build secrets (not its regular
-# build variables) to supply `bayareametro_npm_token` /
-# `fontawesome_auth_token` - see docs/deploy/coolify.md.
-RUN --mount=type=secret,id=bayareametro_npm_token \
+# BuildKit secret mounts, not ARG/ENV: these are real npm
+# publish-scoped credentials. An ARG/ENV value gets baked into the
+# image's layer history and is recoverable later via `docker history`
+# even after the build finishes; a secret mount exists only for the
+# one RUN step that reads it, never written to any layer. Secret ids
+# (`npm_auth_token` / `fontawesome_auth_token`) match the convention
+# used by every app on the shared dsa-infrastructure Coolify setup -
+# see docs/deploy/coolify.md.
+RUN --mount=type=secret,id=npm_auth_token \
     --mount=type=secret,id=fontawesome_auth_token \
-    BAYAREAMETRO_NPM_TOKEN="$(cat /run/secrets/bayareametro_npm_token)" \
+    BAYAREAMETRO_NPM_TOKEN="$(cat /run/secrets/npm_auth_token)" \
     FONTAWESOME_AUTH_TOKEN="$(cat /run/secrets/fontawesome_auth_token)" \
     npm ci --workspace web --include-workspace-root=false
 
 COPY web web
-
-# Next.js inlines every NEXT_PUBLIC_* env var into the client JS bundle
-# at `next build` time, not at container runtime (confirmed: grepped a
-# built chunk and found the value literally present in the file), so
-# this has to be a build arg, baked in per image build - setting it as
-# a normal runtime environment variable does nothing.
-ARG NEXT_PUBLIC_MAPBOX_TOKEN=""
-ENV NEXT_PUBLIC_MAPBOX_TOKEN=$NEXT_PUBLIC_MAPBOX_TOKEN
 
 RUN npm run build --workspace web
 

@@ -2,16 +2,17 @@ name: CI/CD
 
 # `test` and `build` run on every push/PR and need no infra setup.
 #
-# There's no `deploy` job: this app deploys as a single Coolify
-# application that builds directly from this repo's git history (see
-# docs/deploy/coolify.md), not by this workflow pushing an image
-# somewhere - Coolify's own webhook/git integration triggers that build.
+# There's no `deploy` job here: deploy-dev.yml and deploy-prod.yml
+# handle that (build -> push to ECR -> Coolify webhook), triggered by
+# push to dev/main respectively - see docs/deploy/coolify.md. This
+# workflow's `build` job only validates the Dockerfile still builds;
+# it never pushes an image.
 
 on:
   push:
-    branches: [main, modernization]
+    branches: [main, dev]
   pull_request:
-    branches: [main, modernization]
+    branches: [main, dev]
   workflow_dispatch: {}
 
 jobs:
