@@ -31,7 +31,7 @@ function HeaderNavLink({ label, href }: HeaderNavLinkItem) {
   );
 }
 
-export const Header = ({ title = 'Vehicle Miles Traveled Dataportal', items }: HeaderProps) => (
+export const Header = ({ title = 'Vehicle Miles Traveled Data Portal', items }: HeaderProps) => (
   <StandardHeader.Root className={styles.root}>
     <StandardHeader.Navbar aria-label="Primary navigation">
       <StandardHeader.Container className={styles.navRow}>

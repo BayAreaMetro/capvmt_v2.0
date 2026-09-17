@@ -1,6 +1,6 @@
 import { PageFrame } from './page-frame';
 
-const APP_TITLE = 'Vehicle Miles Traveled Dataportal';
+const APP_TITLE = 'Vehicle Miles Traveled Data Portal';
 
 /**
  * Matches the legacy navbar's live links (client/components/navbar/navbar.html)
