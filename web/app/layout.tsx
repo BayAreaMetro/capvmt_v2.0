@@ -5,7 +5,7 @@ import './fonts';
 import './fontawesome';
 
 export const metadata: Metadata = {
-  title: 'Vehicle Miles Traveled Dataportal',
+  title: 'Vehicle Miles Traveled Data Portal',
   description:
     'Explore Bay Area vehicle miles traveled data and climate action planning resources.',
 };

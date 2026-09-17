@@ -36,11 +36,11 @@ test('header renders Bay Area Air Quality Management District branding with titl
       'alt',
       'Bay Area Air Quality Management District Logo'
     );
-    await expect(header.getByText('Vehicle Miles Traveled Dataportal', { exact: true })).toBeVisible();
+    await expect(header.getByText('Vehicle Miles Traveled Data Portal', { exact: true })).toBeVisible();
 
     const homeLink = header.locator('a[href="/"]').first();
     await expect(homeLink).toBeVisible();
-    await expect(homeLink.getByText('Vehicle Miles Traveled Dataportal', { exact: true })).toBeVisible();
+    await expect(homeLink.getByText('Vehicle Miles Traveled Data Portal', { exact: true })).toBeVisible();
 
     const logoImg = header.locator('img[src="/images/HorizLogo-WHT.png"]');
     const logoBox = await logoImg.boundingBox();
